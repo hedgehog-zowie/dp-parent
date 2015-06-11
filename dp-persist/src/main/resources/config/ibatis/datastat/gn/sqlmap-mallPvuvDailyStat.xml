@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="MallPvuvDailyStat" >
+
+  <typeAlias alias="MallPvuvDailyStat" type="com.iuni.dp.persist.datastat.model.MallPvuvDailyStat" />
+
+  <resultMap id="MallPvuvDailyStatMap" class="MallPvuvDailyStat" >
+    <result property="id" column="ID"/>
+    <result property="urlDomain" column="URL_MAIN" />
+    <result property="pv" column="PV" />
+    <result property="uv" column="UV" />
+    <result property="ip" column="IP"/>
+    <result property="bizDate" column="BIZ_DATE" />
+    <result property="createTime" column="CREATE_TIME" />
+  </resultMap>
+
+  <sql id="MallPvuvDailyStat_columns" >
+    MPDS.ID, MPDS.URL_DOMAIN, MPDS.PV, MPDS.UV, MPDS.IP, MPDS.BIZ_DATE, MPDS.CREATE_TIME
+  </sql>
+  
+  <sql id="MallDailyBaseStat_columns">
+  	MPDS.PV "pv", MPDS.UV "uv", MPDS.IP "ip", MPDS.BIZ_DATE "bizDate"
+	, CASE WHEN MODS.ORDER_NUM IS NULL THEN 0 ELSE MODS.ORDER_NUM END "orderNum"
+	, CASE WHEN MODS.PAY_NUM IS NULL THEN 0 ELSE MODS.PAY_NUM END "payNum"
+  </sql>
+  
+  <sql id="WjqDailyBaseStat_columns">
+  	MPDS.PV "pv", MPDS.UV "uv", MPDS.IP "ip", MPDS.BIZ_DATE "bizDate"
+  </sql>
+  
+  <sql id="MallPvuvDailyStat_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="urlDomain" prepend="AND" >
+        <![CDATA[  
+        URL_DOMAIN = #urlDomain#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="pv" prepend="AND" >
+        <![CDATA[  
+        PV = #pv#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="uv" prepend="AND" >
+        <![CDATA[  
+        UV = #uv#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="ip" prepend="AND" >
+        <![CDATA[  
+        IP = #ip#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="bizDate" prepend="AND" >
+        <![CDATA[  
+        BIZ_DATE = #bizDate#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="createTime" prepend="AND" >
+        <![CDATA[  
+        CREATE_TIME = #createTime#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="DailyBaseStat_queryParams" >
+	<dynamic prepend="WHERE" >
+		<isNotNull prepend="AND" property="urlDomain" >
+			MPDS.URL_DOMAIN = #urlDomain#
+		</isNotNull>
+		<isNotNull prepend="AND" property="pvFrom">
+			<![CDATA[ MPDS.PV >= #pvFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="pvTo">
+			<![CDATA[ MPDS.PV <= #pvTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="uvFrom">
+			<![CDATA[ MPDS.UV >= #uvFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="uvTo">
+			<![CDATA[ MPDS.UV <= #uvTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ipFrom">
+			<![CDATA[ MPDS.IP >= #ipFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ipTo">
+			<![CDATA[ MPDS.IP <= #ipTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ordNumFrom">
+			<![CDATA[ MODS.ORDER_NUM >= #ordNumFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ordNumTo">
+			<![CDATA[ MODS.ORDER_NUM <= #ordNumTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="payNumFrom">
+			<![CDATA[ MODS.PAY_NUM >= #payNumFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="payNumTo">
+			<![CDATA[ MODS.PAY_NUM <= #payNumTo#]]>
+		</isNotNull>
+	  	<isNotNull prepend="AND" property="beginDate">
+			<![CDATA[ to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd') >= to_date(#beginDate#, 'yyyy-mm-dd')]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endDate">
+			<![CDATA[ to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd') <= to_date(#endDate#, 'yyyy-mm-dd')]]>
+		</isNotNull>
+	</dynamic>
+  </sql>
+  
+  <sql id="WjqBaseStat_queryParams">
+  	<dynamic prepend="WHERE" >
+		<isNotNull prepend="AND" property="urlDomain" >
+			MPDS.URL_DOMAIN = #urlDomain#
+		</isNotNull>
+		<isNotNull prepend="AND" property="pvFrom">
+			<![CDATA[ MPDS.PV >= #pvFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="pvTo">
+			<![CDATA[ MPDS.PV <= #pvTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="uvFrom">
+			<![CDATA[ MPDS.UV >= #uvFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="uvTo">
+			<![CDATA[ MPDS.UV <= #uvTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ipFrom">
+			<![CDATA[ MPDS.IP >= #ipFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ipTo">
+			<![CDATA[ MPDS.IP <= #ipTo#]]>
+		</isNotNull>
+	  	<isNotNull prepend="AND" property="beginDate">
+			<![CDATA[ to_date(substr(MPDS.BIZ_DATE,0,instr(MPDS.BIZ_DATE,'-',1,2)-1) || '-01', 'yyyy-mm-dd') >= to_date(#beginDate# || '-01', 'yyyy-mm-dd')]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endDate">
+			<![CDATA[ to_date(substr(MPDS.BIZ_DATE,0,instr(MPDS.BIZ_DATE,'-',1,2)-1) || '-01', 'yyyy-mm-dd') <= to_date(#endDate# || '-01', 'yyyy-mm-dd')]]>
+		</isNotNull>
+	</dynamic>
+  </sql>
+  
+  <select id="selectMallPvuvDailyStatById" resultMap="MallPvuvDailyStatMap" parameterClass="int">
+  	SELECT 
+  	<include refid="MallPvuvDailyStat_columns"/>
+  	FROM MALL_PVUV_DAILY_STAT MPDS
+  	WHERE MPDS.ID = #id#
+  </select>
+  
+  <select id="selectAllByExample" resultMap="MallPvuvDailyStatMap" parameterClass="java.util.Map">
+  	SELECT 
+  	<include refid="MallPvuvDailyStat_columns"/>
+  	FROM MALL_PVUV_DAILY_STAT MPDS
+  	<include refid="MallPvuvDailyStat_queryParams"/>
+  	ORDER BY MPDS.CREATE_TIME DESC
+  </select>
+  
+  <select id="selectMallPvuvDailyStatByPage" resultMap="MallPvuvDailyStatMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+		  	SELECT 
+		  	<include refid="MallPvuvDailyStat_columns"/>
+		  	FROM MALL_PVUV_DAILY_STAT MPDS
+		  	<include refid="MallPvuvDailyStat_queryParams"/>
+		  	ORDER BY MPDS.CREATE_TIME DESC
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectTotalCountByExample" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(MPDS.ID) FROM MALL_PVUV_DAILY_STAT MPDS
+  	<include refid="MallPvuvDailyStat_queryParams"/>
+  	ORDER BY MPDS.CREATE_TIME DESC
+  </select>
+  
+  <select id="selectMallDailyBaseStatByExample" resultClass="hashmap" parameterClass="java.util.Map">
+	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		SELECT 
+	  	<include refid="MallDailyBaseStat_columns"/>
+	  	FROM MALL_PVUV_DAILY_STAT MPDS
+		LEFT JOIN MALL_ORDER_DAILY_STAT MODS on MODS.BIZ_DATE = MPDS.BIZ_DATE
+		<include refid="DailyBaseStat_queryParams"/>
+		ORDER BY to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd') DESC
+	) T
+  </select>
+  
+  <select id="selectMallDailyBaseStatByPage" resultClass="hashmap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	SELECT 
+		  	<include refid="MallDailyBaseStat_columns"/>
+		  	FROM MALL_PVUV_DAILY_STAT MPDS
+			LEFT JOIN MALL_ORDER_DAILY_STAT MODS on MODS.BIZ_DATE = MPDS.BIZ_DATE
+			<include refid="DailyBaseStat_queryParams"/>
+			ORDER BY to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd') DESC
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectMallDailyBaseStatCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(MPDS.ID)
+  	FROM MALL_PVUV_DAILY_STAT MPDS
+	LEFT JOIN MALL_ORDER_DAILY_STAT MODS on MODS.BIZ_DATE = MPDS.BIZ_DATE
+	<include refid="DailyBaseStat_queryParams"/>
+  </select>
+  
+  <select id="selectWjqDailyBaseStatByExample" resultClass="hashmap" parameterClass="java.util.Map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		SELECT 
+	  	<include refid="WjqDailyBaseStat_columns"/>
+	  	FROM MALL_PVUV_DAILY_STAT MPDS
+		<include refid="DailyBaseStat_queryParams"/>
+		ORDER BY to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd')
+	) T
+  </select>
+  
+  <select id="selectWjqDailyBaseStatByPage" resultClass="hashmap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	SELECT 
+		  	<include refid="WjqDailyBaseStat_columns"/>
+		  	FROM MALL_PVUV_DAILY_STAT MPDS
+			<include refid="DailyBaseStat_queryParams"/>
+			ORDER BY to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd')
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWjqDailyBaseStatCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(MPDS.ID)
+  	FROM MALL_PVUV_DAILY_STAT MPDS
+	<include refid="DailyBaseStat_queryParams"/>
+  </select>
+  
+  <select id="selectWjqMonthlyBaseStatByExample" resultClass="hashmap" parameterClass="java.util.Map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select sum(intbl.PV) "pv", sum(intbl.UV) "uv", sum(intbl.IP) "ip", intbl.BIZ_DATE "bizDate" from 
+        (
+            select MPDS.PV , MPDS.UV , MPDS.IP, substr(MPDS.BIZ_DATE,0,instr(MPDS.BIZ_DATE,'-',1,2)-1) BIZ_DATE 
+            from MALL_PVUV_DAILY_STAT MPDS
+            <include refid="WjqBaseStat_queryParams"/>
+            ORDER BY to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd')
+        ) intbl
+        group by intbl.BIZ_DATE
+        order by to_date(intbl.BIZ_DATE || '-01', 'yyyy-mm-dd')
+	) T
+  </select>
+  
+  <select id="selectWjqMonthlyBaseStatByPage" resultClass="hashmap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select sum(intbl.PV) "pv", sum(intbl.UV) "uv", sum(intbl.IP) "ip", intbl.BIZ_DATE "bizDate" from 
+        	(
+            	select MPDS.PV , MPDS.UV , MPDS.IP, substr(MPDS.BIZ_DATE,0,instr(MPDS.BIZ_DATE,'-',1,2)-1) BIZ_DATE 
+            	from MALL_PVUV_DAILY_STAT MPDS
+            	<include refid="WjqBaseStat_queryParams"/>
+            	ORDER BY to_date(MPDS.BIZ_DATE, 'yyyy-mm-dd')
+        	) intbl
+        	group by intbl.BIZ_DATE
+        	order by to_date(intbl.BIZ_DATE || '-01', 'yyyy-mm-dd')
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWjqMonthlyBaseStatCount" resultClass="int" parameterClass="java.util.Map">
+  	select count("pv") from 
+  	(
+    	select sum(intbl.PV) "pv", sum(intbl.UV) "uv", sum(intbl.IP) "ip", intbl.BIZ_DATE "bizDate" from 
+       	(
+           	select MPDS.PV , MPDS.UV , MPDS.IP, substr(MPDS.BIZ_DATE,0,instr(MPDS.BIZ_DATE,'-',1,2)-1) BIZ_DATE 
+           	from MALL_PVUV_DAILY_STAT MPDS
+           	<include refid="WjqBaseStat_queryParams"/>
+           	ORDER BY MPDS.BIZ_DATE
+       	) intbl
+       	group by intbl.BIZ_DATE
+       	order by intbl.BIZ_DATE
+     )
+  </select>
+
+  <insert id="insertMallPvuvDailyStat" parameterClass="MallPvuvDailyStat" >
+    INSERT INTO MALL_PVUV_DAILY_STAT( ID, URL_MAIN, PV, UV, IP, BIZ_DATE, CREATE_TIME)
+     VALUES ( #id#, #urlDomain#, #pv#, #uv#, #ip#, #bizDate#, SysTimestamp)
+     <selectKey type="pre" keyProperty="id" resultClass="int">
+     	SELECT S_MALL_PVUV_DAILY_STAT.NEXTVAL AS id FROM DUAL
+     </selectKey>
+  </insert>
+  
+  <delete id="deleteMallPvuvDailyStatById" parameterClass="int">
+  	DELETE FROM MALL_PVUV_DAILY_STAT MPDS
+  	WHERE MPDS.ID = #id#
+  </delete>
+
+</sqlMap>

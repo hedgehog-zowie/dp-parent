@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="MallGoodsPvuvDailyStat" >
+
+  <typeAlias alias="MallGoodsPvuvDailyStat" type="com.iuni.dp.persist.datastat.model.MallGoodsPvuvDailyStat" />
+
+  <resultMap id="MallGoodsPvuvDailyStatMap" class="MallGoodsPvuvDailyStat" >
+    <result property="id" column="ID"/>
+    <result property="goodsId" column="GOODS_ID" />
+    <result property="pv" column="PV" />
+    <result property="uv" column="UV" />
+    <result property="ip" column="IP" />
+    <result property="bizDate" column="BIZ_DATE" />
+    <result property="createTime" column="CREATE_TIME" />
+  </resultMap>
+
+  <sql id="MallGoodsPvuvDailyStat_columns" >
+    MGPDS.ID, MGPDS.GOODS_ID, MGPDS.PV, MGPDS.UV, MGPDS.IP, MGPDS.BIZ_DATE, MGPDS.CREATE_TIME
+  </sql>
+  
+  <sql id="MallGoodsDailyBaseStat_columns">
+  	MGPDS.PV "pv", MGPDS.UV "uv", MGPDS.IP "ip", MGPDS.BIZ_DATE "bizDate"
+	, CASE WHEN MGODS.ORDER_NUM IS NULL THEN 0 ELSE MGODS.ORDER_NUM end "orderNum"
+	, CASE WHEN MGODS.PAY_NUM IS NULL THEN 0 ELSE MGODS.PAY_NUM end "payNum"
+	, JD.GOODS_NAME "goodsName"
+  </sql>
+
+  <sql id="MallGoodsPvuvDailyStat_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="goodsId" prepend="AND" >
+        <![CDATA[  
+        GOODS_ID = #goodsId#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="pv" prepend="AND" >
+        <![CDATA[  
+        PV = #pv#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="uv" prepend="AND" >
+        <![CDATA[  
+        UV = #uv#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="ip" prepend="AND" >
+        <![CDATA[  
+        IP = #ip#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="bizDate" prepend="AND" >
+        <![CDATA[  
+        BIZ_DATE = #bizDate#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="createTime" prepend="AND" >
+        <![CDATA[  
+        CREATE_TIME = #createTime#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="MallGoodsDailyBaseStat_queryParams" >
+	<dynamic prepend="WHERE" >
+		<isNotNull prepend="AND" property="gdName">
+			<![CDATA[ JD.GOODS_NAME LIKE '%' || #gdName# || '%']]>
+		</isNotNull>
+	  	<isNotNull prepend="AND" property="pvFrom">
+			<![CDATA[ MGPDS.PV >= #pvFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="pvTo">
+			<![CDATA[ MGPDS.PV <= #pvTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="uvFrom">
+			<![CDATA[ MGPDS.UV >= #uvFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="uvTo">
+			<![CDATA[ MGPDS.UV <= #uvTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ipFrom">
+			<![CDATA[ MGPDS.IP >= #ipFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ipTo">
+			<![CDATA[ MGPDS.IP <= #ipTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ordNumFrom">
+			<![CDATA[ MGODS.ORDER_NUM >= #ordNumFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="ordNumTo">
+			<![CDATA[ MGODS.ORDER_NUM <= #ordNumTo#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="payNumFrom">
+			<![CDATA[ MGODS.PAY_NUM >= #payNumFrom#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="payNumTo">
+			<![CDATA[ MGODS.PAY_NUM <= #payNumTo#]]>
+		</isNotNull>
+	  	<isNotNull prepend="AND" property="beginDate">
+			<![CDATA[ to_date(MGPDS.BIZ_DATE, 'yyyy-mm-dd') >= to_date(#beginDate#, 'yyyy-mm-dd')]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="endDate">
+			<![CDATA[ to_date(MGPDS.BIZ_DATE, 'yyyy-mm-dd') <= to_date(#endDate#, 'yyyy-mm-dd')]]>
+		</isNotNull>
+	</dynamic>
+  </sql>
+  
+  <select id="selectMallGoodsPvuvDailyStatById" resultMap="MallGoodsPvuvDailyStatMap" parameterClass="int">
+  	SELECT 
+  	<include refid="MallGoodsPvuvDailyStat_columns"/>
+  	FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+  	WHERE MGPDS.ID = #id#
+  </select>
+  
+  <select id="selectAllByExample" resultMap="MallGoodsPvuvDailyStatMap" parameterClass="java.util.Map">
+  	SELECT 
+  	<include refid="MallGoodsPvuvDailyStat_columns"/>
+  	FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+  	<include refid="MallGoodsPvuvDailyStat_queryParams"/>
+  	ORDER BY MGPDS.CREATE_TIME DESC
+  </select>
+  
+  <select id="selectMallGoodsPvuvDailyStatByPage" resultMap="MallGoodsPvuvDailyStatMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+		  	SELECT 
+		  	<include refid="MallGoodsPvuvDailyStat_columns"/>
+		  	FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+		  	<include refid="MallGoodsPvuvDailyStat_queryParams"/>
+		  	ORDER BY MGPDS.CREATE_TIME DESC
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectTotalCountByExample" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(MGPDS.ID) FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+  	<include refid="MallGoodsPvuvDailyStat_queryParams"/>
+  	ORDER BY MGPDS.CREATE_TIME DESC
+  </select>
+  
+  <select id="selectMallGoodsDailyBaseStatByExample" resultClass="hashmap" parameterClass="java.util.Map">
+  	SELECT T.*, ROWNUM "rowNum" FROM 
+  	(
+	  	SELECT 
+	  	<include refid="MallGoodsDailyBaseStat_columns"/>
+	  	FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+		LEFT JOIN MALL_GOODS_ORDER_DAILY_STAT MGODS ON (MGODS.GOODS_ID = MGPDS.GOODS_ID AND MGODS.BIZ_DATE = MGPDS.BIZ_DATE)
+		LEFT JOIN JLSP_GOODS JD ON JD.GOODS_ID = MGPDS.GOODS_ID
+		<include refid="MallGoodsDailyBaseStat_queryParams"/>
+		ORDER BY to_date(MGPDS.BIZ_DATE, 'yyyy-mm-dd') DESC, "orderNum" DESC, MGPDS.GOODS_ID
+  	) T
+  </select>
+  
+  <select id="selectMallGoodsDailyBaseStatByPage" resultClass="hashmap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	SELECT 
+		  	<include refid="MallGoodsDailyBaseStat_columns"/>
+		  	FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+			LEFT JOIN MALL_GOODS_ORDER_DAILY_STAT MGODS ON (MGODS.GOODS_ID = MGPDS.GOODS_ID AND MGODS.BIZ_DATE = MGPDS.BIZ_DATE)
+			LEFT JOIN JLSP_GOODS JD ON JD.GOODS_ID = MGPDS.GOODS_ID
+			<include refid="MallGoodsDailyBaseStat_queryParams"/>
+			ORDER BY to_date(MGPDS.BIZ_DATE, 'yyyy-mm-dd') DESC, "orderNum" DESC, MGPDS.GOODS_ID
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectMallGoodsDailyBaseStatCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(MGPDS.ID)
+  	FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+	LEFT JOIN MALL_GOODS_ORDER_DAILY_STAT MGODS ON (MGODS.GOODS_ID = MGPDS.GOODS_ID AND MGODS.BIZ_DATE = MGPDS.BIZ_DATE)
+	LEFT JOIN JLSP_GOODS JD ON JD.GOODS_ID = MGPDS.GOODS_ID
+	<include refid="MallGoodsDailyBaseStat_queryParams"/>
+  </select>
+
+  <insert id="insertMallGoodsPvuvDailyStat" parameterClass="MallGoodsPvuvDailyStat" >
+    INSERT INTO MALL_GOODS_PVUV_DAILY_STAT( ID, GOODS_ID, PV, UV, IP, BIZ_DATE, CREATE_TIME)
+     VALUES ( #id#, #goodsId#, #pv#, #uv#, #ip#, #bizDate#, SysTimestamp)
+     <selectKey type="pre" keyProperty="id" resultClass="int">
+     	SELECT S_MALL_GOODS_PVUV_DAILY_STAT.NEXTVAL AS id FROM DUAL
+     </selectKey>
+  </insert>
+  
+  <delete id="deleteMallGoodsPvuvDailyStatById" parameterClass="int">
+  	DELETE FROM MALL_GOODS_PVUV_DAILY_STAT MGPDS
+  	WHERE MGPDS.ID = #id#
+  </delete>
+
+</sqlMap>

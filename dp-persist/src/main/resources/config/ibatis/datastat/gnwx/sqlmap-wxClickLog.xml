@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="WxClickLog" >
+
+  <typeAlias alias="WxClickLog" type="com.iuni.dp.persist.datastat.model.WxClickLog" />
+
+  <resultMap id="WxClickLogMap" class="WxClickLog">
+    <result property="id" column="ID"/>
+    <result property="userId" column="USER_ID"/>
+    <result property="publicUserId" column="PUBLIC_USER_ID"/>
+    <result property="imgId" column="IMG_ID"/>
+    <result property="txtId" column="TXT_ID"/>
+    <result property="logTime" column="LOG_TIME"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+
+  <sql id="WxClickLog_columns" >
+    WCL.ID, WCL.USER_ID, WCL.PUBLIC_USER_ID, WCL.IMG_ID, WCL.TXT_ID, WCL.LOG_TIME, WCL.CREATE_TIME
+  </sql>
+  
+  <sql id="WxClickLog_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="userId" prepend="AND" >
+        <![CDATA[  
+        WCL.USER_ID = #userId#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="publicUserId" prepend="AND" >
+        <![CDATA[  
+        WCL.PUBLIC_USER_ID = #publicUserId#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="logTime" prepend="AND" >
+        <![CDATA[  
+        WCL.LOG_TIME = #logTime#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="createTime" prepend="AND" >
+        <![CDATA[  
+        WCL.CREATE_TIME = #createTime#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <select id="selectWxClickLogById" resultMap="WxClickLogMap" parameterClass="int">
+  	SELECT 
+  	<include refid="WxClickLog_columns"/>
+  	FROM WX_CLICK_LOG WCL
+  	WHERE WCL.ID = #id#
+  </select>
+  
+  <select id="selectWxClickLogByExample" resultMap="WxClickLogMap" parameterClass="map">
+  	SELECT 
+  	<include refid="WxClickLog_columns"/>
+  	FROM WX_CLICK_LOG WCL
+  	<include refid="WxClickLog_queryParams"/>
+  	ORDER BY WCL.LOG_TIME
+  </select>
+  
+  <select id="selectWxClickLogByPage" resultMap="WxClickLogMap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+		  	SELECT 
+		  	<include refid="WxClickLog_columns"/>
+		  	FROM WX_CLICK_LOG WCL
+		  	<include refid="WxClickLog_queryParams"/>
+		  	ORDER BY WCL.LOG_TIME
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWxClickLogCount" resultClass="int" parameterClass="map">
+  	SELECT COUNT(WCL.ID) FROM WX_CLICK_LOG WCL
+  	<include refid="WxClickLog_queryParams"/>
+  </select>
+  
+  <insert id="insertWxClickLog" parameterClass="WxClickLog" >
+    INSERT INTO WX_CLICK_LOG( ID, USER_ID, PUBLIC_USER_ID, IMG_ID, TXT_ID, LOG_TIME, CREATE_TIME)
+     VALUES ( #id#, #userId#, #publicUserId#, #imgId#, #txtId#, #logTime#, SysDate)
+     <selectKey type="pre" keyProperty="id" resultClass="long">
+     	SELECT S_WX_CLICK_LOG.NEXTVAL AS id FROM DUAL
+     </selectKey>
+  </insert>
+  
+  <delete id="deleteWxClickLogById" parameterClass="int">
+  	DELETE FROM WX_CLICK_LOG WCL
+  	WHERE WCL.ID = #id#
+  </delete>
+
+</sqlMap>

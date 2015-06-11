@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniWmsFreight">
+
+    <!-- 运费报表-正向 -->
+    <sql id="iuniWmsFreightForward">
+        SELECT SWSO.SHIPPING_TIME "shippingTime",
+        SWSO.DELIVERY_CODE "deliveryCode",
+        SWSO.ORDER_CODE "orderCode",
+        CASE SWSO.ORDER_STATUS WHEN '5' THEN '已签收' ELSE '未签收' END "status",
+        SWSO.CONSIGNEE "userName",
+        SWSO.ADDRESS "address",
+        SWSO.WEIGHT "weight",
+        SWSO.ORDER_AMOUNT "amount",
+        '' "protectFee",
+        SWSO.DELIVERY_FEE "deliveryFee",
+        '零售发货' "type"
+        FROM SYN_WMS_SALES_ORDER SWSO
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWSO.SHIPPING_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWSO.SHIPPING_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+    </sql>
+
+    <!-- 运费报表-逆向 -->
+    <sql id="iuniWmsFreightReverse">
+        SELECT SWEI.SHIPPING_TIME "shippingTime",
+        SWEI.F_SHIPPING_NO "deliveryCode",
+        SWEI.ORDER_CODE "orderCode",
+        CASE SWEI.STATUS WHEN '8' THEN '已签收' ELSE '未签收' END "status",
+        SWEI.CONSIGNEE "userName",
+        SWEI.ADDRESS "address",
+        TO_CHAR(SWEI.WEIGHT) "weight",
+        SWEG2."amount" "amount",
+        '' "protectFee",
+        SWEI.F_SHIPPING_FEE "deliveryFee",
+        '换货' "type"
+        FROM SYN_WMS_EXCHANGE_INFO SWEI
+        LEFT JOIN (
+        SELECT SWEG.EXCHANGE_CODE,
+        SUM(SWEG.UNIT_PRICE * (SWEG.DEFECTIVE_NUM + SWEG.NONDEFECTIVE_NUM)) "amount"
+        FROM SYN_WMS_EXCHANGE_GOODS SWEG
+        GROUP BY SWEG.EXCHANGE_CODE) SWEG2
+        ON SWEI.EXCHANGE_CODE = SWEG2.EXCHANGE_CODE
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWEI.SHIPPING_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWEI.SHIPPING_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        UNION ALL
+        SELECT SWR.UPDATE_TIME "shippingTime",
+        SWR.F_SHIPPING_NO "deliveryCode",
+        SWR.ORDER_CODE "orderCode",
+        CASE SWR.HANDLE_STATUS WHEN '8' THEN '已签收' ELSE '未签收' END "status",
+        SWR.CONSIGNEE "userName",
+        SWR.ADDRESS "address",
+        TO_CHAR(SWR.WEIGHT) "weight",
+        SWRG2."amount" "amount",
+        '' "protectFee",
+        SWR.F_SHIPPING_FEE "deliveryFee",
+        '维修发货' "type"
+        FROM SYN_WMS_REPAIR SWR
+        LEFT JOIN (
+        SELECT SWRG.REPAIR_CODE,
+        SUM(SWRG.GOODS_PRICE * SWRG.ACTUAL_NUM) "amount"
+        FROM SYN_WMS_REPAIR_GOODS SWRG
+        GROUP BY SWRG.REPAIR_CODE) SWRG2
+        ON SWR.REPAIR_CODE = SWRG2.REPAIR_CODE
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWR.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWR.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+    </sql>
+
+    <select id="selectWmsFreightByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        SELECT * FROM (
+        <isEqual property="direction" compareValue="forward">
+            <include refid="iuniWmsFreightForward"/>
+        </isEqual>
+        <isEqual property="direction" compareValue="reverse">
+            <include refid="iuniWmsFreightReverse"/>
+        </isEqual>
+        <isEqual property="direction" compareValue="all">
+            <include refid="iuniWmsFreightForward"/>
+            UNION ALL
+            <include refid="iuniWmsFreightReverse"/>
+        </isEqual>
+        ) ORDER BY "shippingTime", "deliveryCode"
+        ) T
+        <isNotNull property="endRec">
+            WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        </isNotNull>
+        )
+        <isNotNull property="startRec">
+            WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+        </isNotNull>
+    </select>
+
+    <select id="selectWmsFreightCount" resultClass="int" parameterClass="map">
+        select count(*) "totalCount" from
+        (
+        <isEqual property="direction" compareValue="forward">
+            <include refid="iuniWmsFreightForward"/>
+        </isEqual>
+        <isEqual property="direction" compareValue="reverse">
+            <include refid="iuniWmsFreightReverse"/>
+        </isEqual>
+        <isEqual property="direction" compareValue="all">
+            <include refid="iuniWmsFreightForward"/>
+            UNION ALL
+            <include refid="iuniWmsFreightReverse"/>
+        </isEqual>
+        )
+    </select>
+
+</sqlMap>
+
+
+

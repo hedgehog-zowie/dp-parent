@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 兼容历史接口 package -->
+	<package name="report" extends="dp-api" namespace="/drs/report">
+		
+		<!-- ReportData类型上报数据单条数据上报HTTP接口 -->
+		<action name="rptData" class="reportDataAction" method="reportData">
+		</action>
+		
+		<!-- 金立相关客户端APP登入登出记录日志数据上报 -->
+		<action name="sendAppAccessLog" class="gnAppAccessLogAction" method="sendGnAppAccessLog">
+		</action>
+		<action name="sendWjqcAccessLog" class="gnAppAccessLogAction" method="sendGnAppAccessLog">
+		</action>
+		
+	</package>
+	<package name="reportData" extends="dp-api" namespace="/dp">
+		
+		<!-- ReportData类型上报数据单条数据上报HTTP接口 -->
+		<action name="rptData" class="reportDataAction" method="reportData">
+		</action>
+		
+		<!-- 金立相关客户端APP登入登出记录日志数据上报 -->
+		<action name="sendAppAccessLog" class="gnAppAccessLogAction" method="sendGnAppAccessLog">
+		</action>
+		
+	</package>
+</struts>

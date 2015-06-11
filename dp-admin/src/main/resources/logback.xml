@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeroid="60 seconds">
+	<property name="App_Name" value="dp-admin"></property>
+	<property name="EncoderPattern_1" value="%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg %n"></property>
+	<property name="EncoderPattern_2" value="%msg%n"></property>
+	
+	<contextName>${App_Name}</contextName>
+
+<!-- 	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" /> -->
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<encoder charset="UTF-8">
+			<pattern>${EncoderPattern_1}</pattern>
+		</encoder>
+		<target>System.out</target>
+	</appender>
+
+	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+
+	<appender name="Project" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-admin/dp-admin.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-admin/%d{yyyy-MM,aux}/dp-admin-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<appender name="iBatis" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-admin/dp-admin-iBatis.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-admin/%d{yyyy-MM,aux}/dp-admin-iBatis-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<appender name="dbDataException" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-admin/dp-admin-dbDataEx.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-admin/%d{yyyy-MM,aux}/dp-admin-dbDataEx-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<appender name="Apache" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-admin/dp-admin-apache.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-admin/%d{yyyy-MM,aux}/dp-admin-apache-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<!-- Base Third-party Jars -->
+	<logger name="org.springframework" level="INFO" additivity="true"></logger>
+	<logger name="org.apache.struts2" level="INFO" additivity="true"></logger>
+	<logger name="com.opensymphony.xwork2" level="INFO" additivity="true"></logger>
+	<logger name="com.opensymphony.xwork2.ognl.OgnlValueStack" level="ERROR" additivity="true"></logger>
+
+	<!-- Base Logger -->
+	<logger name="com.mybatis" level="WARN" additivity="true">
+		<appender-ref ref="iBatis"/>
+	</logger>
+    <logger name="com.ibatis" level="WARN" additivity="true">
+        <appender-ref ref="iBatis"/>
+    </logger>
+	<logger name="java.sql" level="DEBUG" additivity="true">
+		<appender-ref ref="iBatis"/>
+	</logger>
+	<logger name="java.sql.ResultSet" level="WARN" additivity="true">
+		<appender-ref ref="iBatis"/>
+	</logger>
+	<logger name="org.apache" level="WARN" additivity="true">
+		<appender-ref ref="Apache"/>
+	</logger>
+	
+	<!-- DB Data Exception Logger -->
+	<logger name="dp-admin.dao.dbDataException" level="WARN" additivity="true">
+		<appender-ref ref="dbDataException"/>
+	</logger>
+	
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="Project" />
+	</root>
+	
+</configuration>

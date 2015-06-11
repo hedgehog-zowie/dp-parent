@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="gnAppReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- 金立相关APP客户端渠道趋势统计 -->
+        <action name="gnAppChannelTrendStatView" class="gnAppAccessLogAction" method="gnAppChannelTrendStatView">
+            <result name="success">/WEB-INF/views/stat/report/gnAppChannelTrendStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/gnAppChannelTrendStat.jsp</result>
+        </action>
+
+        <action name="gnAppChannelTrendStat2Excel" class="gnAppAccessLogAction" method="gnAppChannelTrendStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">gnAppChannelTrendStatView</result>
+        </action>
+
+        <!-- 金立相关APP客户端渠道新增用户统计 -->
+        <action name="gnAppNewUserOfChannelStatView" class="gnAppImeiLogAction" method="gnAppNewUserOfChannelStatView">
+            <result name="success">/WEB-INF/views/stat/report/gnAppNewUserOfChannelStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/gnAppNewUserOfChannelStat.jsp</result>
+        </action>
+
+        <action name="gnAppNewUserOfChannelStat2Excel" class="gnAppImeiLogAction"
+                method="gnAppNewUserOfChannelStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">gnAppNewUserOfChannelStatView</result>
+        </action>
+
+        <action name="getGnAppNewUserOfChannelStatByJSON" class="gnAppImeiLogAction"
+                method="getGnAppNewUserOfChannelStatByJSON">
+        </action>
+
+        <!-- 金立相关APP客户端渠道注册用户统计 -->
+        <action name="gnAppRegisterOfChannelStatView" class="gnAppAccessLogAction"
+                method="gnAppRegisterOfChannelStatView">
+            <result name="success">/WEB-INF/views/stat/report/gnAppRegisterOfChannelStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/gnAppRegisterOfChannelStat.jsp</result>
+        </action>
+
+        <action name="gnAppRegisterOfChannelStat2Excel" class="gnAppAccessLogAction"
+                method="gnAppRegisterOfChannelStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">gnAppRegisterOfChannelStatView</result>
+        </action>
+
+        <action name="getGnAppRegisterOfChannelStatByJSON" class="gnAppAccessLogAction"
+                method="getGnAppRegisterOfChannelStatByJSON">
+        </action>
+
+        <!-- 金立相关APP客户端渠道活跃用户统计 -->
+        <action name="gnAppActiveUserOfChannelStatView" class="gnAppAccessLogAction"
+                method="gnAppActiveUserOfChannelStatView">
+            <result name="success">/WEB-INF/views/stat/report/gnAppActiveUserOfChannelStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/gnAppActiveUserOfChannelStat.jsp</result>
+        </action>
+
+        <action name="gnAppActiveUserOfChannelStat2Excel" class="gnAppAccessLogAction"
+                method="gnAppActiveUserOfChannelStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">gnAppActiveUserOfChannelStatView</result>
+        </action>
+
+        <action name="getGnAppActiveUserOfChannelStatByJSON" class="gnAppAccessLogAction"
+                method="getGnAppActiveUserOfChannelStatByJSON">
+        </action>
+
+        <!-- 金立相关APP客户端渠道用户启动次数分布统计 -->
+        <action name="gnAppLaunchNumDistributeView" class="gnAppAccessLogAction" method="gnAppLaunchNumDistributeView">
+            <result name="success">/WEB-INF/views/stat/report/gnAppLaunchNumDistribute.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/gnAppLaunchNumDistribute.jsp</result>
+        </action>
+
+        <action name="gnAppLaunchNumDistribute2Excel" class="gnAppAccessLogAction"
+                method="gnAppLaunchNumDistribute2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">gnAppLaunchNumDistributeView</result>
+        </action>
+
+        <action name="getGnAppLaunchNumDistributeByJSON" class="gnAppAccessLogAction"
+                method="getGnAppLaunchNumDistributeByJSON">
+        </action>
+
+        <!-- APP端用户访问机型报表 -->
+        <action name="appUserStatOnModelView" class="gnAppAccessLogAction" method="appUserStatOnModelView">
+            <result name="success">/WEB-INF/views/stat/report/appUserStatOnModel.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/appUserStatOnModel.jsp</result>
+        </action>
+
+        <action name="appUserStatOnModel2Excel" class="gnAppAccessLogAction" method="appUserStatOnModel2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">appUserStatOnModelView</result>
+        </action>
+
+        <action name="getAppUserStatOnModelByJSON" class="gnAppAccessLogAction" method="getAppUserStatOnModelByJSON">
+        </action>
+
+        <!-- GIONEE APP 渠道销售统计  -->
+        <action name="gnAppChannelSalesView" class="gnAppOrderDailyStatAction" method="gnAppChannelSalesView">
+            <result name="success">/WEB-INF/views/stat/report/gnAppChannelSales.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/gnAppChannelSales.jsp</result>
+        </action>
+
+        <action name="gnAppChannelSales2Excel" class="gnAppOrderDailyStatAction" method="gnAppChannelSales2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">gnAppChannelSalesView</result>
+        </action>
+
+        <!-- 按JSON格式获取金立相关APP客户端渠道列表 -->
+        <action name="getChannelListByJSON" class="gnAppAccessLogAction" method="getChannelListByJSON">
+        </action>
+
+        <!-- 按JSON格式获取金立相关APP客户端版本列表 -->
+        <action name="getApkVersionListByJSON" class="gnAppAccessLogAction" method="getApkVersionListByJSON">
+        </action>
+    </package>
+
+</struts>

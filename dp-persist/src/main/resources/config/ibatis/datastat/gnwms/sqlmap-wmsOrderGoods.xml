@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="WmsOrderGoods" >
+
+	<typeAlias alias="wmsOrderGoods" type="com.iuni.dp.persist.datastat.model.WmsOrderGoods" />
+	<!-- 查询销售数据-->
+	<select id="queryWmsOrderGoodsList" resultClass="wmsOrderGoods" parameterClass="map"> 
+select t5.*
+  from (select t4.*, rownum rn
+          from (select 
+                t.batch_code batchCode,
+                t.order_code orderCode,
+       			t.payment_name paymentName,
+       			t.pay_no payNo,
+       			t.shipping_name shippingName,
+       			t.shipping_no shippingNo,
+       			t.order_time orderTime,
+       			t.order_user orderUser,
+       			t.invoice_amount invoiceAmount,
+       			t.invoice_title invoiceTitle,
+       			t.consignee consignee,
+                t.province||t.city||t.district||t.address address,
+       			decode(t.order_source, 1, '金立官网', 2, '金立天猫', 3, 'IUNI官网', 4, 'IUNI天猫', 5, '金立唯品', 6, 'IUNI唯品', 7, '金立淘宝分销') orderSource,
+       			decode(t.order_status,
+              			0,
+              			'未发货',
+              			1,
+              			'已发货',
+              			2,
+              			'已打单',
+              			3,
+              			'已配货',
+              			4,
+              			'已退货',
+              			5,
+              			'已签收',
+              			7,
+              			'拒收',
+              			8,
+              			'配货中',
+              			9,
+              			'待出库',
+              			10,
+              			'已拒收',
+              			-1,
+              			'已取消') orderStatus,
+                t.postscript postscript,
+              	t.remark remark,
+       			t2.sku_name skuName,
+       			t2.quantity quantity,
+       			t2.unit_price unitPrice,
+       			t2.subtotal_price subtotalPrice,
+       			t3.prepared_time jhTime
+  			from wms_sales_order t 
+  		    left join  wms_sales_order_goods t2  on t.id = t2.order_id
+  		    left join  wms_delivery_batch t3 on  t.batch_code = t3.batch_code
+ 			<dynamic prepend="WHERE" > 
+			<isNotNull property="beginDate" prepend="AND">
+		    t.order_time <![CDATA[>=]]> to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>
+			<isNotNull property="endDate" prepend="AND">
+		    t.order_time <![CDATA[<=]]> to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>
+			<isNotEmpty property="batchCodes" prepend="AND">
+			   t.batch_code in
+			   <iterate property="batchCodes" conjunction="," open="(" close=")">
+                #batchCodes[]#
+              </iterate>
+            </isNotEmpty>
+		    <isNotNull property="orderCode" prepend="AND">
+		     t.order_code = #orderCode#
+			</isNotNull>
+			<isNotNull property="shippingNo" prepend="AND">
+		    t.shipping_no = #shippingNo#
+			</isNotNull>
+			<isNotNull property="jhBeginDate" prepend="AND">
+		    t3.prepared_time <![CDATA[>=]]> to_date(#jhBeginDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>
+			<isNotNull property="jhEndDate" prepend="AND">
+		    t3.prepared_time <![CDATA[<=]]> to_date(#jhEndDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>	
+			</dynamic>
+                 order by t.order_time desc) t4
+	where rownum  <![CDATA[ <= ]]> #endRec#) t5
+	where rn  <![CDATA[ >= ]]>  #startRec#
+	</select>
+  
+	<!-- 查询销售数据:总记录-->
+	<select id="queryWmsOrderGoodsListCount" resultClass="int" parameterClass="map"> 
+      select count(1)
+  			from wms_sales_order t
+  		    left join  wms_sales_order_goods t2  on t.id = t2.order_id
+  		    left join  wms_delivery_batch t3 on  t.batch_code = t3.batch_code
+ 			<dynamic prepend="WHERE" > 
+			<isNotNull property="beginDate" prepend="AND">
+			 t.order_time <![CDATA[>=]]> to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>
+			<isNotNull property="endDate" prepend="AND">
+			 t.order_time <![CDATA[<=]]> to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>
+            <isNotEmpty property="batchCodes" prepend="AND">
+			   t.batch_code in
+			   <iterate property="batchCodes" conjunction="," open="(" close=")">
+                #batchCodes[]#
+              </iterate>
+            </isNotEmpty>
+		    <isNotNull property="orderCode" prepend="AND">
+		     t.order_code = #orderCode#
+			</isNotNull>
+			<isNotNull property="shippingNo" prepend="AND">
+		    t.shipping_no = #shippingNo#
+			</isNotNull>
+			<isNotNull property="jhBeginDate" prepend="AND">
+			 t3.prepared_time <![CDATA[>=]]> to_date(#jhBeginDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>
+			<isNotNull property="jhEndDate" prepend="AND">
+			 t3.prepared_time <![CDATA[<=]]> to_date(#jhEndDate#, 'yyyy-mm-dd hh24:mi:ss')
+			</isNotNull>	
+			</dynamic>
+	</select>
+ 
+</sqlMap>

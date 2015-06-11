@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="MallSaleDailyStat" >
+
+  <typeAlias alias="mallSaleDailyStat" type="com.iuni.dp.persist.datastat.model.MallSaleDailyStat" />
+
+  <resultMap id="mallSaleDailyStatResultMap" class="mallSaleDailyStat" >
+    <!--<result property="id" column="ID" />-->
+    <result property="totalOrderNum" column="TOTAL_ORDER_NUM" />
+    <result property="totalOrderAmount" column="TOTAL_ORDER_AMOUNT" />
+    <result property="totalGoodsNum" column="TOTAL_GOODS_NUM" />
+    <result property="onlinePayOrderNum" column="ONLINE_PAY_ORDER_NUM" />
+    <result property="offlinePayOrderNum" column="OFFLINE_PAY_ORDER_NUM" />
+    <result property="returnedOrderNum" column="RETURNED_ORDER_NUM" />
+    <result property="refusedOrderNum" column="REFUSED_ORDER_NUM" />
+    <result property="validOrderNum" column="VALID_ORDER_NUM" />
+    <result property="validOrderAmount" column="VALID_ORDER_AMOUNT" />
+    <result property="validGoodsNum" column="VALID_GOODS_NUM" />
+    <result property="payedOrderNum" column="PAYED_ORDER_NUM" />
+    <result property="prePayedOrderNum" column="PRE_PAYED_ORDER_NUM" />
+    <result property="bizDate" column="BIZ_DATE" />
+    <!--<result property="createTime" column="CREATE_TIME" />-->
+    
+    <result property="validOrderRate" column="valid_order_rate" />
+    <result property="amountPerOrder" column="amount_per_order" />
+    <result property="goodsNumPerOrder" column="goods_num_per_order" />
+  </resultMap>
+  
+  <resultMap id="mallSaleDailyStatSumResultMap" class="mallSaleDailyStat" >
+    <!--<result property="id" column="ID" />-->
+    <result property="totalOrderNum" column="TOTAL_ORDER_NUM" />
+    <result property="totalOrderAmount" column="TOTAL_ORDER_AMOUNT" />
+    <result property="totalGoodsNum" column="TOTAL_GOODS_NUM" />
+    <result property="onlinePayOrderNum" column="ONLINE_PAY_ORDER_NUM" />
+    <result property="offlinePayOrderNum" column="OFFLINE_PAY_ORDER_NUM" />
+    <result property="returnedOrderNum" column="RETURNED_ORDER_NUM" />
+    <result property="refusedOrderNum" column="REFUSED_ORDER_NUM" />
+    <result property="validOrderNum" column="VALID_ORDER_NUM" />
+    <result property="validOrderAmount" column="VALID_ORDER_AMOUNT" />
+    <result property="validGoodsNum" column="VALID_GOODS_NUM" />
+    <result property="payedOrderNum" column="PAYED_ORDER_NUM" />
+    <result property="prePayedOrderNum" column="PRE_PAYED_ORDER_NUM" />
+    <!--<result property="bizDate" column="BIZ_DATE" />
+    <result property="createTime" column="CREATE_TIME" />-->
+    
+    <result property="validOrderRate" column="valid_order_rate" />
+    <result property="amountPerOrder" column="amount_per_order" />
+    <result property="goodsNumPerOrder" column="goods_num_per_order" />
+  </resultMap>
+  <!-- 查询销售数据-->
+   <select id="queryMallSaleDailyStats" resultMap="mallSaleDailyStatResultMap" parameterClass="map"> 
+select t2.*
+  from (select t1.*, rownum rn
+          from (select t.*,
+                       CASE
+                         WHEN t.total_order_num = 0 THEN
+                          '0.00%'
+                         ELSE
+                          to_char(t.valid_order_num / t.total_order_num * 100,
+                                  'FM9999999999990.00') || '%'
+                       END valid_order_rate,
+                       CASE
+                         WHEN t.valid_order_num = 0 THEN
+                          '0.00'
+                         ELSE
+                          to_char(t.valid_order_amount / t.valid_order_num,
+                                  'FM9999999999990.00')
+                       END amount_per_order,
+                       CASE
+                         WHEN t.valid_order_num = 0 THEN
+                          '0.00'
+                         ELSE
+                          to_char(t.valid_goods_num / t.valid_order_num,
+                                  'FM9999999999990.00')
+                       END goods_num_per_order
+                  from mall_sale_daily_stat t
+                 <dynamic prepend="WHERE" > 
+   				   <isNotNull property="beginDate" prepend="AND" >
+       			    t.biz_date <![CDATA[>=]]> #beginDate# 
+   				   </isNotNull>
+   				   <isNotNull property="endDate" prepend="AND" >
+       			    t.biz_date <![CDATA[<=]]> #endDate# 
+   				   </isNotNull>		
+   				  </dynamic>
+                 order by t.biz_date desc) t1
+         where rownum  <![CDATA[ <= ]]> #endRec#) t2
+ where rn  <![CDATA[ >= ]]>  #startRec#
+  </select>
+  
+    <!-- 查询销售数据:总记录-->
+  <select id="queryMallSaleDailyStatsCount" resultClass="int" parameterClass="map"> 
+  select count(1) from mall_sale_daily_stat t
+		<dynamic prepend="WHERE" > 
+			<isNotNull property="beginDate" prepend="AND" >
+			t.biz_date <![CDATA[>=]]> #beginDate# 
+			</isNotNull>
+			<isNotNull property="endDate" prepend="AND" >
+			t.biz_date <![CDATA[<=]]> #endDate# 
+			</isNotNull>		
+		</dynamic>
+  </select>
+  
+    <!-- 查询销售数据(总计)-->
+   <select id="queryMallSaleDailyStatsSum" resultMap="mallSaleDailyStatSumResultMap" parameterClass="map"> 
+  select sum(t.total_order_num) total_order_num,
+         sum(t.total_order_amount) total_order_amount,
+         sum(t.total_goods_num) total_goods_num,
+         sum(t.online_pay_order_num) online_pay_order_num,
+         sum(t.offline_pay_order_num) offline_pay_order_num,
+         sum(t.returned_order_num) returned_order_num,
+         sum(t.refused_order_num) refused_order_num,
+         sum(t.valid_order_num) valid_order_num,
+         sum(t.valid_order_amount) valid_order_amount,
+         sum(t.valid_goods_num) valid_goods_num,
+         sum(t.payed_order_num) payed_order_num,
+         sum(t.pre_payed_order_num) pre_payed_order_num,
+         CASE
+           WHEN sum(t.total_order_num) = 0 THEN
+            '0.00%'
+           ELSE
+            to_char(sum(t.valid_order_num) / sum(t.total_order_num) * 100,
+                    'FM9999999999990.00') || '%'
+         END valid_order_rate,
+         CASE
+           WHEN sum(t.valid_order_num) = 0 THEN
+            '0.00'
+           ELSE
+            to_char(sum(t.valid_order_amount) / sum(t.valid_order_num),
+                    'FM9999999999990.00')
+         END amount_per_order,
+         CASE
+           WHEN sum(t.valid_order_num) = 0 THEN
+            '0.00'
+           ELSE
+            to_char(sum(t.valid_goods_num) / sum(t.valid_order_num),
+                    'FM9999999999990.00')
+         END goods_num_per_order
+          from mall_sale_daily_stat t
+		<dynamic prepend="WHERE" > 
+			<isNotNull property="beginDate" prepend="AND" >
+			t.biz_date <![CDATA[>=]]> #beginDate# 
+			</isNotNull>
+			<isNotNull property="endDate" prepend="AND" >
+			t.biz_date <![CDATA[<=]]> #endDate# 
+			</isNotNull>		
+		</dynamic>
+  </select>
+</sqlMap>

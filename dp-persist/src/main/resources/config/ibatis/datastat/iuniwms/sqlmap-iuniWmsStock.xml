@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniWmsStock">
+
+    <typeAlias alias="IuniWmsStock" type="com.iuni.dp.persist.datastat.model.IuniWmsStock"/>
+
+    <resultMap id="IuniWmsStockMap" class="IuniWmsStock">
+        <result property="id" column="ID"/>
+        <result property="skuId" column="SKU_ID"/>
+        <result property="warehouseId" column="WAREHOUSE_ID"/>
+        <result property="totalQuantity" column="TOTAL_QUANTITY"/>
+        <result property="salesQuantity" column="SALES_QUANTITY"/>
+        <result property="unsalesQuantity" column="UNSALES_QUANTITY"/>
+        <result property="occupyQuantity" column="OCCUPY_QUANTITY"/>
+        <result property="lockQuantity" column="LOCK_QUANTITY"/>
+        <result property="virtualQuantity" column="VIRTUAL_QUANTITY"/>
+        <result property="airQuantity" column="AIR_QUANTITY"/>
+        <result property="limitUpper" column="LIMIT_UPPER"/>
+        <result property="limitLower" column="LIMIT_LOWER"/>
+        <result property="checkId" column="CHECK_ID"/>
+        <result property="checkCode" column="CHECK_CODE"/>
+    </resultMap>
+
+    <sql id="iuniWmsStockDetails_query_1">
+        select IWSK.SKU_CODE "skuCode",
+        IWSK.MATERIAL_CODE "materialCode",
+        IWSK.SKU_NAME "skuName",
+        IWWR.WARES_NAME "goodsName",
+        IWWR.MEASURE_UNIT "measureUnit",
+        IWS.SALES_QUANTITY + IWS.OCCUPY_QUANTITY "acceptedGoods",
+        IWS.UNSALES_QUANTITY "defectiveGoods",
+        IWS.TOTAL_QUANTITY "totalGoods"
+        from SYN_WMS_STOCK IWS
+        left join SYN_WMS_WAREHOUSE IWW
+        on IWW.ID = IWS.WAREHOUSE_ID
+        left join SYN_WMS_SKU IWSK
+        on IWSK.ID = IWS.SKU_ID
+        left join SYN_WMS_WARES IWWR
+        on IWWR.ID = IWSK.WARES_ID
+        where IWW.WAREHOUSE_CODE = '0769'
+        <isNotNull property="beginDate" prepend="and">
+            IWSK.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+        </isNotNull>
+        <isNotNull property="endDate" prepend="and">
+            IWSK.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+        </isNotNull>
+        order by IWSK.SKU_CODE
+    </sql>
+
+    <select id="selectIuniWmsStockDetailsByExample" resultClass="hashmap" parameterClass="map">
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="iuniWmsStockDetails_query_1"/>
+        ) T
+    </select>
+
+    <select id="selectIuniWmsStockDetailsByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="iuniWmsStockDetails_query_1"/>
+        ) T
+        WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )
+        WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniWmsStockDetailsCount" resultClass="int" parameterClass="map">
+        select count(*) "totalCount" from
+        (
+        <include refid="iuniWmsStockDetails_query_1"/>
+        )
+    </select>
+
+</sqlMap>

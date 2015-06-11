@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="iuniWmsReports" extends="dp-admin" namespace="/dp/stat">
+
+        <!-- IUNI WMS调拨明细统计报表 -->
+        <action name="iuniWmsTransferStatView" class="iuniWmsTransferAction" method="iuniWmsTransferStatView">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniWmsTransferStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniWmsTransferStat.jsp</result>
+        </action>
+        <action name="iuniWmsTransferStat2Excel" class="iuniWmsTransferAction" method="iuniWmsTransferStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsTransferStatView</result>
+        </action>
+
+        <!-- IUNI WMS销售明细统计报表 -->
+        <action name="iuniWmsSalesOrderStatView" class="iuniWmsSalesOrderAction" method="iuniWmsSalesOrderStatView">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniWmsSalesOrderStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniWmsSalesOrderStat.jsp</result>
+        </action>
+        <action name="iuniWmsSalesOrderStat2Excel" class="iuniWmsSalesOrderAction" method="iuniWmsSalesOrderStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsSalesOrderStatView</result>
+        </action>
+
+        <!-- IUNI WMS销售出库明细报表 -->
+        <action name="iuniStockMovDetailsView" class="iuniWmsSalesOrderAction" method="iuniStockMovDetailsView">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniStockMovDetails.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniStockMovDetails.jsp</result>
+        </action>
+        <action name="iuniStockMovDetails2Excel" class="iuniWmsSalesOrderAction" method="iuniStockMovDetails2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniStockMovDetailsView</result>
+        </action>
+
+        <!-- IUNI WMS未开票销售明细报表 -->
+        <action name="iuniNoInvoiceSalesDetailsView" class="iuniWmsSalesOrderAction"
+                method="iuniNoInvoiceSalesDetailsView">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniNoInvoiceSalesDetails.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniNoInvoiceSalesDetails.jsp</result>
+        </action>
+        <action name="iuniNoInvoiceSalesDetails2Excel" class="iuniWmsSalesOrderAction"
+                method="iuniNoInvoiceSalesDetails2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniNoInvoiceSalesDetailsView</result>
+        </action>
+
+        <!-- IUNI WMS内部调拔明细报表 -->
+        <action name="iuniInTransferDetailsView" class="iuniWmsTransferAction" method="iuniInTransferDetailsView">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniInTransferDetails.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniInTransferDetails.jsp</result>
+        </action>
+        <action name="iuniInTransferDetails2Excel" class="iuniWmsTransferAction" method="iuniInTransferDetails2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniInTransferDetailsView</result>
+        </action>
+
+        <!-- IUNI WMS库存明细报表 -->
+        <action name="iuniWmsStockDetailsView" class="iuniWmsStockAction" method="iuniWmsStockDetailsView">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniWmsStockDetails.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniWmsStockDetails.jsp</result>
+        </action>
+        <action name="iuniWmsStockDetails2Excel" class="iuniWmsStockAction" method="iuniWmsStockDetails2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsStockDetailsView</result>
+        </action>
+
+        <!-- IUNI WMS收款发货发票金额核对明细报表 -->
+        <action name="iuniWmsPayAmountCheckView" class="iuniWmsSalesOrderAction" method="iuniWmsPayAmountCheckView">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniWmsPayAmountCheck.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniWmsPayAmountCheck.jsp</result>
+        </action>
+        <action name="iuniWmsPayAmountCheck2Excel" class="iuniWmsSalesOrderAction" method="iuniWmsPayAmountCheck2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsPayAmountCheckView</result>
+        </action>
+
+        <!-- 入库明细报表 -->
+        <action name="iuniWmsProcurementDetail" class="iuniWmsProcurementDetailAction"
+                method="iuniWmsProcurementDetail">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniWmsProcurementDetail.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniWmsProcurementDetail.jsp</result>
+        </action>
+        <action name="iuniWmsProcurementDetail2Excel" class="iuniWmsProcurementDetailAction"
+                method="iuniWmsProcurementDetail2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsProcurementDetail</result>
+        </action>
+
+        <!-- 非保修维修单报表 -->
+        <action name="iuniWmsNotInWarrantyDetail" class="iuniWmsNotInWarrantyDetailAction"
+                method="iuniWmsNotInWarrantyDetail">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniWmsNotInWarrantyDetail.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniWmsNotInWarrantyDetail.jsp</result>
+        </action>
+        <action name="iuniWmsNotInWarrantyDetail2Excel" class="iuniWmsNotInWarrantyDetailAction"
+                method="iuniWmsNotInWarrantyDetail2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsNotInWarrantyDetail</result>
+        </action>
+
+        <!-- 支付宝对账报表 -->
+        <action name="iuniAlipayView" class="iuniAlipayAction" method="iuniAlipay">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniAlipay.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniAlipay.jsp</result>
+        </action>
+        <action name="iuniAlipay2Excel" class="iuniAlipayAction" method="iuniAlipay2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniAlipayView</result>
+        </action>
+
+    </package>
+
+</struts>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MsgType">
+  
+  <typeAlias alias="MsgType"  type="com.iuni.dp.persist.dataalarm.model.MsgType"/>
+  <typeAlias alias="PersonRelMsgType" type="com.iuni.dp.persist.dataalarm.model.PersonRelMsgType"/>
+
+  <resultMap id="MsgTypeMap" class="MsgType">
+  	<result property="msgTypeId" column="msg_type_id"/>
+  	<result property="msgTypeCode" column="msg_type_code"/>
+  	<result property="msgTypeName" column="msg_type_name"/>
+  	<result property="sendEmailFlag" column="send_email_flag"/>
+  	<result property="sendSmsFlag" column="send_sms_flag"/>
+    <result property="senderStrategyCode" column="sender_strategy_code"/>
+    <result property="senderDelaySeconds" column="sender_delay_seconds"/>  
+    <result property="senderTimingSeconds" column="sender_timing_seconds"/> 
+    <result property="executeStrategyCode" column="execute_stragegy_code"/>    
+    <result property="executeNumber" column="execute_number"/>
+  	<result property="executeDelaySeconds" column="execute_delay_seconds"/>
+    <result property="failStrategyCode" column="fail_strategy_code"/>  
+    <result property="failRepeatNumber" column="fail_repeat_number"/> 
+    <result property="failDelaySeconds" column="fail_delay_seconds"/>
+  	<result property="flag" column="flag"/>
+    <result property="createTime" column="create_time"/>  
+    <result property="creator" column="creator"/> 
+    <result property="remark" column="remark"/>
+    <result property="receivePersonList" column="msg_type_id" select="ReceivePerson.getReceivePersonListByMsgTypeId" />    
+  </resultMap>
+  
+  <resultMap id="PersonRelMsgTypeMap" class="PersonRelMsgType">
+  	<result property="personRelMsgTypeId" column="person_type_relation_id" />
+  	<result property="receivePersonId" column="receive_person_id" />
+  	<result property="msgTypeId" column="msg_type_id" />
+  </resultMap>
+  
+  <select id="getMsgTypeByMsgTypeId" resultMap="MsgTypeMap"  parameterClass="String">
+     select mt.*
+     from t_msg_type mt   
+     where mt.msg_type_id = #msgTypeId#
+     order by mt.msg_type_id
+  </select>
+  
+  <select id="getMsgTypeList" resultMap="MsgTypeMap"  parameterClass="MsgType">
+     select mt.*
+     from t_msg_type mt
+     <dynamic prepend="WHERE"> 
+	     <isNotNull prepend="AND" property="msgTypeId"> 
+	      	msg_type_id = #msgTypeId#  
+	     </isNotNull>
+	     <isNotNull prepend="AND" property="msgTypeCode"> 
+	      	msg_type_code = #msgTypeCode#  
+	     </isNotNull> 
+	     <isNotNull prepend="AND" property="msgTypeName"> 
+	      	msg_type_name = #msgTypeName#  
+	     </isNotNull>
+    </dynamic>         
+     order by mt.msg_type_id
+  </select>
+  
+  <select id="getAllMsgTypeList" resultMap="MsgTypeMap">
+  	SELECT mt.* FROM t_msg_type mt
+    ORDER BY mt.msg_type_id
+  </select>
+  
+  <select id="getMagTypeByPage" resultMap="MsgTypeMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+  			SELECT mt.msg_type_id, mt.msg_type_code, mt.msg_type_name, mt.send_email_flag, mt.send_sms_flag
+  		, mt.sender_strategy_code, mt.sender_delay_seconds, mt.sender_timing_seconds , mt.execute_stragegy_code
+  		, mt.execute_number, mt.execute_delay_seconds, mt.fail_strategy_code, mt.fail_repeat_number, mt.fail_delay_seconds
+  		, mt.flag, mt.create_time, mt.creator, mt.remark
+  	FROM t_msg_type mt
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="msgTypeCode">
+  			mt.msg_type_code LIKE '%' || #msgTypeCode# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="msgTypeName">
+  			mt.msg_type_name LIKE '%' || #msgTypeName# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="flag">
+  			mt.flag = #flag#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="sendEmailFlag">
+  			mt.send_email_flag = #sendEmailFlag#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="sendSmsFlag">
+  			mt.send_sms_flag = #sendSmsFlag#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="senderStrategyCode">
+  			mt.sender_strategy_code = #senderStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="executeStrategyCode">
+  			mt.execute_stragegy_code = #executeStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="failStrategyCode">
+  			mt.fail_strategy_code = #failStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="beginDate">
+  			<![CDATA[ mt.create_time >= str_to_date(#createTime#, '%Y-%m-%d %H:%i:%s') ]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="endDate">
+  			<![CDATA[ mt.create_time <= str_to_date(#createTime#, '%Y-%m-%d %H:%i:%s') ]]>
+  		</isNotNull>
+  		<!--  
+  		<isNotNull prepend="AND" property="creator">
+  			mt.creator LIKE '%' || #creator# || '%'
+  		</isNotNull>
+  		-->
+  	</dynamic>
+  	ORDER BY mt.create_time DESC, mt.msg_type_code
+  		) T
+  		WHERE ROWNUM <![CDATA[<= ]]> #endRec#  
+  	)
+  	WHERE RN <![CDATA[>= ]]> #startRec#
+  </select>
+  
+  <select id="getTotalCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(mt.msg_type_id) FROM t_msg_type mt
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="msgTypeCode">
+  			mt.msg_type_code LIKE '%' || #msgTypeCode# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="msgTypeName">
+  			mt.msg_type_name LIKE '%' || #msgTypeName# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="flag">
+  			mt.flag = #flag#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="sendEmailFlag">
+  			mt.send_email_flag = #sendEmailFlag#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="sendSmsFlag">
+  			mt.send_sms_flag = #sendSmsFlag#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="senderStrategyCode">
+  			mt.sender_strategy_code = #senderStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="executeStrategyCode">
+  			mt.execute_stragegy_code = #executeStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="failStrategyCode">
+  			mt.fail_strategy_code = #failStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="createTime">
+  			<![CDATA[ mt.create_time >= str_to_date(#createTime#, '%Y-%m-%d %H:%i:%s') ]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="createTime">
+  			<![CDATA[ mt.create_time <= str_to_date(#createTime#, '%Y-%m-%d %H:%i:%s') ]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="creator">
+  			mt.creator LIKE '%' || #creator# || '%'
+  		</isNotNull>
+  	</dynamic>
+  </select>
+  
+  <insert id="insertMsgType" parameterClass="MsgType">
+  	INSERT INTO t_msg_type (
+  		msg_type_id, msg_type_code,msg_type_name, send_email_flag, send_sms_flag, sender_strategy_code, sender_delay_seconds,  
+  		sender_timing_seconds,execute_stragegy_code, execute_number, execute_delay_seconds, fail_strategy_code, 
+  		fail_repeat_number, fail_delay_seconds, flag, remark, create_time, creator
+  	) VALUES (
+  		#msgTypeId#, #msgTypeCode#,#msgTypeName#,#sendEmailFlag#,#sendSmsFlag#,#senderStrategyCode#,#senderDelaySeconds#,
+  		#senderTimingSeconds#, #executeStrategyCode#,#executeNumber#,#executeDelaySeconds#,#failStrategyCode#,
+  		#failRepeatNumber#,#failDelaySeconds#, #flag#,#remark#,#createTime#,#creator#
+  	)
+  	<selectKey resultClass="int" type="pre" keyProperty="msgTypeId">
+  		SELECT S_t_msg_type.NEXTVAL as msgTypeId FROM dual
+  	</selectKey>
+  </insert>
+  
+  <insert id="insertPersonRelMsgType" parameterClass="PersonRelMsgType">
+  	INSERT INTO t_person_type_relation (
+  		person_type_relation_id, receive_person_id, msg_type_id
+  	) VALUES (
+  		#personRelMsgTypeId#, #receivePersonId#,#msgTypeId#
+  	)
+  	<selectKey resultClass="int" type="pre" keyProperty="personRelMsgTypeId">
+  		SELECT S_t_person_type_relation as personRelMsgTypeId FROM dual
+  	</selectKey>
+  </insert>
+  
+  <update id="updateMsgType" parameterClass="MsgType">
+  	UPDATE t_msg_type mt 
+  	<dynamic prepend="SET">
+  		<isNotNull prepend="," property="msgTypeCode">
+  			mt.msg_type_code = #msgTypeCode#
+  		</isNotNull>
+  		<isNotNull prepend="," property="msgTypeName">
+  			mt.msg_type_name = #msgTypeName#
+  		</isNotNull>
+  		<isNotNull prepend="," property="flag">
+  			mt.flag = #flag#
+  		</isNotNull>
+  		<isNotNull prepend="," property="sendEmailFlag">
+  			mt.send_email_flag = #sendEmailFlag#
+  		</isNotNull>
+  		<isNotNull prepend="," property="sendSmsFlag">
+  			mt.send_sms_flag = #sendSmsFlag#
+  		</isNotNull>
+  		<isNotNull prepend="," property="senderStrategyCode">
+  			mt.sender_strategy_code = #senderStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="," property="senderDelaySeconds">
+  			mt.sender_delay_seconds = #senderDelaySeconds#
+  		</isNotNull>
+  		<isNotNull prepend="," property="senderTimingSeconds">
+  			mt.sender_timing_seconds = #senderTimingSeconds#
+  		</isNotNull>
+  		<isNotNull prepend="," property="executeStrategyCode">
+  			mt.execute_stragegy_code = #executeStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="," property="executeNumber">
+  			mt.execute_number = #executeNumber#
+  		</isNotNull>
+  		<isNotNull prepend="," property="executeDelaySeconds">
+  			mt.execute_delay_seconds = #executeDelaySeconds#
+  		</isNotNull>
+  		<isNotNull prepend="," property="failStrategyCode">
+  			mt.fail_strategy_code = #failStrategyCode#
+  		</isNotNull>
+  		<isNotNull prepend="," property="failRepeatNumber">
+  			mt.fail_repeat_number = #failRepeatNumber#
+  		</isNotNull>
+  		<isNotNull prepend="," property="failDelaySeconds">
+  			mt.fail_delay_seconds = #failDelaySeconds#
+  		</isNotNull>
+  		<isNotNull prepend="," property="remark">
+  			mt.remark = #remark#
+  		</isNotNull>
+  	</dynamic>
+  	WHERE mt.msg_type_id = #msgTypeId#
+  </update>
+  
+  <delete id="deletePersonRelMsgType" parameterClass="PersonRelMsgType">
+  	DELETE ptr FROM t_person_type_relation ptr 
+  	<dynamic prepend="WHERE">
+  		<isNotNull property="msgTypeId" prepend="and">
+  			ptr.msg_type_id = #msgTypeId#
+  		</isNotNull>
+  		<isNotNull property="receivePersonId" prepend="and">
+  			ptr.receive_person_id = #receivePersonId#
+  		</isNotNull>
+  	</dynamic>
+  </delete>
+  
+  <delete id="deleteMsgTypeById" parameterClass="int">
+  	DELETE mt FROM t_msg_type mt 
+  	WHERE mt.msg_type_id = #id#
+  </delete>
+ 
+</sqlMap>

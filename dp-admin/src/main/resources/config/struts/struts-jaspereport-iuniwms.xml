@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="iuniWmsJR" extends="jasperReport" namespace="/jr/wms">
+        <!--
+        <action name="export" class="iuniWmsTransferAction">
+            <result name="success" type="jasper">
+                <param name="location">/WEB-INF/jasper/iuni_wms_transferStat_3.jasper</param>
+                <param name="format">HTML</param>
+                <param name="dataSource">iuniWmsTransferStat</param>
+                <param name="reportParameters">statParams</param>
+            </result>
+        </action>
+         -->
+    </package>
+
+</struts>

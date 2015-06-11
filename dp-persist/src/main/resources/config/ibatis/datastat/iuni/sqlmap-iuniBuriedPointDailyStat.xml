@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniBuriedPointDailyStat" >
+
+  <typeAlias alias="IuniBuriedPointDailyStat" type="com.iuni.dp.persist.datastat.model.IuniBuriedPointDailyStat" />
+
+  <resultMap id="IuniBuriedPointDailyStatMap" class="IuniBuriedPointDailyStat">
+    <result property="id" column="ID"/>
+    <result property="urlDomain" column="URL_DOMAIN"/>
+    <result property="statDate" column="STAT_DATE"/>
+    <result property="websiteCode" column="WEBSITE_CODE"/> 
+    <result property="website" column="WEBSITE"/> 
+    <result property="pageName" column="PAGE_NAME"/>  
+    <result property="pagePosition" column="PAGE_POSITION"/>  
+    <result property="pointFlag" column="POINT_FLAG"/> 
+    <result property="pointType" column="POINT_TYPE"/>
+    <result property="pv" column="PV"/>
+    <result property="uv" column="UV"/>
+    <result property="vv" column="VV"/>
+    <result property="ip" column="IP"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+  
+  <sql id="base_columns_1">
+  	IBPD.URL_DOMAIN "urlDomain", IBPD.STAT_DATE "statDate", IBPD.WEBSITE_CODE "webSiteCode", IBPD.WEBSITE "webSite", 
+	IBPD.PAGE_NAME "pageName", IBPD.PAGE_POSITION "pagePosition", IBPD.POINT_FLAG "pointFlag", 
+	IBPD.POINT_TYPE "pointType", IBPD.PV "pv", IBPD.UV "uv", IBPD.VV "vv", IBPD.IP "ip"
+  </sql>
+
+  <sql id="base_queryParams_1">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			IBPD.URL_DOMAIN = 'rd.iuni.com'
+  		</isParameterPresent>
+    	<isNotNull prepend="and" property="pointType">
+    		IBPD.POINT_TYPE = #pointType#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			to_date(IBPD.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			to_date(IBPD.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>	
+  	</dynamic>
+  </sql>
+  
+  <select id="selectIbpdByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		select 
+		<include refid="base_columns_1"/>
+		from IUNI_BURIEDPOINT_DAILYSTAT IBPD
+		<include refid="base_queryParams_1"/>
+		order by IBPD.URL_DOMAIN, IBPD.STAT_DATE, IBPD.POINT_FLAG
+  	) T
+  </select>
+  
+  <select id="selectIbpdByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+			<include refid="base_columns_1"/>
+			from IUNI_BURIEDPOINT_DAILYSTAT IBPD
+			<include refid="base_queryParams_1"/>
+			order by IBPD.URL_DOMAIN, IBPD.STAT_DATE, IBPD.POINT_FLAG
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIbpdCount" resultClass="int" parameterClass="map">
+	select count(*)
+	from IUNI_BURIEDPOINT_DAILYSTAT IBPD
+	<include refid="base_queryParams_1"/>
+  </select>
+  
+  <select id="selectClickRateTodayByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+		select 
+		  t0."statDate", t0."urlDomain"
+		  , BP.WEBSITE_CODE "webSiteCode", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName"
+		  , BP.PAGE_POSITION "pagePosition", BP.POINT_FLAG "pointFlag", BP.POINT_TYPE "pointType"
+		  , T0.PV "pv", T0.UV "uv", T0.VV "vv", T0.IP "ip" 
+		from 
+		(
+		    select 
+		    #statDate# "statDate", RD.URL_DOMAIN "urlDomain", RD.REPORT_CONTENT
+		    , count(RD.ID) PV, count(distinct RD.COOKIE_INFO) UV
+		    , count(distinct RD.SESSION_ID) VV, count(distinct RD.SOURCE_IP) IP
+		    from T_REPORT_DATA_$curMonth$ RD
+		    where RD.URL_DOMAIN = 'rd.iuni.com'
+		    and RD.REPORT_TYPE = 'rtag'
+		    and RD.REPORT_CONTENT in 
+		    (
+		        select POINT_FLAG from IUNI_BURIEDPOINT_SITE T2 
+		        <dynamic prepend="where">
+		        	<isNotNull prepend="and" property="pointType">
+		        		T2.POINT_TYPE = #pointType#
+		        	</isNotNull>
+		        </dynamic> 
+		    )
+		    and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#statDate#,'yyyy-MM-dd')
+		    and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#statDate#,'yyyy-MM-dd')+1
+		    group by RD.URL_DOMAIN, RD.REPORT_CONTENT
+		    order by RD.URL_DOMAIN, RD.REPORT_CONTENT
+		) T0
+		left join IUNI_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT  	
+  	) T
+  </select>
+  
+  <select id="selectClickRateTodayByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+			  t0."statDate", t0."urlDomain"
+			  , BP.WEBSITE_CODE "webSiteCode", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName"
+			  , BP.PAGE_POSITION "pagePosition", BP.POINT_FLAG "pointFlag", BP.POINT_TYPE "pointType"
+			  , T0.PV "pv", T0.UV "uv", T0.VV "vv", T0.IP "ip" 
+			from 
+			(
+			    select 
+			    #statDate# "statDate", RD.URL_DOMAIN "urlDomain", RD.REPORT_CONTENT
+			    , count(RD.ID) PV, count(distinct RD.COOKIE_INFO) UV
+			    , count(distinct RD.SESSION_ID) VV, count(distinct RD.SOURCE_IP) IP
+			    from T_REPORT_DATA_$curMonth$ RD
+			    where RD.URL_DOMAIN = 'rd.iuni.com'
+			    and RD.REPORT_TYPE = 'rtag'
+			    and RD.REPORT_CONTENT in 
+			    (
+			        select POINT_FLAG from IUNI_BURIEDPOINT_SITE T2 
+			        <dynamic prepend="where">
+			        	<isNotNull prepend="and" property="pointType">
+			        		T2.POINT_TYPE = #pointType#
+			        	</isNotNull>
+			        </dynamic> 
+			    )
+			    and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#statDate#,'yyyy-MM-dd')
+			    and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#statDate#,'yyyy-MM-dd')+1
+			    group by RD.URL_DOMAIN, RD.REPORT_CONTENT
+			    order by RD.URL_DOMAIN, RD.REPORT_CONTENT
+			) T0
+			left join IUNI_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT 
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectClickRateTodayCount" resultClass="int" parameterClass="map">
+  	select count(*) 
+	from 
+	(
+	    select 
+	    #statDate# "statDate", RD.URL_DOMAIN "urlDomain", RD.REPORT_CONTENT
+	    , count(RD.ID) PV, count(distinct RD.COOKIE_INFO) UV
+	    , count(distinct RD.SESSION_ID) VV, count(distinct RD.SOURCE_IP) IP
+	    from T_REPORT_DATA_$curMonth$ RD
+	    where RD.URL_DOMAIN = 'rd.iuni.com'
+	    and RD.REPORT_TYPE = 'rtag'
+	    and RD.REPORT_CONTENT in 
+	    (
+	        select POINT_FLAG from IUNI_BURIEDPOINT_SITE T2 
+	        <dynamic prepend="where">
+	        	<isNotNull prepend="and" property="pointType">
+	        		T2.POINT_TYPE = #pointType#
+	        	</isNotNull>
+	        </dynamic>
+	    )
+	    and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#statDate#,'yyyy-MM-dd')
+	    and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#statDate#,'yyyy-MM-dd')+1
+	    group by RD.URL_DOMAIN, RD.REPORT_CONTENT
+	    order by RD.URL_DOMAIN, RD.REPORT_CONTENT
+	) T0
+  </select>
+  
+  <!--  
+  <select id="selectIbpsClickRateByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+	  	select t0."statDate", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName", BP.PAGE_POSITION "pagePosition"
+	  	, T0.PV "pv", T0.UV "uv", T0.VV "vv", T0.IP "ip" 
+		from 
+		(
+		    select to_char(T1.CREATE_TIME, 'yyyy-MM-dd') "statDate", T1.REPORT_CONTENT
+		    , count(T1.ID) PV, count(distinct T1.COOKIE_INFO) UV
+		    , count(distinct T1.SESSION_ID) VV, count(distinct T1.SOURCE_IP) IP
+		    from
+		    (
+		    	<iterate conjunction="union" property="rdList" >
+		    		select RD.ID, RD.REPORT_CONTENT, RD.COOKIE_INFO, RD.SOURCE_IP,
+		    		RD.SESSION_ID, RD.CREATE_TIME
+		        	from T_REPORT_DATA_$rdList[]$ RD
+		        	where RD.REPORT_TYPE = 'rtag'
+		        	and RD.REPORT_CONTENT in 
+		        	(
+		        		select POINT_FLAG from IUNI_BURIEDPOINT_SITE T2 where T2.POINT_TYPE = #pointType# 
+		        	)
+			        and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-MM-dd hh24:mi:ss')
+			        and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-MM-dd hh24:mi:ss')+1/86400
+		    	</iterate>
+		    ) T1
+		    group by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		    order by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		) T0
+		left join IUNI_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT
+  	) T
+  </select>
+  
+  <select id="selectIbpsClickRateByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select t0."statDate", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName", BP.PAGE_POSITION "pagePosition"
+		  	, T0.PV "pv", T0.UV "uv", T0.VV "vv", T0.IP "ip" 
+			from 
+			(
+			    select to_char(T1.CREATE_TIME, 'yyyy-MM-dd') "statDate", T1.REPORT_CONTENT
+			    , count(T1.ID) PV, count(distinct T1.COOKIE_INFO) UV
+			    , count(distinct T1.SESSION_ID) VV, count(distinct T1.SOURCE_IP) IP
+			    from
+			    (
+			    	<iterate conjunction="union" property="rdList" >
+			    		select RD.ID, RD.REPORT_CONTENT, RD.COOKIE_INFO, RD.SOURCE_IP,
+			    		RD.SESSION_ID, RD.CREATE_TIME
+			        	from T_REPORT_DATA_$rdList[]$ RD
+			        	where RD.REPORT_TYPE = 'rtag'
+			        	and RD.REPORT_CONTENT in 
+			        	(
+			        		select POINT_FLAG from IUNI_BURIEDPOINT_SITE T2 where T2.POINT_TYPE = #pointType# 
+			        	)
+				        and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-MM-dd hh24:mi:ss')
+				        and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-MM-dd hh24:mi:ss')+1/86400
+			    	</iterate>
+			    ) T1
+			    group by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+			    order by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+			) T0
+			left join IUNI_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIbpsClickRateCount" resultClass="int" parameterClass="map">
+  	select count(*) 
+	from 
+	(
+	    select t0."statDate", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName", BP.PAGE_POSITION "pagePosition"
+	  	, T0.PV "pv", T0.UV "uv", T0.VV "vv", T0.IP "ip" 
+		from 
+		(
+		    select to_char(T1.CREATE_TIME, 'yyyy-MM-dd') "statDate", T1.REPORT_CONTENT
+		    , count(T1.ID) PV, count(distinct T1.COOKIE_INFO) UV
+		    , count(distinct T1.SESSION_ID) VV, count(distinct T1.SOURCE_IP) IP
+		    from
+		    (
+		    	<iterate conjunction="union" property="rdList" >
+		    		select RD.ID, RD.REPORT_CONTENT, RD.COOKIE_INFO, RD.SOURCE_IP,
+		    		RD.SESSION_ID, RD.CREATE_TIME
+		        	from T_REPORT_DATA_$rdList[]$ RD
+		        	where RD.REPORT_TYPE = 'rtag'
+		        	and RD.REPORT_CONTENT in 
+		        	(
+		        		select POINT_FLAG from IUNI_BURIEDPOINT_SITE T2 where T2.POINT_TYPE = #pointType# 
+		        	)
+			        and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-MM-dd hh24:mi:ss')
+			        and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-MM-dd hh24:mi:ss')+1/86400
+		    	</iterate>
+		    ) T1
+		    group by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		    order by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		) T0
+		left join IUNI_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT
+	) T0
+  </select>
+  -->
+  
+</sqlMap>

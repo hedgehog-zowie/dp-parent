@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="StatScheduledResult">
+  
+  <typeAlias alias="StatScheduledResult"  type="com.iuni.dp.persist.datastat.model.StatScheduledResult"/>
+
+  <resultMap id="StatScheduledResultMap" class="StatScheduledResult">
+  	<result property="id" column="ID"/>
+    <result property="sourceId" column="SOURCEID"/>
+  	<result property="statSchemeId" column="STAT_SCHEME_ID"/>
+    <result property="statType" column="STAT_TYPE"/>
+    <result property="statNum" column="STAT_NUM"/>
+    <result property="scheduledTime" column="SCHEDULED_TIME"/>
+  	<result property="createTime" column="CREATE_TIME"/>
+  	<result property="statScheme" column="STAT_SCHEME_ID" select="StatScheme.selectStatSchemeById"/>
+  </resultMap>
+  
+  <select id="selectStatScheduledResultById" resultMap="StatScheduledResultMap" parameterClass="int">
+  	SELECT SCR.*	
+  	FROM T_STAT_SCHEDULED_RESULT SCR
+  	WHERE SCR.ID = #id#
+  </select>
+  
+  <select id="selectAllStatScheduledResult" resultMap="StatScheduledResultMap" parameterClass="java.util.Map">
+  	SELECT SCR.*	
+  	FROM T_STAT_SCHEDULED_RESULT SCR
+  	<dynamic prepend="WHERE">
+		<isNotNull prepend="AND" property="sourceId">
+			SCR.SOURCEID = #sourceId#
+		</isNotNull>
+		<isNotNull prepend="AND" property="statSchemeId">
+			SCR.STAT_SCHEME_ID = #statSchemeId#
+		</isNotNull>
+		<isNotNull prepend="AND" property="scheduledTime">
+			<![CDATA[ SCR.SCHEDULED_TIME = to_date(#scheduledTime#, 'yyyy-mm-dd')]]>
+		</isNotNull>
+  	</dynamic>
+  	ORDER BY SCR.STAT_TYPE
+  </select>
+  
+  <select id="selectAllStatScheduledResultTemp" resultMap="StatScheduledResultMap" parameterClass="java.util.Map">
+  	SELECT SCRT.*	
+  	FROM T_STAT_SCHEDULED_RESULT_TEMP SCRT
+  	<dynamic prepend="WHERE">
+		<isNotNull prepend="AND" property="sourceId">
+			SCRT.SOURCEID = #sourceId#
+		</isNotNull>
+		<isNotNull prepend="AND" property="statSchemeId">
+			SCRT.STAT_SCHEME_ID = #statSchemeId#
+		</isNotNull>
+		<isNotNull prepend="AND" property="scheduledTime">
+			<![CDATA[ SCRT.SCHEDULED_TIME = to_date(#scheduledTime#, 'yyyy-mm-dd')]]>
+		</isNotNull>
+  	</dynamic>
+  	ORDER BY SCRT.STAT_TYPE
+  </select>
+  
+  <select id="selectStatScheduledResultByPage" resultMap="StatScheduledResultMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+  			SELECT SCR.*	
+  			FROM T_STAT_SCHEDULED_RESULT SCR
+		  	<dynamic prepend="WHERE">
+				<isNotNull prepend="AND" property="sourceId">
+					SCR.SOURCEID = #sourceId#
+				</isNotNull>
+				<isNotNull prepend="AND" property="statSchemeId">
+					SCR.STAT_SCHEME_ID = #statSchemeId#
+				</isNotNull>
+				<isNotNull prepend="AND" property="scheduledTime">
+					<![CDATA[ SCR.SCHEDULED_TIME = to_date(#scheduledTime#, 'yyyy-mm-dd')]]>
+				</isNotNull>
+		  	</dynamic>
+  			ORDER BY SCR.CREATE_TIME DESC
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectTotalCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(SCR.ID) 
+  	FROM T_STAT_SCHEDULED_RESULT SCR
+	<dynamic prepend="WHERE">
+		<isNotNull prepend="AND" property="sourceId">
+			SCR.SOURCEID = #sourceId#
+		</isNotNull>
+		<isNotNull prepend="AND" property="statSchemeId">
+			SCR.STAT_SCHEME_ID = #statSchemeId#
+		</isNotNull>
+		<isNotNull prepend="AND" property="scheduledTime">
+			<![CDATA[ SCR.SCHEDULED_TIME = to_date(#scheduledTime#, 'yyyy-mm-dd')]]>
+		</isNotNull>
+  	</dynamic>
+  </select>
+  
+  <insert id="insertStatScheduledResult" parameterClass="StatScheduledResult">
+    INSERT INTO T_STAT_SCHEDULED_RESULT (
+   			  ID,
+			  SOURCEID,
+			  STAT_SCHEME_ID,
+			  STAT_TYPE,
+			  STAT_NUM,	
+			  SCHEDULED_TIME,
+			  CREATE_TIME,
+	)
+    VALUES (  
+    		  #id#,
+			  #sourceId#,
+			  #statSchemeId#,
+			  #statType#,
+			  #statNum#,
+			  #scheduledTime#
+			  SysDate,
+    )
+    <selectKey resultClass="int" type="pre" keyProperty="id" >
+        SELECT S_T_STAT_SCHEDULED_RESULT.NEXTVAL as id FROM dual
+    </selectKey>
+  </insert>
+  
+  <delete id="deleteStatScheduledResultById" parameterClass="int">
+  	DELETE FROM T_STAT_SCHEDULED_RESULT SCR
+  	WHERE SCR.ID = #id#
+  </delete>
+  
+  <delete id="delStatScdResultTempByCondition" parameterClass="java.util.Map">
+  	DELETE FROM T_STAT_SCHEDULED_RESULT_TEMP SCRT
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="sourceId">
+  			SCRT.SOURCEID = #sourceId#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="statSchemeId">
+  			SCRT.STAT_SCHEME_ID = #statSchemeId#
+  		</isNotNull>
+  	</dynamic>
+  </delete>
+ 
+</sqlMap>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+    <package name="stat" extends="dp-admin" namespace="/dp/stat">
+
+        <!-- StatScheme Action -->
+        <action name="statSchemeListView" class="statSchemeAction" method="statSchemeListView">
+            <result name="error">/WEB-INF/views/stat/scheme/statScheme_list.jsp</result>
+            <result name="success">/WEB-INF/views/stat/scheme/statScheme_list.jsp</result>
+        </action>
+
+        <action name="statSchemeEditView" class="statSchemeAction" method="statSchemeEditView">
+            <result name="success">/WEB-INF/views/stat/scheme/statScheme_edit.jsp</result>
+            <result name="error">/WEB-INF/views/stat/scheme/statScheme_edit.jsp</result>
+        </action>
+
+        <action name="addStatScheme" class="statSchemeAction" method="addStatScheme">
+            <result name="success" type="chain">statSchemeListView</result>
+            <result name="input">/WEB-INF/views/stat/scheme/statScheme_edit.jsp</result>
+            <result name="error">/WEB-INF/views/stat/scheme/statScheme_edit.jsp</result>
+        </action>
+
+        <action name="updateStatScheme" class="statSchemeAction" method="updateStatScheme">
+            <result name="success" type="chain">statSchemeListView</result>
+            <result name="input">/WEB-INF/views/stat/scheme/statScheme_edit.jsp</result>
+            <result name="error">/WEB-INF/views/stat/scheme/statScheme_edit.jsp</result>
+        </action>
+
+        <action name="removeStatScheme" class="statSchemeAction" method="removeStatScheme">
+            <result name="success" type="chain">statSchemeListView</result>
+            <result name="error">/WEB-INF/views/stat/scheme/statScheme_list.jsp</result>
+        </action>
+
+        <!-- StatScheme JSON Action -->
+        <action name="getStatSchemeListByJSON" class="statSchemeAction" method="getStatSchemeListByJSON">
+        </action>
+
+        <action name="getStatSchemeByJSON" class="statSchemeAction" method="getStatSchemeByJSON">
+        </action>
+
+        <!-- StatScheduledResult Action -->
+        <action name="scheduledResultListView" class="statScheduledResultAction" method="scheduledResultListView">
+            <result name="error">/WEB-INF/views/stat/report/scheduledStat_list.jsp</result>
+            <result name="success">/WEB-INF/views/stat/report/scheduledStat_list.jsp</result>
+        </action>
+
+        <!-- StatScheduledResult JSON Action -->
+        <action name="getScheduledResultByJSON" class="statScheduledResultAction" method="getScheduledResultByJSON">
+        </action>
+
+        <action name="getScheduledReportByJSON" class="statScheduledResultAction" method="getScheduledReportByJSON">
+        </action>
+
+        <!-- StatSnapshotResult Action -->
+        <action name="snapshotResultListView" class="statSnapshotResultAction" method="snapshotResultListView">
+            <result name="error">/WEB-INF/views/stat/report/snapshotStat_list.jsp</result>
+            <result name="success">/WEB-INF/views/stat/report/snapshotStat_list.jsp</result>
+        </action>
+
+        <!-- StatSnapshotResult JSON Action -->
+        <action name="getSnapshotResultByJSON" class="statSnapshotResultAction" method="getSnapshotResultByJSON">
+        </action>
+
+        <action name="getSnapshotReportByJSON" class="statSnapshotResultAction" method="getSnapshotReportByJSON">
+        </action>
+    </package>
+</struts>

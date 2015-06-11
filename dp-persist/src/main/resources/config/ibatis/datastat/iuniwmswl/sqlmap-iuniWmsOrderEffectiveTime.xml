@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniWmsOrderEffectiveTime">
+
+    <sql id="iuniWmsPositiveOrderWlSQL_where_1">
+        <dynamic prepend="where">
+            <isNotNull prepend="and" property="beginDate">
+                OP_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+            </isNotNull>
+            <isNotNull prepend="and" property="endDate">
+                OP_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+            </isNotNull>
+        </dynamic>
+    </sql>
+
+    <sql id="iuniWmsPositiveOrderWlSQL">
+        SELECT orderId "orderId",orderCode "orderCode",opTime "opTime",
+        time1 "time1",time2 "time2",time3 "time3",time4 "time4",time5 "time5",time6 "time6",
+        CEIL((time2-time1)*24*60) "time21",
+        CEIL((time3-time2)*24*60) "time32",
+        CEIL((time4-time3)*24*60) "time43",
+        CEIL((time5-time4)*24*60) "time54",
+        CEIL((time6-time5)*24*60) "time65",
+        CEIL((time6-time1)*24*60) "time61"
+        FROM(
+        SELECT SW.ORDERID orderId,SW.ORDERCODE orderCode, MAX(OPTIME) opTime,
+        MAX(TIME0) time1,MAX(TIME2) time2, MAX(TIME8) time3, MAX(TIME3) time4, MAX(TIME9) time5, MAX(TIME1) time6
+        FROM (
+        SELECT * FROM(
+        SELECT SWSOG.ORDER_ID ORDERID ,SWSO.ORDER_CODE ORDERCODE, SWSOG.OP_TIME OPTIME,SWSO.PAYMENT_TIME PAYMENTTIME,
+        DECODE(SWSOG.ORDER_STATUS, 0, OP_TIME) TIME0,
+        DECODE(SWSOG.ORDER_STATUS, 2, OP_TIME) TIME2,
+        DECODE(SWSOG.ORDER_STATUS, 8, OP_TIME) TIME8,
+        DECODE(SWSOG.ORDER_STATUS, 3, OP_TIME) TIME3,
+        DECODE(SWSOG.ORDER_STATUS, 9, OP_TIME) TIME9,
+        DECODE(SWSOG.ORDER_STATUS, 1, OP_TIME) TIME1
+        FROM SYN_WMS_SALES_ORDER_LOG SWSOG
+        LEFT JOIN SYN_WMS_SALES_ORDER SWSO ON SWSOG.ORDER_ID=SWSO.ID
+        )A WHERE EXISTS (SELECT * FROM (
+        SELECT distinct ORDER_ID FROM SYN_WMS_SALES_ORDER_LOG
+        <include refid="iuniWmsPositiveOrderWlSQL_where_1"/>
+        AND ORDER_STATUS=1
+        )B WHERE A.ORDERID=B.ORDER_ID)
+        )SW
+        GROUP BY SW.ORDERID,SW.ORDERCODE
+        ORDER BY opTime
+        )
+    </sql>
+
+    <select id="iuniWmsPositiveOrderWlByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM(
+        SELECT T.*,ROWNUM RN FROM(
+        SELECT * FROM (
+        <include refid="iuniWmsPositiveOrderWlSQL"/>
+        )
+        )T WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )WHERE RN <![CDATA[ >= ]]> #startRec#
+
+    </select>
+
+    <select id="iuniWmsPositiveOrderWlCount" resultClass="int" parameterClass="map">
+        SELECT COUNT(*) FROM (
+        <include refid="iuniWmsPositiveOrderWlSQL"/>
+        )
+    </select>
+
+    <select id="iuniWmsPositiveOrderWl2Excel" resultClass="hashmap" parameterClass="map">
+        SELECT T.*,ROWNUM RN FROM(
+        SELECT * FROM (
+        <include refid="iuniWmsPositiveOrderWlSQL"/>
+        )
+        )T
+    </select>
+</sqlMap>

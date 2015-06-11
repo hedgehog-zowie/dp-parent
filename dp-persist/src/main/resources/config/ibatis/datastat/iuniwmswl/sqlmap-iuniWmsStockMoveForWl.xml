@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniWmsStockMoveForWl">
+
+    <sql id="selectIuniWmsStockMoveForWlByPageSQL">
+        SELECT *
+        FROM (SELECT IWSO.SHIPPING_TIME    "time",
+        IOS.SOURCE_NAME       "orderSource",
+        IWSO.ORDER_CODE       "orderCode",
+        IWSO.OUTER_ORDER_CODE "outerOrderCode",
+        IWSO.PAY_NO           "payNo",
+        IWSO.DELIVERY_CODE    "deliveryCode",
+        IWSOG.UNIT_PRICE      "price",
+        IWSOG.QUANTITY        "quantity",
+        IWS.SKU_CODE          "sku",
+        IWS.SKU_NAME          "skuName",
+        IWS.MATERIAL_CODE     "materialCode",
+        IWW.WARES_NAME        "waresName",
+        IOS.SOURCE_CODE       "orderList"
+        FROM SYN_WMS_SALES_ORDER IWSO
+        LEFT JOIN SYN_WMS_SALES_ORDER_GOODS IWSOG
+        ON IWSO.ID = IWSOG.ORDER_ID
+        LEFT JOIN SYN_WMS_SKU IWS
+        ON IWSOG.SKU_ID = IWS.ID
+        LEFT JOIN SYN_WMS_WARES IWW
+        ON IWS.WARES_ID = IWW.ID
+        LEFT JOIN (SELECT DISTINCT (WMS_SOURCE_CODE) SOURCE_CODE,
+        WMS_SOURCE_NAME SOURCE_NAME
+        FROM IUNI_ORDER_SOURCE
+        ORDER BY WMS_SOURCE_CODE) IOS
+        ON IOS.SOURCE_CODE = IWSO.ORDER_SOURCE
+        WHERE 1 = 1
+        AND (IWSO.ORDER_MERGER_TYPE IS NULL OR IWSO.ORDER_MERGER_TYPE = 2)
+        <isNotNull prepend="and" property="beginDate">
+            IWSO.SHIPPING_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            IWSO.SHIPPING_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        ) T1
+        WHERE 1 = 1
+        <isNotNull property="orderList" prepend="and">
+            T1."orderList" IN
+            <iterate property="orderList" open="(" close=")" conjunction=",">
+                #orderList[]#
+            </iterate>
+        </isNotNull>
+        UNION ALL
+        SELECT *
+        FROM (SELECT SWT.SHIPPING_TIME "time",
+        IOS.SOURCE_NAME   "orderSource",
+        null              "orderCode",
+        null              "outerOrderCode",
+        null              "payNo",
+        null              "deliveryCode",
+        SWTG.UNIT_PRICE   "price",
+        SWTG.QUANTITY     "quantity",
+        SWS.SKU_CODE      "sku",
+        SWS.SKU_NAME      "skuName",
+        SWS.MATERIAL_CODE "materialCode",
+        SWW.WARES_NAME    "waresName",
+        IOS.SOURCE_CODE   "transferList"
+        FROM SYN_WMS_TRANSFER SWT
+        LEFT JOIN SYN_WMS_TRANSFER_GOODS SWTG
+        ON SWT.ID = SWTG.TRANSFER_ID
+        LEFT JOIN SYN_WMS_TRANSFER_PARTNER SWTP
+        ON SWTP.ID = SWT.TRANSFER_SALE
+        LEFT JOIN SYN_WMS_SKU SWS
+        ON SWTG.SKU_ID = SWS.ID
+        LEFT JOIN SYN_WMS_WARES SWW
+        ON SWS.WARES_ID = SWW.ID
+        LEFT JOIN (SELECT DISTINCT (CODE) SOURCE_CODE, NAME SOURCE_NAME
+        FROM SYN_WMS_TRANSFER_PARTNER
+        WHERE CODE NOT IN ('88888', '110538')
+        AND C_PARENT_ID IS NULL
+        ORDER BY CODE) IOS
+        ON IOS.SOURCE_CODE = SWTP.CODE
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWT.SHIPPING_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWT.SHIPPING_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        ) T2
+        WHERE 1 = 1
+        <isNotNull property="transferList" prepend="and">
+            T2."transferList" IN
+            <iterate property="transferList" open="(" close=")" conjunction=",">
+                #transferList[]#
+            </iterate>
+        </isNotNull>
+    </sql>
+
+    <select id="selectIuniWmsStockMoveForWlByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM(
+        SELECT T.*,ROWNUM RN FROM(
+        <include refid="selectIuniWmsStockMoveForWlByPageSQL"/>
+        )T WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )WHERE RN <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniWmsStockMoveForWLCount" resultClass="int" parameterClass="map">
+        SELECT COUNT(*) FROM(
+        <include refid="selectIuniWmsStockMoveForWlByPageSQL"/>
+        )
+    </select>
+
+    <select id="selectIuniWmsStockMoveForWl2Excel" resultClass="hashmap" parameterClass="map">
+        SELECT T.*,ROWNUM RN FROM(
+        <include refid="selectIuniWmsStockMoveForWlByPageSQL"/>
+        )T
+    </select>
+</sqlMap>

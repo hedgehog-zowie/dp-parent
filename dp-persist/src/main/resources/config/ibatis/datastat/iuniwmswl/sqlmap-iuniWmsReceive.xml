@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniWmsReceive">
+
+    <typeAlias alias="IuniWmsReceive" type="com.iuni.dp.persist.datastat.model.IuniWmsReceive"/>
+
+    <resultMap id="IuniWmsReceiveMap" class="IuniWmsReceive">
+        <result column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="RECEIVE_CODE" jdbcType="VARCHAR" property="receiveCode"/>
+        <result column="RECEIVE_TYPE" jdbcType="VARCHAR" property="receiveType"/>
+        <result column="ORIGINAL_ID" jdbcType="VARCHAR" property="originalId"/>
+        <result column="ORIGINAL_CODE" jdbcType="VARCHAR" property="originalCode"/>
+        <result column="WAREHOUSE_ID" jdbcType="VARCHAR" property="warehouseId"/>
+        <result column="WAREHOUSE_NAME" jdbcType="VARCHAR" property="warehouseName"/>
+        <result column="SUPPLIER_ID" jdbcType="VARCHAR" property="supplierId"/>
+        <result column="SUPPLIER_NAME" jdbcType="VARCHAR" property="supplierName"/>
+        <result column="PREPARED_TIME" jdbcType="TIMESTAMP" property="preparedTime"/>
+        <result column="PREPARED_BY" jdbcType="VARCHAR" property="preparedBy"/>
+        <result column="HANDLING_STATUS" jdbcType="VARCHAR" property="handlingStatus"/>
+        <result column="HANDLED_TIME" jdbcType="TIMESTAMP" property="handledTime"/>
+        <result column="HANDLED_BY" jdbcType="VARCHAR" property="handledBy"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="RECEIVE_MODE" jdbcType="VARCHAR" property="receiveMode"/>
+        <result column="TRANS_BACK_TYPE" jdbcType="VARCHAR" property="transBackType"/>
+        <result column="TRANSFER_PARTNER_ID" jdbcType="VARCHAR" property="transferPartnerId"/>
+        <result column="TRANSFER_PARTNER_NAME" jdbcType="VARCHAR" property="transferPartnerName"/>
+        <result column="PARTNER_WAREHOUSE" jdbcType="VARCHAR" property="partnerWarehouse"/>
+        <result column="PARTNER_WAREHOUSE_NAME" jdbcType="VARCHAR" property="partnerWarehouseName"/>
+    </resultMap>
+
+    <!-- =======调拨明细统计报表（物流） —— 调入====== -->
+    <sql id="queryIuniWmsReceiveForWL">
+        SELECT SWR.HANDLED_TIME "handledTime",
+        CASE SWR.RECEIVE_TYPE
+        WHEN '104' THEN
+        '调拨退货'
+        WHEN '107' THEN
+        '调拨换货退回'
+        ELSE
+        SWR.RECEIVE_TYPE
+        END "receiveType",
+        SWR.WAREHOUSE_NAME "wareHouse",
+        SWR.TRANSFER_PARTNER_NAME "transferPartnerName",
+        SWR.RECEIVE_CODE "receiveCode",
+        SWRG.QUANTITY "quantity",
+        CASE SWRG.WARES_STATUS
+        WHEN '0' THEN
+        '良品'
+        WHEN '1' THEN
+        '次品'
+        ELSE
+        SWRG.WARES_STATUS
+        END "wareStatus",
+        SWS.SKU_CODE "sku",
+        SWS.SKU_NAME "skuName",
+        SWS.MATERIAL_CODE "materialCode"
+        FROM SYN_WMS_RECEIVE SWR
+        LEFT JOIN SYN_WMS_RECEIVE_GOODS SWRG
+        ON SWR.ID = SWRG.RECEIVE_ID
+        LEFT JOIN SYN_WMS_SKU SWS
+        ON SWRG.SKU_ID = SWS.ID
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWR.HANDLED_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWR.HANDLED_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        AND SWR.RECEIVE_TYPE IN ('104', '107')
+        AND SWR.HANDLING_STATUS = '1'
+        AND (SWRG.USE_FLAG IS NULL OR SWRG.USE_FLAG <![CDATA[ <> ]]> '0')
+        ORDER BY SWR.HANDLED_TIME,
+        SWR.WAREHOUSE_ID,
+        SWR.RECEIVE_CODE,
+        SWRG.SKU_CODE,
+        SWRG.WARES_STATUS
+    </sql>
+
+    <select id="selectIuniWmsReceiveForWL" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM(
+        SELECT T.*,ROWNUM RN FROM(
+        <include refid="queryIuniWmsReceiveForWL" />
+        )T WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )WHERE RN <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniWmsReceiveForWlCount" resultClass="int" parameterClass="map">
+        SELECT COUNT(*) FROM(
+        <include refid="queryIuniWmsReceiveForWL" />
+        )
+    </select>
+
+    <select id="selectIuniWmsReceiveForWl2Excel" resultClass="hashmap" parameterClass="map">
+        SELECT T.*,ROWNUM RN FROM(
+        <include refid="queryIuniWmsReceiveForWL" />
+        )T
+    </select>
+
+    <!-- ============= 退货明细报表（物流） ====================== -->
+    <sql id="selectIuniWmsBackGoodsForWlSQL">
+        SELECT *
+        FROM (SELECT SWSC.CREATE_TIME "time",
+        SWB.ORDER_CODE "orderCode",
+        SWB.REMARK_BACKING "backReason",
+        CASE SWB.IS_INVOICE
+        WHEN '1' THEN
+        '有'
+        WHEN '0' THEN
+        '/'
+        ELSE
+        SWB.IS_INVOICE
+        END "invoice",
+        SWB.BACK_CODE "backCode",
+        SWB.HANDLED_BY "handledBy",
+        SWSC.QUANTITY "quantity",
+        SWB.REMARK_BACKED "remark",
+        SWSO.ORDER_USER "orderUser",
+        IOS.SOURCE_NAME "backChannel",
+        IOS.SOURCE_CODE "backOption",
+        SWS.SKU_CODE "sku",
+        SWS.SKU_NAME "skuName",
+        SWS.MATERIAL_CODE "materialCode",
+        SWBI.INDIV_CODE "IMEI",
+        SWSI2.SHIPPING_NAME "shippingName"
+        FROM SYN_WMS_STOCK_CHANGE SWSC
+        LEFT JOIN SYN_WMS_SALES_ORDER SWSO
+        ON SWSC.ORIGINAL_CODE = SWSO.ORDER_CODE
+        LEFT JOIN SYN_WMS_STOCK SWSS
+        ON SWSC.STOCK_ID = SWSS.ID
+        LEFT JOIN SYN_WMS_SKU SWS
+        ON SWSS.SKU_ID = SWS.ID
+        LEFT JOIN SYN_WMS_BACK SWB
+        ON SWB.ORDER_CODE = SWSO.ORDER_CODE
+        LEFT JOIN SYN_WMS_BACK_INDIV SWBI
+        ON SWB.BACK_CODE = SWBI.BACK_CODE
+        AND SWS.SKU_CODE = SWBI.SKU_CODE
+        LEFT JOIN (SELECT IWSI.SHIPPING_NO, MAX(SWS.SHIPPING_NAME) "SHIPPING_NAME"
+        FROM SYN_WMS_SHIPPING_INFO IWSI
+        LEFT JOIN SYN_WMS_SHIPPING SWS
+        ON SWS.ID = IWSI.SHIPPING_ID
+        GROUP BY IWSI.SHIPPING_NO) SWSI2
+        ON SWSI2.SHIPPING_NO = SWB.SHIPPING_NO
+        LEFT JOIN (SELECT DISTINCT (WMS_SOURCE_CODE) SOURCE_CODE,
+        WMS_SOURCE_NAME SOURCE_NAME
+        FROM IUNI_ORDER_SOURCE
+        ORDER BY WMS_SOURCE_CODE) IOS
+        ON IOS.SOURCE_CODE = SWSO.ORDER_SOURCE
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWSC.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWSC.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        AND SWSC.STOCK_TYPE = '4'
+        AND SWSC.BIZ_TYPE IN ('102')
+        AND SWB.BACK_STATUS IN ('2', '4', '5')
+        UNION ALL
+        SELECT SWSC.CREATE_TIME "time",
+        SWSC.ORIGINAL_CODE "orderCode",
+        CASE
+        WHEN SWSC.BIZ_TYPE = '103' THEN
+        '拒收'
+        WHEN SWSC.BIZ_TYPE = '106' THEN
+        '刷单入库'
+        ELSE
+        SWSC.BIZ_TYPE
+        END "backReason",
+        NULL "invoice",
+        NULL "backCode",
+        NULL "handledBy",
+        SWSC.QUANTITY "quantity",
+        NULL "remark",
+        SWSO.ORDER_USER "orderUser",
+        IOS.SOURCE_NAME "backChannel",
+        IOS.SOURCE_CODE "backOption",
+        SWS.SKU_CODE "sku",
+        SWS.SKU_NAME "skuName",
+        SWS.MATERIAL_CODE "materialCode",
+        NULL "IMEI",
+        NULL "shippingName"
+        FROM SYN_WMS_STOCK_CHANGE SWSC
+        LEFT JOIN SYN_WMS_SALES_ORDER SWSO
+        ON SWSC.ORIGINAL_CODE = SWSO.ORDER_CODE
+        LEFT JOIN SYN_WMS_STOCK SWSS
+        ON SWSC.STOCK_ID = SWSS.ID
+        LEFT JOIN SYN_WMS_SKU SWS
+        ON SWSS.SKU_ID = SWS.ID
+        LEFT JOIN (SELECT DISTINCT (WMS_SOURCE_CODE) SOURCE_CODE,
+        WMS_SOURCE_NAME SOURCE_NAME
+        FROM IUNI_ORDER_SOURCE
+        ORDER BY WMS_SOURCE_CODE) IOS
+        ON IOS.SOURCE_CODE = SWSO.ORDER_SOURCE
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWSC.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWSC.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        AND SWSC.STOCK_TYPE = '4'
+        AND SWSC.BIZ_TYPE IN ('103', '106')) T1
+        WHERE 1 = 1
+        <isNotNull property="backOption" prepend="and">
+            T1."backOption" IN
+            <iterate property="backOption" open="(" close=")" conjunction=",">
+                #backOption[]#
+            </iterate>
+        </isNotNull>
+        UNION ALL
+        SELECT *
+        FROM (SELECT SWR.HANDLED_TIME "time",
+        SWR.ORIGINAL_ID "orderCode",
+        '调拨退货' "backReason",
+        NULL "invoice",
+        SWR.RECEIVE_CODE "backCode",
+        NULL "handledBy",
+        SWRG.QUANTITY "quantity",
+        SWR.REMARK "remark",
+        SWR.TRANSFER_PARTNER_NAME "orderUser",
+        IOS.SOURCE_NAME "backChannel",
+        IOS.SOURCE_CODE "receiveOption",
+        SWS.SKU_CODE "sku",
+        SWS.SKU_NAME "skuName",
+        SWS.MATERIAL_CODE "materialCode",
+        NULL "IMEI",
+        NULL "shippingName"
+        FROM SYN_WMS_RECEIVE SWR
+        LEFT JOIN SYN_WMS_RECEIVE_GOODS SWRG
+        ON SWR.ID = SWRG.RECEIVE_ID
+        LEFT JOIN SYN_WMS_SKU SWS
+        ON SWRG.SKU_ID = SWS.ID
+        LEFT JOIN SYN_WMS_TRANSFER_PARTNER SWTP
+        ON SWTP.ID = SWR.TRANSFER_PARTNER_ID
+        LEFT JOIN (SELECT DISTINCT (CODE) SOURCE_CODE, NAME SOURCE_NAME
+        FROM SYN_WMS_TRANSFER_PARTNER
+        WHERE CODE NOT IN ('88888', '110538')
+        AND C_PARENT_ID IS NULL
+        ORDER BY CODE) IOS
+        ON IOS.SOURCE_CODE = SWTP.CODE
+        WHERE 1 = 1
+        <isNotNull prepend="and" property="beginDate">
+            SWR.HANDLED_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWR.HANDLED_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        AND SWR.HANDLING_STATUS = '1'
+        AND (SWRG.USE_FLAG IS NULL OR SWRG.USE_FLAG <![CDATA[ <> ]]> '0')
+        AND SWR.RECEIVE_TYPE IN ('104', '107')) T2
+        WHERE 1 = 1
+        <isNotNull property="receiveOption" prepend="and">
+            T2."receiveOption" IN
+            <iterate property="receiveOption" open="(" close=")" conjunction=",">
+                #receiveOption[]#
+            </iterate>
+        </isNotNull>
+    </sql>
+
+    <select id="selectIuniWmsBackGoodsForWlByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM(
+        SELECT T.*,ROWNUM RN FROM(
+        SELECT * FROM (
+        <include refid="selectIuniWmsBackGoodsForWlSQL"/>
+        )
+        ORDER BY
+        "time",
+        "orderCode",
+        "backCode",
+        DECODE("backChannel",'3','IUNI官网退货','4','IUNI天猫退货','4603479','京东退货','4603513','苏宁退货','9','换后退货',"backChannel")
+        )T WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )WHERE RN <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniWmsBackGoodsForWlCount" resultClass="int" parameterClass="map">
+        SELECT COUNT(*) FROM (
+        <include refid="selectIuniWmsBackGoodsForWlSQL"/>
+        )
+    </select>
+
+    <select id="selectIuniWmsBackGoodsForWl2Excel" resultClass="hashmap" parameterClass="map">
+        SELECT T.*,ROWNUM RN FROM(
+        SELECT * FROM (
+        <include refid="selectIuniWmsBackGoodsForWlSQL"/>
+        )
+        ORDER BY
+        "time",
+        "orderCode",
+        "backCode",
+        DECODE("backChannel",'3','IUNI官网退货','4','IUNI天猫退货','4603479','京东退货','4603513','苏宁退货','9','换后退货',"backChannel")
+        )T
+
+    </select>
+
+    <!-- 入库明细报表 -->
+    <sql id="selectIuniWmsProcurementDetailSQL">
+        SELECT SWR.HANDLED_TIME  "time",
+        SWR.SUPPLIER_NAME "supplierName",
+        CASE SWR.RECEIVE_TYPE
+        WHEN '101' THEN
+        '采购进货'
+        WHEN '102' THEN
+        '退换货'
+        WHEN '103' THEN
+        '拒收'
+        WHEN '104' THEN
+        '调拨退货'
+        WHEN '105' THEN
+        '采购退仓入库'
+        WHEN '106' THEN
+        '刷单入库'
+        WHEN '107' THEN
+        '调拨换货'
+        WHEN '109' THEN
+        '调拨入库'
+        ELSE
+        SWR.RECEIVE_TYPE
+        END "receiveType",
+        SWR.ORIGINAL_CODE "originalCode",
+        SWR.RECEIVE_CODE  "receiveCode",
+        SWRG.QUANTITY     "quantity",
+        SWR.REMARK        "remark",
+        SWS.SKU_CODE      "sku",
+        SWS.MATERIAL_CODE "materialCode",
+        SWS.SKU_NAME      "skuName",
+        SWW.WARES_NAME    "waresName"
+        FROM SYN_WMS_RECEIVE SWR
+        LEFT JOIN SYN_WMS_RECEIVE_GOODS SWRG
+        ON SWRG.RECEIVE_ID = SWR.ID
+        LEFT JOIN SYN_WMS_SKU SWS
+        ON SWRG.SKU_ID = SWS.ID
+        LEFT JOIN SYN_WMS_WARES SWW
+        ON SWS.WARES_ID = SWW.ID
+        WHERE (SWRG.USE_FLAG IS NULL OR SWRG.USE_FLAG <![CDATA[ <> ]]> '0')
+        AND SWR.RECEIVE_TYPE IN ('101','105','106','109')
+        <isNotNull prepend="and" property="beginDate">
+            SWR.HANDLED_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            SWR.HANDLED_TIME <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+        </isNotNull>
+        <isNotEmpty prepend="and" property="materialCode">
+            SWS.MATERIAL_CODE LIKE '%' || #materialCode# || '%'
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="originalCode">
+            SWR.ORIGINAL_CODE LIKE '%' || #originalCode# || '%'
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="supplierId">
+            SWR.SUPPLIER_ID LIKE  '%' || #supplierId# || '%'
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="receiveCode">
+            SWR.RECEIVE_CODE LIKE  '%' || #receiveCode# || '%'
+        </isNotEmpty>
+        ORDER BY SWR.HANDLED_TIME
+    </sql>
+
+    <select id="selectIuniWmsProcurementDetailByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM(
+        SELECT T.*,ROWNUM RN FROM(
+        <include refid="selectIuniWmsProcurementDetailSQL"/>
+        )T WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )WHERE RN <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniWmsProcurementDetailCount" resultClass="int" parameterClass="map">
+        SELECT COUNT(*) FROM (
+        <include refid="selectIuniWmsProcurementDetailSQL"/>
+        )
+    </select>
+
+    <select id="selectIuniWmsProcurementDetail2Excel" resultClass="hashmap" parameterClass="map">
+        SELECT T.*,ROWNUM RN FROM(
+        SELECT * FROM (
+        <include refid="selectIuniWmsProcurementDetailSQL"/>
+        )
+        )T
+    </select>
+</sqlMap>

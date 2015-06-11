@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniNetflowDailyStat">
+
+  <typeAlias alias="IuniNetflowDailyStat" type="com.iuni.dp.persist.datastat.model.IuniNetflowDailyStat" />
+
+  <resultMap id="IuniNetflowDailyStatMap" class="IuniNetflowDailyStat">
+    <result property="id" column="ID"/> 
+    <result property="urlDomain" column="URL_DOMAIN"/> 
+    <result property="pv" column="PV"/>  
+    <result property="uv" column="UV"/>  
+    <result property="vv" column="VV"/> 
+    <result property="ip" column="IP"/>
+    <result property="statDate" column="STAT_DATE"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+  
+  <sql id="base_columns_1">
+  	INDS.ID, INDS.URL_DOMAIN, INDS.PV, INDS.UV, INDS.VV, INDS.IP, INDS.STAT_DATE, INDS.CREATE_TIME
+  </sql>
+  
+  <sql id="base_columns_2">
+  	INDS.ID "id", INDS.URL_DOMAIN "urlDomain", INDS.PV "pv", INDS.UV "uv", INDS.VV "vv", INDS.IP "ip", 
+	INDS.STAT_DATE "statDate", INDS.CREATE_TIME "createTime",
+	case when INDS.UV = 0 then 0 else round(INDS.PV/INDS.UV,3) end "pvPC",
+	case when INDS.VV = 0 then 0 else round(INDS.PV/INDS.VV,3) end "avgVD"
+  </sql>
+  
+  <sql id="base_queryParams_1">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="id">
+    		INDS.ID = #id#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="urlDomain">
+    		INDS.URL_DOMAIN = #urlDomain#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			to_date(INDS.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			to_date(INDS.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectIndsByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		select 
+  		<include refid="base_columns_2"/>
+  		from IUNI_NETFLOW_DAILYSTAT INDS
+  		<include refid="base_queryParams_1"/>
+  		order by INDS.STAT_DATE, INDS.URL_DOMAIN
+  	) T
+  </select>
+  
+  <select id="selectIndsByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+	  		<include refid="base_columns_2"/>
+	  		from IUNI_NETFLOW_DAILYSTAT INDS
+	  		<include refid="base_queryParams_1"/>
+	  		order by INDS.STAT_DATE, INDS.URL_DOMAIN
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIndsCount" resultClass="int" parameterClass="map">
+	select count(INDS.ID)
+	from IUNI_NETFLOW_DAILYSTAT INDS
+	<include refid="base_queryParams_1"/>
+  </select>
+  
+  <select id="selectIndsSumByDate" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		select INDS.URL_DOMAIN "urlDomain", #beginDate# || '~' || #endDate# "statDate", 
+	  	sum(INDS.PV) "pv", sum(INDS.UV) "uv", 
+		sum(INDS.VV) "vv", sum(INDS.IP) "ip", 
+		case when sum(INDS.UV) = 0 then 0 else round(sum(INDS.PV)/sum(INDS.UV),3) end "pvPC",
+		case when sum(INDS.VV) = 0 then 0 else round(sum(INDS.PV)/sum(INDS.VV),3) end "avgVD"
+		from IUNI_NETFLOW_DAILYSTAT INDS
+		<include refid="base_queryParams_1"/>
+		group by INDS.URL_DOMAIN
+		order by INDS.URL_DOMAIN
+  	) T
+  </select>
+
+</sqlMap>

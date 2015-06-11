@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniRepairs">
+
+	<!-- 非保修维修单查询 -->
+	<sql id="iuniNotInWarrantyRepairs">
+		SELECT IRI.PAY_CONFIRM_TIME PAY_CONFIRM_TIME,
+		'' PAYER,
+		IRI.REPAIRS_SN REPAIRS_SN,
+		CASE WHEN IRI.USERNAME IS NOT NULL THEN IRI.USERNAME
+		ELSE IRI.REFERER END USERNAME,
+		IRI.MOBILE MOBILE,
+		IRIM.OIMEI OIMEI,
+		IRM.MATTER_CODE MATTER_CODE,
+		IRM.MATTER_NAME MATTER_NAME,
+		IRM.QUANTITY QUANTITY,
+		IRM.MATTER_FEE MATTER_FEE,
+		IRM.HAND_FEE HAND_FEE,
+		'' INVOICE_TIME,
+		'' INVOICE_CODE,
+		IRI.FEE FEE,
+		IRI.REMARK REMARK
+		FROM IUNI_REPAIRSGOODS_INFO IRI
+		LEFT JOIN IUNI_REPAIRSGOODS_ITEM IRIM
+		ON IRIM.REPAIRS_SN = IRI.REPAIRS_SN
+		LEFT JOIN IUNI_REPAIRSGOODS_MATTER IRM
+		ON IRM.REPAIRS_SN = IRI.REPAIRS_SN
+		WHERE 1 = 1
+		AND IRIM.TYPE_CODE = 'mobile'
+		AND IRI.FEE > 0
+		<isNotNull property="clients" prepend="and">
+			(
+			IRI.USERNAME IN
+			<iterate property="clients" open="(" close=")" conjunction=",">
+				#clients[]#
+			</iterate>
+			OR
+			IRI.REFERER IN
+			<iterate property="clients" open="(" close=")" conjunction=",">
+				#clients[]#
+			</iterate>
+			)
+		</isNotNull>
+		<isNotNull property="phones" prepend="and">
+			IRI.MOBILE IN
+			<iterate property="phones" open="(" close=")" conjunction=",">
+				#phones[]#
+			</iterate>
+		</isNotNull>
+		AND IRI.PAY_CONFIRM_TIME <![CDATA[ >= ]]> TO_DATE(#beginDate#, 'YYYY-MM-DD')
+		AND IRI.PAY_CONFIRM_TIME <![CDATA[ < ]]> TO_DATE(#endDate#, 'YYYY-MM-DD') + 1
+		ORDER BY IRI.PAY_CONFIRM_TIME DESC
+	</sql>
+
+	<select id="selectIuniNotInWarrantyRepairsByPage" resultClass="hashmap" parameterClass="map">
+		SELECT * FROM
+		(
+		SELECT T.*, ROWNUM "rowNum" FROM
+		(
+		<include refid="iuniNotInWarrantyRepairs"/>
+		) T
+		<isNotNull property="endRec">
+			WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+		</isNotNull>
+		)
+		<isNotNull property="startRec">
+			WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+		</isNotNull>
+	</select>
+
+	<select id="selectIuniNotInWarrantyRepairsCount" resultClass="int" parameterClass="map">
+		select count(*) "totalCount" from
+		(
+		<include refid="iuniNotInWarrantyRepairs"/>
+		)
+	</select>
+
+</sqlMap>

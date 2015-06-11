@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniWmsDailyStock">
+
+    <typeAlias alias="IuniWmsDailyStock" type="com.iuni.dp.persist.datastat.model.IuniWmsDailyStock"/>
+
+    <resultMap id="IuniWmsDailyStock" class="IuniWmsDailyStock">
+        <result property="id" column="ID"/>
+        <result property="skuCode" column="SKU_CODE"/>
+        <result property="reportDate" column="REPORT_DATE"/>
+        <result property="startstockqty" column="STARTSTOCKQTY"/>
+        <result property="outstockqty" column="OUTSTOCKQTY"/>
+        <result property="occupystockqty" column="OCCUPYSTOCKQTY"/>
+        <result property="endstockqty" column="ENDSTOCKQTY"/>
+        <result property="createdate" column="CREATEDATE"/>
+        <result property="startdefeqty" column="STARTDEFEQTY"/>
+        <result property="startnondefeqty" column="STARTNONDEFEQTY"/>
+        <result property="outdefeqty" column="OUTDEFEQTY"/>
+        <result property="outnondefeqty" column="OUTNONDEFEQTY"/>
+        <result property="instockqty" column="INSTOCKQTY"/>
+        <result property="indefeqty" column="INDEFEQTY"/>
+        <result property="innondefeqty" column="INNONDEFEQTY"/>
+        <result property="enddefeqty" column="ENDDEFEQTY"/>
+        <result property="endnondefeqty" column="ENDNONDEFEQTY"/>
+        <result property="skuName" column="SKU_NAME"/>
+        <result property="stockId" column="STOCK_ID"/>
+    </resultMap>
+
+    <!-- 库存明细报表 -->
+    <sql id="iuniWmsStockDetails_query_1">
+        select * from (
+        select IWSD.REPORT_DATE "date",
+        IWWH.WAREHOUSE_NAME "wareHouse",
+        IWSD.SKU_CODE "skuCode",
+        IWS.Material_Code "materialCode",
+        IWW.Wares_Name "goodsName",
+        IWS.Sku_Name "skuName",
+        IWW.MEASURE_UNIT "measureUnit",
+        SUM(IWSD.ENDNONDEFEQTY) "acceptedGoods",
+        SUM(IWSD.ENDDEFEQTY) "defectiveGoods",
+        SUM(IWSD.ENDSTOCKQTY) "totalGoods"
+        from SYN_WMS_STOCK_DAILYSTOCK IWSD
+        LEFT JOIN SYN_WMS_SKU IWS
+        ON IWSD.SKU_CODE = IWS.SKU_CODE
+        LEFT JOIN SYN_WMS_WARES IWW
+        ON IWW.Id = IWS.WARES_ID
+        LEFT JOIN SYN_WMS_WAREHOUSE IWWH
+        ON IWWH.ID = (CASE
+        WHEN IWSD.STOCK_ID IS NULL THEN
+        '1083672'
+        ELSE
+        IWSD.STOCK_ID
+        END)
+        where 1 = 1
+        <isNotNull property="beginDate" prepend="and">
+            IWSD.REPORT_DATE <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+        </isNotNull>
+        <isNotNull property="endDate" prepend="and">
+            IWSD.REPORT_DATE <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+        </isNotNull>
+        GROUP BY IWSD.REPORT_DATE, IWWH.WAREHOUSE_NAME, IWSD.SKU_CODE, IWW.Wares_Name, IWS.Sku_Name, IWW.MEASURE_UNIT,
+        IWS.Material_Code
+        ) TMP
+        WHERE 1 = 1
+        <isNotNull property="wareHouse" prepend="and">
+            TMP."wareHouse" LIKE '%' || #wareHouse# || '%'
+        </isNotNull>
+        <isNotNull property="materialCode" prepend="and">
+            TMP."materialCode" LIKE '%' || #materialCode# || '%'
+        </isNotNull>
+        order by TMP."date", TMP."skuCode"
+    </sql>
+
+    <select id="selectIuniWmsStockDetailsByExample" resultClass="hashmap" parameterClass="map">
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="iuniWmsStockDetails_query_1"/>
+        ) T
+    </select>
+
+    <select id="selectIuniWmsStockDetailsByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="iuniWmsStockDetails_query_1"/>
+        ) T
+        WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )
+        WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniWmsStockDetailsCount" resultClass="int" parameterClass="map">
+        select count(*) "totalCount" from
+        (
+        <include refid="iuniWmsStockDetails_query_1"/>
+        )
+    </select>
+
+</sqlMap>

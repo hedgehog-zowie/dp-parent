@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SysParamDao">
+ 
+  <typeAlias alias="SysParam" type="com.iuni.dp.persist.sys.model.SysParam"/>
+
+  <resultMap id="SysParamResult" class="SysParam">
+    <result property="paramName" column="param_name"/>  
+    <result property="paramVal" column="param_val"/>
+    <result property="paramDesc" column="param_desc"/>
+    <result property="createTime" column="create_time"/>
+    <result property="createor" column="creator"/>  
+    <result property="modifyTime" column="modify_time"/>  
+    <result property="modifier" column="modifier"/>  
+  </resultMap>
+
+  <select id="getSysParams" parameterClass="java.util.Map" resultMap="SysParamResult">
+       <![CDATA[select * from t_sys_param]]>
+       <dynamic prepend="WHERE"> 
+         <isNotNull prepend="AND" property="paramName"> 
+	      	<![CDATA[param_name like '%'||#paramName#||'%']]>
+	     </isNotNull> 
+	    </dynamic>  
+          order by modify_time desc
+  </select>
+  
+  <select id="getSysParamsByParamName" parameterClass="string" resultMap="SysParamResult">
+       select * 
+       from t_sys_param 
+       where param_name =#paramName#
+  </select>
+    
+  <insert id="insertSysParam" parameterClass="SysParam">
+     
+    insert into t_sys_param (
+				  param_name ,
+				  param_val ,
+				  param_desc,
+				  create_time,
+				  creator,
+				  modify_time,
+				  modifier 
+				  )
+    values (
+       		  #paramName#,
+			  #paramVal#,
+			  #paramDesc#,
+			  sysdate,
+			  #createor#,
+			  sysdate,
+			  #modifier#
+    )
+  </insert>
+  
+  <update id="updateSysParam" parameterClass="SysParam">
+     update t_sys_param 
+     set param_val=#paramVal#, 
+         modify_time=sysdate
+	     <isNotEmpty prepend="," property="modifier">
+		    modifier=#modifier#
+		 </isNotEmpty>
+		 <isNotEmpty prepend="," property="paramDesc">
+		    param_desc=#paramDesc#
+		 </isNotEmpty>
+     where param_name = #paramName#
+  </update>
+ 
+  <delete id="deleteSysParam" parameterClass="string">
+    delete 
+    from t_sys_param  
+    where param_name = #paramName#
+  </delete>
+ 
+</sqlMap>

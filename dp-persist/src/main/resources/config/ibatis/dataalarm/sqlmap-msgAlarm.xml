@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MsgAlarm">
+  
+  <typeAlias alias="MsgAlarm" type="com.iuni.dp.persist.dataalarm.model.MsgAlarm"/>
+
+  <resultMap id="MsgAlarmMap" class="MsgAlarm">
+    <result property="msgAlarmId" column="msg_alarm_id"/>  
+    <result property="msgTypeId" column="msg_type_id"/> 
+    <result property="msgSubject" column="msg_subject"/>  
+    <result property="msgContent" column="msg_content"/>  
+    <result property="executeSucessNum" column="execute_success_num"/>
+    <result property="createTime" column="create_time"/>   
+    <result property="state" column="state"/>
+    <result property="remark" column="remark"/>
+    <result property="msgType" column="msg_type_id" select="MsgType.getMsgTypeByMsgTypeId"/>
+  </resultMap>
+
+  <select id="getAllMsgAlarm" resultMap="MsgAlarmMap">
+  	SELECT ma.* FROM t_msg_alarm ma
+  	ORDER BY ma.create_time DESC
+  </select>
+  
+  <select id="getMsgAlarmByPage" resultMap="MsgAlarmMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+  			SELECT ma.msg_alarm_id, ma.msg_type_id, ma.msg_subject, ma.msg_content
+  		, ma.execute_success_num, ma.create_time, ma.state, ma.remark
+  	FROM t_msg_alarm ma
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="msgSubject">
+  			ma.msg_subject LIKE '%' || #msgSubject# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="executeSucessNum">
+  			ma.execute_success_num = executeSucessNum
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="state">
+  			ma.state = state
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="beginDate">
+  			<![CDATA[ ma.create_time >= str_to_date(#beginDate#, '%Y-%m-%d %H-%i-%s') ]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="endDate">
+  			<![CDATA[ ma.create_time <= str_to_date(#endDate#, '%Y-%m-%d %H-%i-%s') ]]>
+  		</isNotNull>
+  	</dynamic>
+  	ORDER BY ma.create_time DESC
+  		) T
+  		WHERE ROWNUM <![CDATA[<= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[>= ]]> #startRec#
+  </select>
+  
+  <select id="getTotalCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(ma.msg_alarm_id) FROM t_msg_alarm ma
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="msgSubject">
+  			ma.msg_subject LIKE '%' || #msgSubject# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="executeSucessNum">
+  			ma.execute_success_num = executeSucessNum
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="state">
+  			ma.state = state
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="beginDate">
+  			<![CDATA[ ma.create_time >= str_to_date(#beginDate#, '%Y-%m-%d %H-%i-%s') ]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="endDate">
+  			<![CDATA[ ma.create_time <= str_to_date(#endDate#, '%Y-%m-%d %H-%i-%s') ]]>
+  		</isNotNull>
+  	</dynamic>
+  </select>
+  
+  <select id="getMsgAlarmByMsgAlarmId" parameterClass="int" resultMap="MsgAlarmMap">
+     select *
+     from t_msg_alarm  
+     where msg_alarm_id = #msg_alarm_id#
+  </select>
+  
+  <insert id="saveMsgAlarm" parameterClass="MsgAlarm">
+    insert into t_msg_alarm (
+    			  msg_alarm_id,
+				  msg_type_id,
+				  msg_subject,
+				  msg_content,	
+				  execute_success_num,
+				  create_time,
+				  state,
+				  remark 
+	)
+    values (  
+    		  #msgAlarmId#,
+			  #msgTypeId#, 
+			  #msgSubject#,
+			  #msgContent#, 
+			  #executeSucessNum#,
+			  sysdate, 
+			  #state#,
+			  #remark#
+    )
+    <selectKey resultClass="int" type="pre" keyProperty="msgAlarmId" >
+        select S_t_msg_alarm.NEXTVAL as msgAlarmId from dual
+    </selectKey>  
+  </insert>
+  
+  <update id="updateExecuteSucessNum" parameterClass="int">
+	update t_msg_alarm  
+	set execute_success_num = execute_success_num + 1
+	where msg_alarm_id =#msgAlarmId#
+  </update>
+  
+  <update id="updateAlarmState" parameterClass="java.util.Map">
+	update t_msg_alarm  
+	set state = #state#
+	where msg_alarm_id =#msgAlarmId#
+  </update>
+ 
+</sqlMap>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="LogDao">
+ 
+  <typeAlias alias="Log" type="com.iuni.dp.persist.sys.model.Log"/>
+
+  <resultMap id="LogResult" class="Log">
+    <result property="logId" column="log_id"/>  
+    <result property="operId" column="oper_id"/>
+    <result property="operName" column="oper_name"/>
+    <result property="operIp" column="oper_ip"/>
+    <result property="memo" column="memo"/>  
+    <result property="logType" column="log_type"/>  
+    <result property="createTime" column="create_time"/>  
+  </resultMap>
+  
+  <!-- 分页查询 -->
+  <select id="getLogs" parameterClass="java.util.Map" resultMap="LogResult">
+  		SELECT * FROM 
+  		(
+  			SELECT t.*, ROWNUM RN
+  			FROM 
+  			(
+  				SELECT t.log_id, 
+               t.oper_id, 
+               t.oper_name, 
+               t.oper_ip, 
+               t.memo, 
+               t.log_type,
+               t.create_time
+        FROM t_log t ,t_user u
+        where u.user_id=t.oper_id
+         <isNotNull prepend="AND" property="begDate"> 
+	      	<![CDATA[ t.create_time >= to_date(#begDate#,'yyyy-mm-dd hh24:mi:ss')]]>
+	     </isNotNull> 
+	     <isNotNull prepend="AND" property="endDate"> 
+	      	<![CDATA[ t.create_time <= to_date(#endDate#,'yyyy-mm-dd hh24:mi:ss')]]>
+	     </isNotNull> 
+         <isNotNull prepend="AND" property="logType"> 
+	      	t.log_type like '%'|| #logType# || '%' 
+	     </isNotNull> 
+	     <isNotNull prepend="AND" property="operId"> 
+	      	t.oper_id = #operId#
+	     </isNotNull> 
+	     <isNotNull prepend="AND" property="operName"> 
+	      	u.user_name like '%' || #operName# || '%' 
+	     </isNotNull> 
+	     ORDER BY create_time DESC
+  			) t
+  			WHERE ROWNUM <![CDATA[<= ]]> #endRow#
+  		) 
+  		WHERE RN <![CDATA[>= ]]> #beginRow#
+  </select>
+  
+  <select id="getTotalCnt"  resultClass="long" parameterClass="java.util.Map">
+     select count(t.log_id)  
+     FROM t_log t ,t_user u
+     where u.user_id=t.oper_id
+         <isNotNull prepend="AND" property="begDate"> 
+	      	<![CDATA[ t.create_time >= to_date(#begDate#,'yyyy-mm-dd hh24:mi:ss')]]>
+	     </isNotNull> 
+	     <isNotNull prepend="AND" property="endDate"> 
+	      	<![CDATA[ t.create_time <= to_date(#endDate#,'yyyy-mm-dd hh24:mi:ss')]]>
+	     </isNotNull> 
+         <isNotNull prepend="AND" property="logType"> 
+	      	t.log_type like '%'|| #logType# || '%' 
+	     </isNotNull> 
+	     <isNotNull prepend="AND" property="operId"> 
+	      	t.oper_id = #operId#
+	     </isNotNull> 
+	     <isNotNull prepend="AND" property="operName"> 
+	      	u.user_name like '%' || #operName# || '%' 
+	     </isNotNull>
+  </select>
+  
+  <insert id="saveLog" parameterClass="Log">
+    insert into t_log (
+			  log_id ,
+			  oper_id ,
+			  oper_name,
+			  oper_ip,
+			  memo,
+			  log_type,
+			  create_time 
+			  )
+    values (
+       		  #logId#,
+			  #operId#,
+			  #operName#,
+			  #operIp#,
+			  #memo#,
+			  #logType#,
+			  #createTime#
+    )
+    <selectKey resultClass="long" type="pre" keyProperty="logId" >
+        SELECT S_t_log.NEXTVAL as logId FROM dual
+    </selectKey> 
+  </insert>
+ 
+  <delete id="deleteLogs">
+    delete 
+    from t_log  
+    where log_id IN
+     <iterate open="(" close=")" conjunction="," >  
+         #[]#  
+     </iterate> 
+  </delete>
+  
+  <delete id="deleteLogsforIntervalTime"  parameterClass="java.lang.String" >
+  	 <![CDATA[ 
+		delete 
+		from t_log 
+		where create_time < to_date(#intervalTime#, 'yyyy-mm-dd hh24:mi:ss')
+	]]>
+  </delete>
+  
+</sqlMap>

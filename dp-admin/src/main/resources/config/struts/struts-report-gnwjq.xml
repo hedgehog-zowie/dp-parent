@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="gnWjqReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- 玩机圈网站访问情况报表 -->
+        <action name="wjqBaseStatListView" class="wjqBaseStatAction" method="wjqBaseStatListView">
+            <result name="success">/WEB-INF/views/stat/report/wjqBaseStat_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wjqBaseStat_list.jsp</result>
+        </action>
+
+        <action name="wjqBaseStatList2Excel" class="wjqBaseStatAction" method="wjqBaseStatList2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">wjqBaseStatListView</result>
+        </action>
+
+        <action name="getWjqBaseStatReportByJSON" class="wjqBaseStatAction" method="getWjqBaseStatReportByJSON">
+        </action>
+
+        <!-- 玩机圈用户推广数据相关统计 -->
+        <action name="wjqUserPromotionStatView" class="wjqCreditPromotionLogAction" method="wjqUserPromotionStatView">
+            <result name="success">/WEB-INF/views/stat/report/wjqUserPromotionStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wjqUserPromotionStat.jsp</result>
+        </action>
+
+        <action name="wjqUserPromotionStat2Excel" class="wjqCreditPromotionLogAction"
+                method="wjqUserPromotionStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">wjqUserPromotionStatView</result>
+        </action>
+
+        <!-- 玩机圈帖子推广数据相关统计 -->
+        <action name="wjqPostsPromotionStatView" class="wjqCreditPromotionLogAction" method="wjqPostsPromotionStatView">
+            <result name="success">/WEB-INF/views/stat/report/wjqPostsPromotionStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wjqPostsPromotionStat.jsp</result>
+        </action>
+
+        <action name="wjqPostsPromotionStat2Excel" class="wjqCreditPromotionLogAction"
+                method="wjqPostsPromotionStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">wjqPostsPromotionStatView</result>
+        </action>
+
+        <!-- 玩机圈全站用户推广数据相关统计 -->
+        <action name="wjqUserPromotionPreviewByJSON" class="wjqCreditPromotionLogAction"
+                method="wjqUserPromotionPreviewByJSON">
+        </action>
+    </package>
+
+</struts>

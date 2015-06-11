@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="IuniWmsSupplier">
+
+    <typeAlias alias="IuniWmsSupplier" type="com.iuni.dp.persist.datastat.common.model.IuniWmsSupplier"/>
+
+    <resultMap class="com.iuni.dp.persist.datastat.common.model.IuniWmsSupplier" id="IuniWmsSupplier">
+        <result column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="SUPPLIER_CODE" property="supplierCode" jdbcType="VARCHAR"/>
+        <result column="SUPPLIER_NAME" property="supplierName" jdbcType="VARCHAR"/>
+        <result column="SUPPLIER_ADDRESS" property="supplierAddress" jdbcType="VARCHAR"/>
+        <result column="SUPPLIER_PHONE" property="supplierPhone" jdbcType="VARCHAR"/>
+        <result column="SUPPLIER_CONTACT" property="supplierContact" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="DEFAULT_STATUS" property="defaultStatus" jdbcType="VARCHAR"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="ENABLED" property="enabled" jdbcType="VARCHAR"/>
+        <result column="SUPPLIER_PROPERTY" property="supplierProperty" jdbcType="VARCHAR"/>
+        <result column="CONTACT_FAX" property="contactFax" jdbcType="VARCHAR"/>
+        <result column="CONTACT_MOBILE_PHONE" property="contactMobilePhone" jdbcType="VARCHAR"/>
+        <result column="CONTACT_EMAIL" property="contactEmail" jdbcType="VARCHAR"/>
+        <result column="FAST_CONTACT_NAME" property="fastContactName" jdbcType="VARCHAR"/>
+        <result column="FAST_CONTACT_FAX" property="fastContactFax" jdbcType="VARCHAR"/>
+        <result column="FAST_CONTACT_MOBILE_PHONE" property="fastContactMobilePhone" jdbcType="VARCHAR"/>
+        <result column="FAST_CONTACT_EMAIL" property="fastContactEmail" jdbcType="VARCHAR"/>
+        <result column="FAST_CONTACT_PHONE" property="fastContactPhone" jdbcType="VARCHAR"/>
+        <result column="ISNEEDPROCESSING" property="isneedprocessing" jdbcType="VARCHAR"/>
+        <result column="NORMAL_SUPPLY_CYCLE" property="normalSupplyCycle" jdbcType="DECIMAL"/>
+        <result column="SUPPLIER_SHORT_NAME" property="supplierShortName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectAllSuppliers" resultMap="IuniWmsSupplier">
+	 	  SELECT * FROM SYN_WMS_SUPPLIER
+	</select>
+</sqlMap>

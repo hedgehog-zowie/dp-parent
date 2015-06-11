@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="System">
+	
+	<typeAlias alias="System" type="com.iuni.dp.persist.sys.model.System"/>
+
+	<resultMap id="System" class="System">
+	  <result property="sys_id" column="sys_id"/>  
+	  <result property="sys_name" column="sys_name"/>
+	  <result property="url" column="url"/>
+	  <result property="state" column="state"/>
+	  <result property="create_time" column="create_time"/>
+	  <result property="creator" column="creator"/>  
+	  <result property="modify_time" column="modify_time"/>  
+	  <result property="modifier" column="modifier"/>  
+	</resultMap>
+	
+	<select id="getAllSystemList"  resultMap="System"  parameterClass="System">
+	    select *
+	    from t_system
+	    order by sys_id asc
+   </select>
+   
+   <select id="getSystemInfo" resultClass="System" parameterClass="System">
+        select *
+	    from t_system
+	    <dynamic prepend="WHERE"> 
+	     <isNotNull prepend="OR" property="sys_name"> 
+	      	sys_name = #sys_name#  
+	     </isNotNull> 
+	     <isNotNull prepend="OR" property="sys_id"> 
+	      	sys_id = #sys_id#  
+	     </isNotNull>
+    </dynamic>
+  </select>
+	
+</sqlMap>

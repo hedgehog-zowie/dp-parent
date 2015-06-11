@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="GnAppOrderDailyStat">
+
+  <typeAlias alias="GnAppOrderDailyStat" type="com.iuni.dp.persist.datastat.model.GnAppOrderDailyStat" />
+
+  <resultMap id="GnAppOrderDailyStatMap" class="GnAppOrderDailyStat">
+    <result property="id" column="ID"/> 
+    <result property="appName" column="APP_NAME"/> 
+    <result property="channelName" column="CHANNEL_NAME"/>  
+    <result property="apkVersion" column="APK_VERSION"/>  
+    <result property="orderNum" column="ORDER_NUM"/> 
+    <result property="payAmount" column="PAY_AMOUNT"/>
+    <result property="payNum" column="PAY_NUM"/>
+    <result property="paiedAmount" column="PAIED_AMOUNT"/>
+    <result property="refundNum" column="REFUND_NUM"/>
+    <result property="refundAmount" column="REFUND_AMOUNT"/>
+    <result property="statDate" column="STAT_DATE"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+  
+  <sql id="base_columns_1">
+  	GAODS.ID, GAODS.APP_NAME, GAODS.CHANNEL_NAME, GAODS.APK_VERSION, GAODS.ORDER_NUM, GAODS.PAY_AMOUNT, 
+	GAODS.PAY_NUM, GAODS.PAIED_AMOUNT, GAODS.REFUND_NUM, GAODS.REFUND_AMOUNT, GAODS.STAT_DATE, GAODS.CREATE_TIME
+  </sql>
+  
+  <sql id="base_columns_2">
+  	GAODS.STAT_DATE,
+	GAODS.APP_NAME, GAODS.CHANNEL_NAME, GAODS.APK_VERSION, GAODS.ORDER_NUM, GAODS.PAY_AMOUNT, 
+	GAODS.PAY_NUM, GAODS.PAIED_AMOUNT, GAODS.REFUND_NUM, GAODS.REFUND_AMOUNT, 
+	GAUDS.AVG_TIME, GAUDS.LAUNCH_NUM, GAUDS.LAUNCHUSER_NUM, GAUDS.NEWUSER_NUM
+  </sql>
+  
+  <sql id="base_queryParams_1">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="appName">
+    		GAODS.APP_NAME = #appName#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="channelNames">
+    		GAODS.CHANNEL_NAME IN
+	    	<iterate open="(" close=")" conjunction="," property="channelNames">
+	    		#channelNames[]#
+	    	</iterate>
+    	</isNotNull>
+    	<isNotNull prepend="and" property="apkVersions">
+    		GAODS.APK_VERSION IN
+    		<iterate open="(" close=")" conjunction="," property="apkVersions">
+    			#apkVersions[]#
+    		</iterate>
+    	</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			to_date(GAODS.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			to_date(GAODS.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="base_queryParams_2">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="appName">
+    		GAA.APP_NAME = #appName#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="channelNames">
+    		GAA.CHANNEL_NAME IN
+	    	<iterate open="(" close=")" conjunction="," property="channelNames">
+	    		#channelNames[]#
+	    	</iterate>
+    	</isNotNull>
+    	<isNotNull prepend="and" property="apkVersions">
+    		GAA.APK_VERSION IN
+    		<iterate open="(" close=")" conjunction="," property="apkVersions">
+    			#apkVersions[]#
+    		</iterate>
+    	</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			GAA.REPORT_TIME+0 <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			GAA.REPORT_TIME+0 <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="base_groupSort_1">
+  	<dynamic prepend="group by">
+    	<isPropertyAvailable prepend="," property="beginDate">
+    		GAODS.STAT_DATE
+    	</isPropertyAvailable>
+    	<isNotNull prepend="," property="channelNames">
+    		GAODS.CHANNEL_NAME
+    	</isNotNull>
+   	</dynamic>
+   	<dynamic prepend="order by">
+   		<isPropertyAvailable prepend="," property="beginDate">
+    		GAODS.STAT_DATE
+    	</isPropertyAvailable>
+    	<isNotNull prepend="," property="channelNames">
+    		GAODS.CHANNEL_NAME
+    	</isNotNull>
+   	</dynamic>
+  </sql>
+  
+  <sql id="base_groupSort_2">
+  	<dynamic prepend="group by">
+    	<isPropertyAvailable prepend="," property="beginDate">
+    		to_char(GAA.REPORT_TIME+0, 'yyyy-mm-dd')
+    	</isPropertyAvailable>
+    	<isNotNull prepend="," property="channelNames">
+    		GAA.CHANNEL_NAME
+    	</isNotNull>
+   	</dynamic>
+   	<dynamic prepend="order by">
+   		<isPropertyAvailable prepend="," property="beginDate">
+    		to_char(GAA.REPORT_TIME+0, 'yyyy-mm-dd')
+    	</isPropertyAvailable>
+    	<isNotNull prepend="," property="channelNames">
+    		GAA.CHANNEL_NAME
+    	</isNotNull>
+   	</dynamic>
+  </sql>
+  
+  <select id="selectGnAppChannelSalesByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		select 
+		T0."statDate"
+		<isNotNull prepend="," property="channelNames">
+			T0."channelName"
+		</isNotNull>
+		<isNull prepend="," property="channelNames">
+			'所有渠道' "channelName"
+		</isNull>
+		, T0."orderNum", T0."payNum", T0."paiedAmount", T0."refundAmount", T1."launchUserNum",
+		T0."paiedAmount" - T0."refundAmount" "salesAmount", 
+		case when T1."launchUserNum" = 0 then 0 else ROUND(T0."orderNum"/T1."launchUserNum", 5) end "orderRate",
+		case when T1."launchUserNum" = 0 then 0 else ROUND(T0."payNum"/T1."launchUserNum", 5) end "closeRate",
+		case when T0."orderNum" = 0 then 0 else ROUND(T0."payNum"/T0."orderNum", 5) end "payRate"
+		from 
+		(
+		    select 
+		    GAODS.STAT_DATE "statDate"
+		    <isNotNull prepend="," property="channelNames">
+		    	GAODS.CHANNEL_NAME "channelName"
+		    </isNotNull>
+		    , sum(GAODS.ORDER_NUM) "orderNum",sum(GAODS.PAY_NUM) "payNum", 
+		    sum(GAODS.PAIED_AMOUNT) "paiedAmount", sum(GAODS.REFUND_AMOUNT) "refundAmount"
+		    from GN_APP_ORDER_DAILYSTAT GAODS
+		    <include refid="base_queryParams_1"/>
+		    <include refid="base_groupSort_1"/>
+		) T0 left join 
+		(
+		    select to_char(GAA.REPORT_TIME+0, 'yyyy-mm-dd') "statDate"
+		    <isNotNull prepend="," property="channelNames">
+		    	 GAA.CHANNEL_NAME "channelName"
+		    </isNotNull>
+		    , count(distinct GAA.IMEI) "launchUserNum" 
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="base_queryParams_2"/>
+		    <include refid="base_groupSort_2"/>
+		) T1 on (T1."statDate" = T0."statDate" 
+				<isNotNull prepend="and" property="channelNames">
+					T1."channelName" = T0."channelName"
+				</isNotNull>
+				)
+  	) T
+  </select>
+  
+  <select id="selectGnAppChannelSalesByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+			T0."statDate"
+			<isNotNull prepend="," property="channelNames">
+				T0."channelName"
+			</isNotNull>
+			<isNull prepend="," property="channelNames">
+				'所有渠道' "channelName"
+			</isNull>
+			, T0."orderNum", T0."payNum", T0."paiedAmount", T0."refundAmount", T1."launchUserNum",
+			T0."paiedAmount" - T0."refundAmount" "salesAmount", 
+			case when T1."launchUserNum" = 0 then 0 else ROUND(T0."orderNum"/T1."launchUserNum", 5) end "orderRate",
+			case when T1."launchUserNum" = 0 then 0 else ROUND(T0."payNum"/T1."launchUserNum", 5) end "closeRate",
+			case when T0."orderNum" = 0 then 0 else ROUND(T0."payNum"/T0."orderNum", 5) end "payRate"
+			from 
+			(
+			    select 
+			    GAODS.STAT_DATE "statDate"
+			    <isNotNull prepend="," property="channelNames">
+			    	GAODS.CHANNEL_NAME "channelName"
+			    </isNotNull>
+			    , sum(GAODS.ORDER_NUM) "orderNum",sum(GAODS.PAY_NUM) "payNum", 
+			    sum(GAODS.PAIED_AMOUNT) "paiedAmount", sum(GAODS.REFUND_AMOUNT) "refundAmount"
+			    from GN_APP_ORDER_DAILYSTAT GAODS
+			    <include refid="base_queryParams_1"/>
+			    <include refid="base_groupSort_1"/>
+			) T0 left join 
+			(
+			    select to_char(GAA.REPORT_TIME+0, 'yyyy-mm-dd') "statDate" 
+			    <isNotNull prepend="," property="channelNames">
+			    	 GAA.CHANNEL_NAME "channelName"
+			    </isNotNull>
+			    , count(distinct GAA.IMEI) "launchUserNum"
+			    from GN_APP_ACCESSLOG GAA
+			    <include refid="base_queryParams_2"/>
+			    <include refid="base_groupSort_2"/>
+			) T1 on (T1."statDate" = T0."statDate" 
+					<isNotNull prepend="and" property="channelNames">
+						T1."channelName" = T0."channelName"
+					</isNotNull>
+					)
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectGnAppChannelSalesCount" resultClass="int" parameterClass="map">
+	select count(T0."statDate")
+	from 
+	(
+	    select 
+	    GAODS.STAT_DATE "statDate"
+	    <isNotNull prepend="," property="channelNames">
+	    	GAODS.CHANNEL_NAME "channelName"
+	    </isNotNull>
+	    , sum(GAODS.ORDER_NUM) "orderNum",sum(GAODS.PAY_NUM) "payNum", 
+	    sum(GAODS.PAIED_AMOUNT) "paiedAmount", sum(GAODS.REFUND_AMOUNT) "refundAmount"
+	    from GN_APP_ORDER_DAILYSTAT GAODS
+	    <include refid="base_queryParams_1"/>
+	    <include refid="base_groupSort_1"/>
+	) T0 left join 
+	(
+	    select to_char(GAA.REPORT_TIME+0, 'yyyy-mm-dd') "statDate"
+	    <isNotNull prepend="," property="channelNames">
+	    	 GAA.CHANNEL_NAME "channelName"
+	    </isNotNull>
+	    , count(distinct GAA.IMEI) "launchUserNum" 
+	    from GN_APP_ACCESSLOG GAA
+	    <include refid="base_queryParams_2"/>
+	    <include refid="base_groupSort_2"/>
+	) T1 on (T1."statDate" = T0."statDate" 
+			<isNotNull prepend="and" property="channelNames">
+				T1."channelName" = T0."channelName"
+			</isNotNull>
+			)
+  </select>
+  
+  <insert id="insertGaods" parameterClass="GnAppOrderDailyStat">
+  	insert into GN_APP_ORDER_DAILYSTAT 
+  	(ID, APP_NAME, CHANNEL_NAME, APK_VERSION, ORDER_NUM, PAY_AMOUNT, PAY_NUM, PAIED_AMOUNT, 
+  		REFUND_NUM, REFUND_AMOUNT, STAT_DATE, CREATE_TIME)
+  	values 
+  	(#id#, #appName#, #channelName#, #apkVersion#, #orderNum#, #payAmount#, #payNum#, #paiedAmount#, 
+  		#refundNum#, #refundAmount#, #statDate#, #createTime#)
+  </insert>
+  
+  <delete id="deleteGaodsById" parameterClass="long">
+  	delete from GN_APP_ORDER_DAILYSTAT GAODS where GAODS.id = #id#
+  </delete>
+
+</sqlMap>

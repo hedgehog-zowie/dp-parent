@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Menu">
+  
+  <typeAlias alias="Menu" type="com.iuni.dp.persist.sys.model.Menu"/>
+
+  <resultMap id="MenuMap" class="Menu">
+  	<result property="sysId" column="sys_id"/>
+  	<result property="sysName" column="sys_name"/>
+  	<result property="url" column="url"/>
+    <result property="id" column="id"/>  
+    <result property="name" column="name"/>   
+    <result property="childMenus" column="id"   select="Menu.getMenuByParentId" />    
+  </resultMap>
+
+  <select id="getAllMenu"   resultMap="MenuMap"  parameterClass="Menu">
+     select m.*,
+            s.sys_name 
+     from t_menu m,t_system s    
+     where m.parent_id=0
+       and m.sys_id = s.sys_id  
+     order by m.sys_id,m.id
+  </select>
+  
+  <select id="getMenuListBySysIdAndOptId" resultMap="MenuMap"  parameterClass="java.util.Map">
+     select m.*,
+            s.sys_name
+     from t_menu m, t_permission p,t_system s    
+     where m.id = p.m_id
+       and m.sys_id = s.sys_id
+       and p.u_id = #u_id#
+	   and m.sys_id IN
+       <iterate property="sys_ids" open="(" close=")" conjunction=",">   
+          #sys_ids[]#
+       </iterate>
+     order by m.sys_id,m.id
+  </select>
+  
+   <select id="getUserMenus"  resultClass="Menu"  parameterClass="long">
+     select * 
+     from t_menu t 
+     where t.id in
+            (select p.m_id 
+             from t_permission p 
+             where p.u_id=#uid#)
+  </select>
+
+  <select id="getParentMenu" parameterClass="Menu"   resultClass="Menu">
+    select *  
+    from t_menu m  
+    where m.parent_id=0  
+      and m.id = #parent_id#
+  </select>
+  
+  <select id="getAllChildMenus"  resultClass="Menu"   parameterClass="Menu">
+     select * 
+     from t_menu  m    
+     where m.parent_id=#id#   
+     order by m.sys_id ,m.id
+  </select>	
+  
+  <select id="getAllMenuByUid"  resultClass="Menu"   parameterClass="long">
+     select * 
+     from t_menu m  
+     where  m.id in 
+         (select m_id 
+          from t_permission p 
+          where p.u_id = #uid#)  
+     order by m.sys_id ,m.id
+  </select>	
+  
+  <select id="getMenuByParentId"  resultClass="Menu"  parameterClass="int">
+     select * 
+     from t_menu  m    
+     where m.parent_id=#id#
+  </select>
+  
+  <select id="getMenuById"  resultClass="Menu"  parameterClass="int">
+     select * 
+     from t_menu  m    
+     where m.id=#id#
+  </select>
+  
+  <select id="checkMenuId" parameterClass="java.util.Map"   resultClass="Menu">
+    select *  
+    from t_menu m   
+    where m.id = #id#
+    and m.sys_id = #sys_id#
+  </select>
+ 
+   <select id="checkMenuName" parameterClass="java.util.Map"   resultClass="Menu">
+    select *  
+    from t_menu m
+    where m.name = #name#
+    and m.sys_id = #sys_id#
+  </select>
+  
+  <insert id="insertMenu" parameterClass="Menu">
+    insert into t_menu (
+				  id,
+				  parent_id,
+				  url,	
+				  create_time,
+				  creator,
+				  modify_time,
+				  modifier,
+				  name,
+				  sys_id 
+	)
+    values (  
+			  #id#, 
+			  #parent_id#,
+			  #url#,
+			  sysdate,
+			  #creator#,
+			  sysdate,
+			  #modifier#,
+			  #name#,
+			  #sysId#
+    )
+  </insert>  
+  
+  <update id="updateMenuName" parameterClass="Menu">
+    update t_menu  
+    set name = #name#,
+        url=#url#,
+        parent_id=#parent_id#,
+        modify_time=sysdate,
+        modifier=#modifier# 
+    where id = #id#
+  </update>
+   
+  <delete id="deleteMenu" parameterClass="int">
+    delete
+    from t_menu
+    where  (id =(select t2.id from (select t1.* from t_menu t1)t2 where t2.parent_id = #id#))
+    or (id = #id#)
+  </delete>
+ 
+</sqlMap>

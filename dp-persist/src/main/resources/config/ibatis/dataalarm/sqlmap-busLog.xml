@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="BusLog">
+  
+  <typeAlias alias="BusLog"  type="com.iuni.dp.persist.dataalarm.model.BusLog"/>
+
+  <resultMap id="BusLogMap" class="BusLog">
+  	<result property="busLogId" column="bus_log_id"/>
+  	<result property="optId" column="opt_id"/>
+  	<result property="busType" column="bus_type"/>
+    <result property="beforeContent" column="before_content"/>
+  	<result property="afterContent" column="after_content"/>
+    <result property="executResult" column="execut_result"/>
+    <result property="createTime" column="create_time"/>
+  	<result property="remark" column="remark"/>
+  </resultMap>
+  
+  <select id="getAllBusLog" resultMap="BusLogMap">
+  	SELECT bl.* FROM t_bus_log bl
+  	ORDER BY bl.create_time DESC
+  </select>
+  
+  <select id="getBusLogByPage" resultMap="BusLogMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+			SELECT 
+  		bl.bus_log_id, bl.opt_id, bl.bus_type, bl.before_content, bl.after_content
+  		, bl.execut_result, bl.create_time, bl.remark
+  	FROM t_bus_log bl
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="busType">
+  			bl.bus_type = #busType#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="executResult">
+  			bl.execut_result = #executResult#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="beginDate">
+  			<![CDATA[ bl.create_time >= to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="endDate">
+  			<![CDATA[ bl.create_time <= to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+  		</isNotNull>
+  	</dynamic>
+  	ORDER BY bl.create_time DESC  			
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="getTotalCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(bl.bus_log_id) 
+  	FROM t_bus_log bl
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="busType">
+  			bl.bus_type = #busType#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="executResult">
+  			bl.execut_result = #executResult#
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="beginDate">
+  			<![CDATA[ bl.create_time >= to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="endDate">
+  			<![CDATA[ bl.create_time <= to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+  		</isNotNull>
+  	</dynamic>
+  </select>
+  
+  <insert id="saveBusLog" parameterClass="BusLog">
+    insert into t_bus_log (
+    			  bus_log_id,
+				  opt_id,
+				  bus_type,
+				  before_content,
+				  after_content,	
+				  execut_result,
+				  create_time,
+				  remark
+	)
+    values (  
+    		  #busLogId#,
+			  #optId#, 
+			  #busType#, 
+			  #beforeContent#,
+			  #afterContent#,
+			  #executResult#,
+			  sysdate,
+			  #remark#
+    )
+    <selectKey resultClass="int" type="pre" keyProperty="busLogId" >
+        SELECT S_t_bus_log.NEXTVAL as busLogId FROM dual
+    </selectKey>
+  </insert>
+ 
+</sqlMap>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.3//EN" "http://www.opensymphony.com/xwork/xwork-validator-1.0.3.dtd">
+<validators>
+
+	<field name="receivePerson.code">
+		<field-validator type="requiredstring" short-circuit="false">
+			<param name="trim">true</param>
+			<message>接收人编码不能为空</message>
+		</field-validator>
+	</field>
+
+</validators>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="MallYqfOrderDailyStat" >
+
+  <typeAlias alias="mallYqfOrderDailyStat" type="com.iuni.dp.persist.datastat.model.MallYqfOrderDailyStat" />
+
+  <resultMap id="mallYqfOrderDailyStatResultMap" class="mallYqfOrderDailyStat" >
+    <result property="id" column="ID" />
+    <result property="cid" column="CID" />
+    <result property="source" column="SOURCE" />
+    <result property="channel" column="CHANNEL" />
+    <result property="totalOrderNum" column="TOTAL_ORDER_NUM" />
+    <result property="validOrderNum" column="VALID_ORDER_NUM" />
+    <result property="refusedOrderNum" column="REFUSED_ORDER_NUM" />
+    <result property="returnedOrderNum" column="RETURNED_ORDER_NUM" />
+    <result property="bizDate" column="BIZ_DATE" />
+    <result property="createTime" column="CREATE_TIME" />
+  </resultMap>
+  <resultMap id="mallYqfOrderDailyStatSumResultMap" class="mallYqfOrderDailyStat" >
+    <result property="totalOrderNum" column="TOTAL_ORDER_NUM" />
+    <result property="validOrderNum" column="VALID_ORDER_NUM" />
+    <result property="refusedOrderNum" column="REFUSED_ORDER_NUM" />
+    <result property="returnedOrderNum" column="RETURNED_ORDER_NUM" />
+  </resultMap>
+    <!-- 查询CPS推广订单信息-->
+   <select id="queryMallYqfOrderDailyStats" resultMap="mallYqfOrderDailyStatResultMap" parameterClass="map"> 
+   select t2.*
+  from (select t1.*, rownum rn
+          from (select t.*
+                  from mall_yqf_order_daily_stat t
+                  <dynamic prepend="WHERE" > 
+   				   <isNotNull property="beginDate" prepend="AND" >
+       			    t.biz_date <![CDATA[>=]]> #beginDate# 
+   				   </isNotNull>
+   				   <isNotNull property="endDate" prepend="AND" >
+       			    t.biz_date <![CDATA[<=]]> #endDate# 
+   				   </isNotNull>	
+   				   <isNotNull property="cid" prepend="AND" >
+       			    t.cid = #cid# 
+   				   </isNotNull>	
+   				   <isNotNull property="source" prepend="AND" >
+       			    t.source = #source# 
+   				   </isNotNull>	
+   				   <isNotNull property="channel" prepend="AND" >
+       			    t.channel = #channel# 
+   				   </isNotNull>		
+   				  </dynamic>
+                 order by t.biz_date desc) t1
+         where rownum  <![CDATA[ <= ]]> #endRec#) t2
+ where rn  <![CDATA[ >= ]]>  #startRec#
+   </select>
+   
+  <!-- 查询CPS推广订单信息:总记录-->
+  <select id="queryMallYqfOrderDailyStatsCount" resultClass="int" parameterClass="map"> 
+  select count(1) from mall_yqf_order_daily_stat t
+		<dynamic prepend="WHERE" > 
+			<isNotNull property="beginDate" prepend="AND" >
+			t.biz_date <![CDATA[>=]]> #beginDate# 
+			</isNotNull>
+			<isNotNull property="endDate" prepend="AND" >
+			t.biz_date <![CDATA[<=]]> #endDate# 
+			</isNotNull>
+			<isNotNull property="cid" prepend="AND" >
+       		t.cid = #cid# 
+   		    </isNotNull>	
+   			<isNotNull property="source" prepend="AND" >
+       		t.source = #source# 
+   			</isNotNull>	
+   		    <isNotNull property="channel" prepend="AND" >
+       		t.channel = #channel# 
+   			</isNotNull>		
+		</dynamic>
+  </select>
+  
+    <!-- 查询CPS推广订单信息(总计)-->
+   <select id="queryMallYqfOrderDailyStatsSum" resultMap="mallYqfOrderDailyStatSumResultMap" parameterClass="map"> 
+     select
+         sum(t.total_order_num) total_order_num,
+         sum(t.valid_order_num) valid_order_num,
+         sum(t.REFUSED_ORDER_NUM) REFUSED_ORDER_NUM,
+         sum(t.RETURNED_ORDER_NUM) RETURNED_ORDER_NUM
+          from mall_yqf_order_daily_stat t
+		<dynamic prepend="WHERE" > 
+			<isNotNull property="beginDate" prepend="AND" >
+			t.biz_date <![CDATA[>=]]> #beginDate# 
+			</isNotNull>
+			<isNotNull property="endDate" prepend="AND" >
+			t.biz_date <![CDATA[<=]]> #endDate# 
+			</isNotNull>
+		    <isNotNull property="cid" prepend="AND" >
+       		t.cid = #cid# 
+   		    </isNotNull>	
+   			<isNotNull property="source" prepend="AND" >
+       		t.source = #source# 
+   			</isNotNull>	
+   		    <isNotNull property="channel" prepend="AND" >
+       		t.channel = #channel# 
+   			</isNotNull>			
+		</dynamic>
+  </select>
+</sqlMap>

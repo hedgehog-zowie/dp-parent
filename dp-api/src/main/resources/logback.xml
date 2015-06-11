@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="false" scanPeroid="30 seconds">
+	<property name="App_Name" value="dp-api"></property>
+	<property name="EncoderPattern_1" value="%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg %n"></property>
+	<property name="EncoderPattern_2" value="%msg%n"></property>
+	
+	<contextName>${App_Name}</contextName>
+
+<!-- 	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" /> -->
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<encoder charset="UTF-8">
+			<pattern>${EncoderPattern_1}</pattern>
+		</encoder>
+		<target>System.out</target>
+	</appender>
+
+	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+
+	<appender name="Project" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-api/dp-api.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-api/%d{yyyy-MM,aux}/dp-api-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<appender name="iBatis" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-api/dp-api-iBatis.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-api/%d{yyyy-MM,aux}/dp-api-iBatis-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<appender name="dbDataException" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-api/dp-api-dbDataEx.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-api/%d{yyyy-MM,aux}/dp-api-dbDataEx-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<appender name="Apache" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<file>/data/log/dp-api/dp-api-apache.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/log/dp-api/%d{yyyy-MM,aux}/dp-api-apache-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+		<encoder charset="UTF-8">
+            <pattern>${EncoderPattern_1}</pattern>
+        </encoder>
+	</appender>
+	
+	<appender name="CommonReportData" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/data/dp_cmRptData_files/commonReportData.txt</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<fileNamePattern>/data/dp_cmRptData_files/files/%d{yyyy-MM,aux}/commonReportData-%d{yyyy-MM-dd_HH}.%i.txt</fileNamePattern>
+      		<timeBasedFileNamingAndTriggeringPolicy
+            	class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        		<maxFileSize>1MB</maxFileSize>
+      		</timeBasedFileNamingAndTriggeringPolicy>
+      		<maxHistory>8760</maxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>${EncoderPattern_2}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="GnAppReportData" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/data/dp_gnAppRptData_files/gnAppReportData.txt</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<fileNamePattern>/data/dp_gnAppRptData_files/files/%d{yyyy-MM,aux}/gnAppReportData-%d{yyyy-MM-dd_HH}.%i.txt</fileNamePattern>
+      		<timeBasedFileNamingAndTriggeringPolicy
+            	class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        		<maxFileSize>8KB</maxFileSize>
+      		</timeBasedFileNamingAndTriggeringPolicy>
+      		<maxHistory>8760</maxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>${EncoderPattern_2}</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- Base Third-party Jars -->
+	<logger name="org.springframework" level="INFO" additivity="true"></logger>
+	<logger name="org.apache.struts2" level="INFO" additivity="true"></logger>
+	<logger name="com.opensymphony.xwork2" level="INFO" additivity="true"></logger>
+	<logger name="com.opensymphony.xwork2.ognl.OgnlValueStack" level="ERROR" additivity="true"></logger>
+	
+	<!-- Base Logger -->
+	<logger name="com.mybatis" level="WARN" additivity="true">
+		<appender-ref ref="iBatis"/>
+	</logger>
+	<logger name="java.sql" level="WARN" additivity="true">
+		<appender-ref ref="iBatis"/>
+	</logger>
+	<logger name="java.sql.ResultSet" level="WARN" additivity="true">
+		<appender-ref ref="iBatis"/>
+	</logger>
+	<logger name="org.apache" level="WARN" additivity="true">
+		<appender-ref ref="Apache"/>
+	</logger>
+	
+	<!-- DB Data Exception Logger -->
+	<logger name="dp-api.dao.dbDataException" level="WARN" additivity="true">
+		<appender-ref ref="dbDataException"/>
+	</logger>
+	
+	<!-- Data Report Logger -->
+	<logger name="dp-api.common.reportdata" level="INFO" additivity="false">
+		<appender-ref ref="CommonReportData"/>
+	</logger>
+	<logger name="dp-api.gnapp.reportdata" level="INFO" additivity="false">
+		<appender-ref ref="GnAppReportData"/>
+	</logger>
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="Project" />
+	</root>
+	
+</configuration>

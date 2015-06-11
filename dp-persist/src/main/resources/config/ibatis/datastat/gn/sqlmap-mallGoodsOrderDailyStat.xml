@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="MallGoodsOrderDailyStat" >
+
+  <typeAlias alias="MallGoodsOrderDailyStat" type="com.iuni.dp.persist.datastat.model.MallGoodsOrderDailyStat" />
+
+  <resultMap id="MallGoodsOrderDailyStatMap" class="MallGoodsOrderDailyStat" >
+    <result property="id" column="ID"/>
+    <result property="goodsId" column="GOODS_ID" />
+    <result property="orderNum" column="ORDER_NUM" />
+    <result property="payNum" column="PAY_NUM" />
+    <result property="bizDate" column="BIZ_DATE" />
+    <result property="createTime" column="CREATE_TIME" />
+  </resultMap>
+
+  <sql id="MallGoodsOrderDailyStat_columns" >
+    MGODS.ID, MGODS.GOODS_ID, MGODS.ORDER_NUM, MGODS.PAY_NUM, MGODS.BIZ_DATE, MGODS.CREATE_TIME
+  </sql>
+
+  <sql id="MallGoodsOrderDailyStat_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="goodsId" prepend="AND" >
+        <![CDATA[  
+        GOODS_ID = #goodsId#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="orderNum" prepend="AND" >
+        <![CDATA[  
+        ORDER_NUM = #orderNum#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="payNum" prepend="AND" >
+        <![CDATA[  
+        PAY_NUM = #payNum#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="bizDate" prepend="AND" >
+        <![CDATA[  
+        BIZ_DATE = #bizDate#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="createTime" prepend="AND" >
+        <![CDATA[  
+        CREATE_TIME = #createTime#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <select id="selectMallGoodsOrderDailyStatById" resultMap="MallGoodsOrderDailyStatMap" parameterClass="int">
+  	SELECT 
+  	<include refid="MallGoodsOrderDailyStat_columns"/>
+  	FROM MALL_GOODS_ORDER_DAILY_STAT MGODS
+  	WHERE MGODS.ID = #id#
+  </select>
+  
+  <select id="selectAllByExample" resultMap="MallGoodsOrderDailyStatMap" parameterClass="java.util.Map">
+  	SELECT 
+  	<include refid="MallGoodsOrderDailyStat_columns"/>
+  	FROM MALL_GOODS_ORDER_DAILY_STAT MGODS
+  	<include refid="MallGoodsOrderDailyStat_queryParams"/>
+  	ORDER BY MGODS.CREATE_TIME DESC
+  </select>
+  
+  <select id="selectMallGoodsOrderDailyStatByPage" resultMap="MallGoodsOrderDailyStatMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+		  	SELECT 
+		  	<include refid="MallGoodsOrderDailyStat_columns"/>
+		  	FROM MALL_GOODS_ORDER_DAILY_STAT MGODS
+		  	<include refid="MallGoodsOrderDailyStat_queryParams"/>
+		  	ORDER BY MGODS.CREATE_TIME DESC
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectTotalCountByExample" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(MGODS.ID) FROM MALL_GOODS_ORDER_DAILY_STAT MGODS
+  	<include refid="MallGoodsOrderDailyStat_queryParams"/>
+  	ORDER BY MGODS.CREATE_TIME DESC
+  </select>
+
+  <insert id="insertMallGoodsOrderDailyStat" parameterClass="MallGoodsOrderDailyStat" >
+    INSERT INTO MALL_GOODS_ORDER_DAILY_STAT( ID, GOODS_ID, ORDER_NUM, PAY_NUM, BIZ_DATE, CREATE_TIME)
+     VALUES ( #id#, #goodsId#, #orderNum#, #payNum#, #bizDate#, SysTimestamp)
+     <selectKey type="pre" keyProperty="id" resultClass="int">
+     	SELECT S_MALL_GOODS_ORDER_DAILY_STAT.NEXTVAL AS id FROM DUAL
+     </selectKey>
+  </insert>
+
+  <delete id="deleteMallGoodsOrderDailyStatById" parameterClass="int">
+  	DELETE FROM MALL_GOODS_ORDER_DAILY_STAT MGODS
+  	WHERE MGODS.ID = #id#
+  </delete>
+
+</sqlMap>

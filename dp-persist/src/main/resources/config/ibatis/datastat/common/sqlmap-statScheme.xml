@@ -1,0 +1,1282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="StatScheme">
+
+    <typeAlias alias="StatScheme" type="com.iuni.dp.persist.datastat.model.StatScheme"/>
+
+    <resultMap id="StatSchemeMap" class="StatScheme">
+        <result property="id" column="ID"/>
+        <result property="code" column="CODE"/>
+        <result property="name" column="NAME"/>
+        <result property="statStrategyCode" column="STAT_STRATEGY_CODE"/>
+        <result property="statSnapshotTime" column="STAT_SNAPSHOT_TIME"/>
+        <result property="statScheduledTime" column="STAT_SCHEDULED_TIME"/>
+        <result property="rptDataType" column="RPTDATA_TYPE"/>
+        <result property="statField" column="STAT_FIELD"/>
+        <result property="status" column="STATUS"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="creatorId" column="CREATOR_ID"/>
+        <result property="remark" column="REMARK"/>
+    </resultMap>
+
+    <select id="selectStatSchemeById" resultMap="StatSchemeMap" parameterClass="int">
+  	SELECT SS.* 
+  	FROM T_STAT_SCHEME SS
+  	WHERE SS.ID = #id#
+  </select>
+
+    <select id="selectAllStatScheme" resultMap="StatSchemeMap" parameterClass="java.util.Map">
+        SELECT SS.*
+        FROM T_STAT_SCHEME SS
+        <dynamic prepend="WHERE">
+            <isNotNull prepend="AND" property="code">
+                SS.CODE LIKE '%' || #code# || '%'
+            </isNotNull>
+            <isNotNull prepend="AND" property="name">
+                SS.NAME LIKE '%' || #name# || '%'
+            </isNotNull>
+            <isNotNull prepend="AND" property="status">
+                SS.STATUS = #status#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statStrategyCode">
+                SS.STAT_STRATEGY_CODE = #statStrategyCode#
+            </isNotNull>
+            <isNotNull prepend="AND" property="rptDataType">
+                SS.RPTDATA_TYPE = #rptDataType#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statField">
+                SS.STAT_FIELD = #statField#
+            </isNotNull>
+            <isNotNull prepend="AND" property="beginDate">
+                <![CDATA[ SS.CREATE_TIME >= to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+            <isNotNull prepend="AND" property="endDate">
+                <![CDATA[ SS.CREATE_TIME <= to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+        </dynamic>
+        ORDER BY SS.CREATE_TIME DESC
+    </select>
+
+    <select id="selectStatSchemeByPage" resultMap="StatSchemeMap" parameterClass="java.util.Map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM RN FROM
+        (
+        SELECT SS.*
+        FROM T_STAT_SCHEME SS
+        <dynamic prepend="WHERE">
+            <isNotNull prepend="AND" property="code">
+                SS.CODE LIKE '%' || #code# || '%'
+            </isNotNull>
+            <isNotNull prepend="AND" property="name">
+                SS.NAME LIKE '%' || #name# || '%'
+            </isNotNull>
+            <isNotNull prepend="AND" property="status">
+                SS.STATUS = #status#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statStrategyCode">
+                SS.STAT_STRATEGY_CODE = #statStrategyCode#
+            </isNotNull>
+            <isNotNull prepend="AND" property="rptDataType">
+                SS.RPTDATA_TYPE = #rptDataType#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statField">
+                SS.STAT_FIELD = #statField#
+            </isNotNull>
+            <isNotNull prepend="AND" property="beginDate">
+                <![CDATA[ SS.CREATE_TIME >= to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+            <isNotNull prepend="AND" property="endDate">
+                <![CDATA[ SS.CREATE_TIME <= to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+        </dynamic>
+        ORDER BY SS.CREATE_TIME DESC
+        ) T
+        WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )
+        WHERE RN <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectTotalCount" resultClass="int" parameterClass="java.util.Map">
+        SELECT COUNT(SS.ID)
+        FROM T_STAT_SCHEME SS
+        <dynamic prepend="WHERE">
+            <isNotNull prepend="AND" property="code">
+                SS.CODE LIKE '%' || #code# || '%'
+            </isNotNull>
+            <isNotNull prepend="AND" property="name">
+                SS.NAME LIKE '%' || #name# || '%'
+            </isNotNull>
+            <isNotNull prepend="AND" property="status">
+                SS.STATUS = #status#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statStrategyCode">
+                SS.STAT_STRATEGY_CODE = #statStrategyCode#
+            </isNotNull>
+            <isNotNull prepend="AND" property="rptDataType">
+                SS.RPTDATA_TYPE = #rptDataType#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statField">
+                SS.STAT_FIELD = #statField#
+            </isNotNull>
+            <isNotNull prepend="AND" property="beginDate">
+                <![CDATA[ SS.CREATE_TIME >= to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+            <isNotNull prepend="AND" property="endDate">
+                <![CDATA[ SS.CREATE_TIME <= to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+        </dynamic>
+    </select>
+
+    <insert id="insertStatScheme" parameterClass="StatScheme">
+        INSERT INTO T_STAT_SCHEME (
+        ID,
+        CODE,
+        NAME,
+        STAT_STRATEGY_CODE,
+        STAT_SCHEDULED_TIME,
+        STAT_SNAPSHOT_TIME,
+        RPTDATA_TYPE,
+        STAT_FIELD,
+        STATUS,
+        CREATE_TIME,
+        CREATOR_ID,
+        REMARK
+        )
+        VALUES (
+        #id#,
+        #code#,
+        #name#,
+        #statStrategyCode#,
+        #statScheduledTime#,
+        #statSnapshotTime#,
+        #rptDataType#,
+        #statField#,
+        #status#,
+        SysDate,
+        #creatorId#,
+        #remark#
+        )
+        <selectKey resultClass="int" type="pre" keyProperty="id">
+            SELECT S_T_STAT_SCHEME.NEXTVAL as id FROM dual
+        </selectKey>
+    </insert>
+
+    <update id="updateStatScheme" parameterClass="StatScheme">
+        UPDATE T_STAT_SCHEME SS
+        <dynamic prepend="SET">
+            <isNotNull prepend="," property="code">
+                SS.CODE = #code#
+            </isNotNull>
+            <isNotNull prepend="," property="name">
+                SS.NAME = #name#
+            </isNotNull>
+            <isNotNull prepend="," property="statStrategyCode">
+                SS.STAT_STRATEGY_CODE = #statStrategyCode#
+            </isNotNull>
+            <isPropertyAvailable prepend="," property="statScheduledTime">
+                SS.STAT_SCHEDULED_TIME = #statScheduledTime#
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="statSnapshotTime">
+                SS.STAT_SNAPSHOT_TIME = #statSnapshotTime#
+            </isPropertyAvailable>
+            <isNotNull prepend="," property="rptDataType">
+                SS.RPTDATA_TYPE = #rptDataType#
+            </isNotNull>
+            <isNotNull prepend="," property="statField">
+                SS.STAT_FIELD = #statField#
+            </isNotNull>
+            <isNotNull prepend="," property="status">
+                SS.STATUS = #status#
+            </isNotNull>
+            <isNotNull prepend="," property="remark">
+                SS.REMARK = #remark#
+            </isNotNull>
+        </dynamic>
+        WHERE SS.ID = #id#
+    </update>
+
+    <delete id="deleteStatSchemeById" parameterClass="int">
+  	DELETE FROM T_STAT_SCHEME SS
+  	WHERE SS.ID = #id#
+  </delete>
+
+    <parameterMap id="procStatPfResParams" class="java.util.Map">
+        <parameter property="STAT_SCHEME_ID" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="STAT_SOURCE_ID" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="STAT_DATE" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="STAT_FLAG" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="EXEC_STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="callProcStatPfResponse" parameterMap="procStatPfResParams">
+        { CALL STAT_PF_RESPONSEEND ( ?, ?, ?, ?, ? )}
+    </procedure>
+
+    <parameterMap id="procStatPfDomLoadParams" class="java.util.Map">
+        <parameter property="STAT_SCHEME_ID" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="INTERVAL_TIME" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="STAT_DATE" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="EXEC_STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="callProcStatPfDomCtxLoaded" parameterMap="procStatPfDomLoadParams">
+        { CALL stat_pf_domCtxLoadedEnd (?, ?, ?, ?) }
+    </procedure>
+
+    <parameterMap id="procStatDailyMallBaseData" class="java.util.Map">
+        <parameter property="STAT_DATE" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="EXEC_STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="callProcStatDailyMallBaseData" parameterMap="procStatDailyMallBaseData">
+        { CALL STAT_DAILY_MALLBASEDATA (?,?) }
+    </procedure>
+
+    <parameterMap id="procStatGnAppBaseDataDaily" class="java.util.Map">
+        <parameter property="STAT_DATE" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="EXEC_STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="callProcStatGnAppBaseDataDaily" parameterMap="procStatGnAppBaseDataDaily">
+        { CALL STAT_GNAPP_BASEDATA_DAILY (?,?) }
+    </procedure>
+
+    <parameterMap id="procStatIuniNetflowDataDaily" class="java.util.Map">
+        <parameter property="STAT_DATE" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="EXEC_STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="callProcStatIuniNetflowDataDaily" parameterMap="procStatIuniNetflowDataDaily">
+        { CALL STAT_IUNI_NETFLOWDATA_DAILY (?,?) }
+    </procedure>
+
+    <parameterMap id="procStatIpAreaDataDaily" class="java.util.Map">
+        <parameter property="STAT_DATE" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="EXEC_STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="callProcStatIpAreaDataDaily" parameterMap="procStatIpAreaDataDaily">
+        { CALL STAT_IUNI_IPAREA_DAILY (?,?) }
+    </procedure>
+
+    <parameterMap id="procStatIuniBpDataDaily" class="java.util.Map">
+        <parameter property="STAT_DATE" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="EXEC_STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="callProcStatIuniBpDataDaily" parameterMap="procStatIuniBpDataDaily">
+        { CALL STAT_IUNI_BPDATA_DAILY (?,?) }
+    </procedure>
+
+    <!--统计当天的前一天各个广告的各个推广渠道(入口点)的PV和UV-->
+    <insert id="insertMallAdPvuvDailyStatByTask" parameterClass="map">
+insert into MALL_AD_PVUV_DAILY_STAT
+  (ID,AD_ID,CHANNEL_NAME, CHANNEL_PV, CHANNEL_UV, BIZ_DATE, CREATE_TIME)
+  select S_MALL_AD_PVUV_DAILY_STAT.Nextval id,ad_id,channel_name, pv, uv, biz_date, create_time from 
+  (
+   
+   select t.source_id ad_id,
+           t.report_content channel_name,
+           count(t.cookie_info) pv,
+           count(distinct t.cookie_info) uv,
+           to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+           sysdate create_time
+     from T_REPORT_DATA_$month$ t
+  <![CDATA[  
+    where t.report_type = 'affiche'
+      and t.create_time < to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+      and t.create_time >= to_date(to_char(sysdate - 1, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+    group by t.source_id, t.report_content
+  ) t1 
+
+
+
+
+
+        ]]>
+    </insert>
+
+    <!--统计当天的前一天各个广告的各个推广渠道(入口点)的有效订单数、总订单数和退单数-->
+    <insert id="insertMallAdOrderDailyStatByTask" parameterClass="map">
+  insert into MALL_AD_ORDER_DAILY_STAT
+    (ID,
+     AD_ID,
+     CHANNEL_NAME,
+     VALID_ORDER_NUM,
+     TOTAL_ORDER_NUM,
+     BACK_ORDER_NUM,
+     BIZ_DATE,
+     CREATE_TIME)
+  <![CDATA[  
+    select S_MALL_AD_ORDER_DAILY_STAT.Nextval id,
+           t1.ad_id,
+           t1.channel_name,
+           t2.valid_order_num,
+           t1.total_order_num,
+           t3.back_order_num,
+           t1.biz_date,
+           t1.create_time
+      from (select t.from_ad ad_id,
+                   t.referer channel_name,
+                   count(1) total_order_num,
+                   to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                   sysdate create_time
+              from jlsp_order_info t
+             where t.from_ad > 0
+               and t.referer is not null
+               and t.add_time < date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+               and t.add_time >= date_to_unixtimestamp(to_char(sysdate - 1, 'yyyy-mm-dd'))
+             group by t.from_ad, t.referer) t1
+      left join (select t.from_ad ad_id,
+                   t.referer channel_name,
+                   count(1) valid_order_num,
+                   to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                   sysdate create_time
+              from jlsp_order_info t
+             where t.from_ad > 0
+               and t.referer is not null
+               and t.pay_status = 2
+               and t.add_time < date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+               and t.add_time >= date_to_unixtimestamp(to_char(sysdate - 1, 'yyyy-mm-dd'))
+             group by t.from_ad, t.referer) t2 on t1.ad_id = t2.ad_id
+                                              and t1.channel_name = t2.channel_name
+      left join (
+            
+            select t.from_ad ad_id,
+                    t.referer channel_name,
+                    count(1) back_order_num,
+                    to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                    sysdate create_time
+              from jlsp_order_info t
+             where t.from_ad > 0
+               and t.referer is not null
+               and t.pay_status = 4
+               and t.add_time < date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+               and t.add_time >= date_to_unixtimestamp(to_char(sysdate - 1, 'yyyy-mm-dd'))
+             group by t.from_ad, t.referer) t3 on t2.ad_id = t3.ad_id
+                                              and t2.channel_name =  t3.channel_name
+
+
+
+
+
+        ]]>
+    </insert>
+
+
+    <!--统计前22天的那一天的各个广告的各个推广渠道(入口点)的有效订单数、总订单数和退单数-->
+    <insert id="insertMallAdOrderDailyStatFinalByTask" parameterClass="map">
+  insert into MALL_AD_ORDER_DAILY_STAT_FINAL
+    (ID,
+     AD_ID,
+     CHANNEL_NAME,
+     VALID_ORDER_NUM,
+     TOTAL_ORDER_NUM,
+     BACK_ORDER_NUM,
+     BIZ_DATE,
+     CREATE_TIME)
+  <![CDATA[  
+    select S_MALL_AD_ORDER_DAILY_STAT_FI.Nextval id,
+           t1.ad_id,
+           t1.channel_name,
+           t2.valid_order_num,
+           t1.total_order_num,
+           t3.back_order_num,
+           t1.biz_date,
+           t1.create_time
+      from (select t.from_ad ad_id,
+                   t.referer channel_name,
+                   count(1) total_order_num,
+                   to_char(sysdate - 22, 'yyyy-mm-dd') biz_date,
+                   sysdate create_time
+              from jlsp_order_info t
+             where t.from_ad > 0
+               and t.referer is not null
+               and t.add_time < date_to_unixtimestamp(to_char(sysdate - 21, 'yyyy-mm-dd'))
+               and t.add_time >= date_to_unixtimestamp(to_char(sysdate - 22, 'yyyy-mm-dd'))
+             group by t.from_ad, t.referer) t1
+      left join (select t.from_ad ad_id,
+                   t.referer channel_name,
+                   count(1) valid_order_num,
+                   to_char(sysdate - 22, 'yyyy-mm-dd') biz_date,
+                   sysdate create_time
+              from jlsp_order_info t
+             where t.from_ad > 0
+               and t.referer is not null
+               and t.pay_status = 2
+               and t.add_time < date_to_unixtimestamp(to_char(sysdate - 21, 'yyyy-mm-dd'))
+               and t.add_time >= date_to_unixtimestamp(to_char(sysdate - 22, 'yyyy-mm-dd'))
+             group by t.from_ad, t.referer) t2 on t1.ad_id = t2.ad_id
+                                              and t1.channel_name = t2.channel_name
+      left join (
+            
+            select t.from_ad ad_id,
+                    t.referer channel_name,
+                    count(1) back_order_num,
+                    to_char(sysdate - 22, 'yyyy-mm-dd') biz_date,
+                    sysdate create_time
+              from jlsp_order_info t
+             where t.from_ad > 0
+               and t.referer is not null
+               and t.pay_status = 4
+               and t.add_time < date_to_unixtimestamp(to_char(sysdate - 21, 'yyyy-mm-dd'))
+               and t.add_time >= date_to_unixtimestamp(to_char(sysdate - 22, 'yyyy-mm-dd'))
+             group by t.from_ad, t.referer) t3 on t2.ad_id = t3.ad_id
+                                              and t2.channel_name =  t3.channel_name
+
+
+
+
+
+        ]]>
+    </insert>
+
+    <delete id="clearMallSaleDailyStatByTask">
+    <![CDATA[
+
+
+
+
+
+     truncate table MALL_SALE_DAILY_STAT
+
+
+
+
+
+        ]]>
+  </delete>
+    <!--统计金立商城当天之前的所有销售情况：包括订单总数、订单总金额、订单商品总件数、在线支付订单数、货到付款订单数、退货订单数、拒收订单数、有效订单数、有效订单总金额、有效订单商品总件数、已支付订单数、预约且已支付订单数-->
+    <insert id="insertMallSaleDailyStatByTask" parameterClass="map">
+INSERT INTO MALL_SALE_DAILY_STAT
+  (ID,
+   TOTAL_ORDER_NUM,
+   TOTAL_ORDER_AMOUNT,
+   TOTAL_GOODS_NUM,
+   ONLINE_PAY_ORDER_NUM,
+   OFFLINE_PAY_ORDER_NUM,
+   RETURNED_ORDER_NUM,
+   REFUSED_ORDER_NUM,
+   VALID_ORDER_NUM,
+   VALID_ORDER_AMOUNT,
+   VALID_GOODS_NUM,
+   PAYED_ORDER_NUM,
+   PRE_PAYED_ORDER_NUM,
+   BIZ_DATE,
+   CREATE_TIME)
+<![CDATA[  
+  select S_MALL_SALE_DAILY_STAT.Nextval id,
+         CASE
+           WHEN t1.total_order_num is null THEN
+            0
+           ELSE
+            t1.total_order_num
+         END total_order_num,
+         CASE
+           WHEN t1.total_order_amount is null THEN
+            0
+           ELSE
+            t1.total_order_amount
+         END total_order_amount,
+         CASE
+           WHEN t2.total_goods_num is null THEN
+            0
+           ELSE
+            t2.total_goods_num
+         END total_goods_num,
+         CASE
+           WHEN t3.online_pay_order_num is null THEN
+            0
+           ELSE
+            t3.online_pay_order_num
+         END online_pay_order_num,
+         CASE
+           WHEN t4.offline_pay_order_num is null THEN
+            0
+           ELSE
+            t4.offline_pay_order_num
+         END offline_pay_order_num,
+         CASE
+           WHEN t5.returned_order_num is null THEN
+            0
+           ELSE
+            t5.returned_order_num
+         END returned_order_num,
+         CASE
+           WHEN t6.refused_order_num is null THEN
+            0
+           ELSE
+            t6.refused_order_num
+         END refused_order_num,
+         CASE
+           WHEN t7.valid_order_num is null THEN
+            0
+           ELSE
+            t7.valid_order_num
+         END valid_order_num,
+         CASE
+           WHEN t7.valid_order_amount is null THEN
+            0
+           ELSE
+            t7.valid_order_amount
+         END valid_order_amount,
+         CASE
+           WHEN t8.valid_goods_num is null THEN
+            0
+           ELSE
+            t8.valid_goods_num
+         END valid_goods_num,
+         CASE
+           WHEN t9.payed_order_num is null THEN
+            0
+           ELSE
+            t9.payed_order_num
+         END payed_order_num,
+         CASE
+           WHEN t10.pre_payed_order_num is null THEN
+            0
+           ELSE
+            t10.pre_payed_order_num
+         END pre_payed_order_num,
+         t1.biz_date,
+         sysdate create_time
+    from (select count(1) total_order_num,
+                 sum(order_amount)+sum(money_paid) total_order_amount,
+                 substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                 sysdate create_time
+            from jlsp_order_info t
+           where t.add_time <
+                 date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+           group by substr(unixtimestamp_to_date(t.add_time), 1, 10)
+           order by substr(unixtimestamp_to_date(t.add_time), 1, 10) desc) t1
+    left join (select sum(og.goods_number) total_goods_num,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from jlsp_order_info t, jlsp_order_goods og
+                where t.order_id = og.order_id
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t2 on t1.biz_date =
+                                                                                 t2.biz_date
+    left join (select count(1) online_pay_order_num,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from jlsp_order_info t
+                where t.pay_id = 1
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t3 on t1.biz_date =
+                                                                                 t3.biz_date
+  
+    left join (
+               
+               select count(1) offline_pay_order_num,
+                       substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                       sysdate create_time
+                 from jlsp_order_info t
+                where t.pay_id = 3
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t4 on t1.biz_date =
+                                                                                 t4.biz_date
+    left join (select count(1) returned_order_num,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from jlsp_order_info t
+                where (t.order_status = 4 or t.pay_status = 3 or
+                      t.pay_status = 4)
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t5 on t1.biz_date =
+                                                                                 t5.biz_date
+    left join (select count(1) refused_order_num,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from jlsp_order_info t
+                where t.shipping_status = 8
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t6 on t1.biz_date =
+                                                                                 t6.biz_date
+    left join (select count(1) valid_order_num,
+                      sum(money_paid) valid_order_amount,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from jlsp_order_info t
+                where (t.pay_status = 2 or
+                      (t.order_status = 1 and t.pay_id = 3))
+                  and t.shipping_status != 8
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t7 on t1.biz_date =
+                                                                                 t7.biz_date
+    left join (select sum(og.goods_number) valid_goods_num,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from jlsp_order_info t, jlsp_order_goods og
+                where t.order_id = og.order_id
+                  and (t.pay_status = 2 or
+                      (t.order_status = 1 and t.pay_id = 3))
+                  and t.shipping_status != 8
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t8 on t1.biz_date =
+                                                                                 t8.biz_date
+    left join (select count(1) payed_order_num,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from jlsp_order_info t
+                where (t.pay_status = 1 or t.pay_status = 2)
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t9 on t1.biz_date =
+                                                                                 t9.biz_date
+    left join (select count(1) pre_payed_order_num,
+                      substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                      sysdate create_time
+                 from (select o.*
+                         from jlsp_order_info o
+                         join JLSP_RESERVATION r on o.user_id = r.u_id) t
+                where (t.pay_status = 1 or t.pay_status = 2)
+                  and t.add_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.add_time), 1, 10)) t10 on t1.biz_date =
+                                                                                  t10.biz_date
+
+
+
+
+
+
+
+        ]]>
+    </insert>
+
+    <delete id="clearMallUserOrderDailyStatByTask">
+        <![CDATA[
+
+
+
+
+     truncate table MALL_USER_ORDER_DAILY_STAT
+
+
+
+
+        ]]>
+    </delete>
+    <!--统计金立商城当天之前的所有会员注册及订单信息：包括注册会员数、订单总数、订单总金额、有效订单数、有效订单总金额、会员平均订单数、会员平均购物金额-->
+    <insert id="insertMallUserOrderDailyStatByTask" parameterClass="map">
+  	INSERT INTO MALL_USER_ORDER_DAILY_STAT
+  (ID,
+   REG_USER_NUM,
+   TOTAL_ORDER_NUM,
+   TOTAL_ORDER_AMOUNT,
+   VALID_ORDER_NUM,
+   VALID_ORDER_AMOUNT,
+   BIZ_DATE,
+   CREATE_TIME)
+   <![CDATA[  
+  select S_MALL_USER_ORDER_DAILY_STAT.Nextval id,
+         t1.reg_user_num,
+         CASE
+           WHEN t2.total_order_num is null THEN
+            0
+           ELSE
+            t2.total_order_num
+         END total_order_num,
+         CASE
+           WHEN t2.total_order_amount is null THEN
+            0
+           ELSE
+            t2.total_order_amount
+         END total_order_amount,
+         CASE
+           WHEN t3.valid_order_num is null THEN
+            0
+           ELSE
+            t3.valid_order_num
+         END valid_order_num,
+         CASE
+           WHEN t3.valid_order_amount is null THEN
+            0
+           ELSE
+            t3.valid_order_amount
+         END valid_order_amount,
+         t1.biz_date,
+         sysdate create_time
+    from (select count(1) reg_user_num,
+                 substr(unixtimestamp_to_date(t.reg_time), 1, 10) biz_date
+            from jlsp_users t
+           where t.reg_time <
+                 date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+           group by substr(unixtimestamp_to_date(t.reg_time), 1, 10)
+           order by substr(unixtimestamp_to_date(t.reg_time), 1, 10) desc) t1
+  
+    left join (select count(1) total_order_num,
+                      sum(order_amount) + sum(money_paid) total_order_amount,
+                      substr(unixtimestamp_to_date(t.reg_time), 1, 10) biz_date
+                 from (select o.*, u.reg_time
+                         from jlsp_order_info o
+                         join jlsp_users u on o.user_id = u.user_id) t
+                where t.reg_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.reg_time), 1, 10)) t2 on t1.biz_date =
+                                                                                 t2.biz_date
+    left join (select count(1) valid_order_num,
+                      sum(money_paid) valid_order_amount,
+                      substr(unixtimestamp_to_date(t.reg_time), 1, 10) biz_date
+                 from (select o.*, u.reg_time
+                         from jlsp_order_info o
+                         join jlsp_users u on o.user_id = u.user_id) t
+                where (t.pay_status = 2 or
+                      (t.order_status = 1 and t.pay_id = 3))
+                  and t.shipping_status != 8
+                  and t.reg_time <
+                      date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+                group by substr(unixtimestamp_to_date(t.reg_time), 1, 10)) t3 on t1.biz_date =
+                                                                                 t3.biz_date
+
+
+
+
+
+        ]]>
+    </insert>
+
+    <delete id="clearMallYqfOrderDailyStatByTask">
+        <![CDATA[
+
+
+
+
+     truncate table MALL_YQF_ORDER_DAILY_STAT
+
+
+
+
+        ]]>
+    </delete>
+    <!--统计金立商城CPS推广销售情况：包括订单总数、退货订单数、拒收订单数、有效订单数-->
+    <insert id="insertMallYqfOrderDailyStatByTask" parameterClass="map">
+INSERT INTO MALL_YQF_ORDER_DAILY_STAT
+  (ID,
+   CID,
+   SOURCE,
+   CHANNEL,
+   TOTAL_ORDER_NUM,
+   VALID_ORDER_NUM,
+   REFUSED_ORDER_NUM,
+   RETURNED_ORDER_NUM,
+   BIZ_DATE,
+   CREATE_TIME)
+<![CDATA[  
+select S_MALL_YQF_ORDER_DAILY_STAT.NEXTVAL id,
+       t1.cid,
+       t1.source,
+       t1.channel,
+       CASE
+         WHEN t1.total_order_num is null THEN
+          0
+         ELSE
+          t1.total_order_num
+       END total_order_num,
+       CASE
+         WHEN t7.valid_order_num is null THEN
+          0
+         ELSE
+          t7.valid_order_num
+       END valid_order_num,
+       CASE
+         WHEN t6.refused_order_num is null THEN
+          0
+         ELSE
+          t6.refused_order_num
+       END refused_order_num,
+       CASE
+         WHEN t5.returned_order_num is null THEN
+          0
+         ELSE
+          t5.returned_order_num
+       END returned_order_num,
+       
+       t1.biz_date,
+       sysdate create_time
+  from (select t.cid,
+               t.source,
+               t.channel,
+               count(1) total_order_num,
+               substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+               sysdate create_time
+          from (select y.source,
+                       y.channel,
+                       y.cid,
+                       y.add_time,
+                       o.order_status,
+                       o.shipping_status,
+                       o.pay_status,
+                       o.pay_id
+                  from jlsp_order_yiqifa y
+                  join jlsp_order_info o on y.order_id = o.order_id) t
+         where t.add_time <
+               date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+         group by substr(unixtimestamp_to_date(t.add_time), 1, 10),
+                  t.cid,
+                  t.source,
+                  t.channel
+         order by substr(unixtimestamp_to_date(t.add_time), 1, 10) desc) t1
+
+  left join (select t.cid,
+                    t.source,
+                    t.channel,
+                    count(1) returned_order_num,
+                    substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                    sysdate create_time
+               from (select y.source,
+                            y.channel,
+                            y.cid,
+                            y.add_time,
+                            o.order_status,
+                            o.shipping_status,
+                            o.pay_status,
+                            o.pay_id
+                       from jlsp_order_yiqifa y
+                       join jlsp_order_info o on y.order_id = o.order_id) t
+              where (t.order_status = 4 or t.pay_status = 3 or
+                    t.pay_status = 4)
+                and t.add_time <
+                    date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+              group by substr(unixtimestamp_to_date(t.add_time), 1, 10),
+                       t.cid,
+                       t.source,
+                       t.channel) t5 on t1.biz_date = t5.biz_date
+  left join (select t.cid,
+                    t.source,
+                    t.channel,
+                    count(1) refused_order_num,
+                    substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                    sysdate create_time
+               from (select y.source,
+                            y.channel,
+                            y.cid,
+                            y.add_time,
+                            o.order_status,
+                            o.shipping_status,
+                            o.pay_status,
+                            o.pay_id
+                       from jlsp_order_yiqifa y
+                       join jlsp_order_info o on y.order_id = o.order_id) t
+              where t.shipping_status = 8
+                and t.add_time <
+                    date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+              group by substr(unixtimestamp_to_date(t.add_time), 1, 10),
+                       t.cid,
+                       t.source,
+                       t.channel) t6 on t1.biz_date = t6.biz_date
+  left join (select t.cid,
+                    t.source,
+                    t.channel,
+                    count(1) valid_order_num,
+                    substr(unixtimestamp_to_date(t.add_time), 1, 10) biz_date,
+                    sysdate create_time
+               from (select y.source,
+                            y.channel,
+                            y.cid,
+                            y.add_time,
+                            o.order_status,
+                            o.shipping_status,
+                            o.pay_status,
+                            o.pay_id
+                       from jlsp_order_yiqifa y
+                       join jlsp_order_info o on y.order_id = o.order_id) t
+              where (t.pay_status = 2 or
+                    (t.order_status = 1 and t.pay_id = 3))
+                and t.shipping_status != 8
+                and t.add_time <
+                    date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))
+              group by substr(unixtimestamp_to_date(t.add_time), 1, 10),
+                       t.cid,
+                       t.source,
+                       t.channel) t7 on t1.biz_date = t7.biz_date
+
+
+
+
+
+        ]]>
+    </insert>
+
+    <delete id="clearIuniSaleDailyStatByTask">
+        <![CDATA[
+
+
+
+
+     truncate table IUNI_SALE_DAILY_STAT
+
+
+
+
+        ]]>
+    </delete>
+
+    <!--统计IUNI商城当天之前的所有销售情况：包括订单总数、订单总金额、订单商品总件数、在线支付订单数、货到付款订单数、退货订单数、拒收订单数、有效订单数、有效订单总金额、有效订单商品总件数、已支付订单数、预约且已支付订单数-->
+    <insert id="insertIuniSaleDailyStatByTask" parameterClass="map">
+  INSERT INTO IUNI_SALE_DAILY_STAT
+    (ID,
+   ORDER_REFERER,
+   TOTAL_ORDER_NUM,
+   TOTAL_ORDER_AMOUNT,
+   TOTAL_GOODS_NUM,
+   ONLINE_PAY_ORDER_NUM,
+   OFFLINE_PAY_ORDER_NUM,
+   RETURNED_ORDER_NUM,
+   REFUSED_ORDER_NUM,
+   VALID_ORDER_NUM,
+   VALID_ORDER_AMOUNT,
+   VALID_GOODS_NUM,
+   PAYED_ORDER_NUM,
+   BIZ_DATE,
+   CREATE_TIME)
+   <![CDATA[  
+SELECT S_IUNI_SALE_DAILY_STAT.Nextval id,
+         T1.REFERER ORDER_REFER,
+         CASE
+           WHEN T1.TOTAL_ORDER_NUM IS NULL THEN
+            0
+           ELSE
+            T1.TOTAL_ORDER_NUM
+         END TOTAL_ORDER_NUM,
+         CASE
+           WHEN T1.TOTAL_ORDER_AMOUNT IS NULL THEN
+            0
+           ELSE
+            T1.TOTAL_ORDER_AMOUNT
+         END TOTAL_ORDER_AMOUNT,
+         CASE
+           WHEN T2.TOTAL_GOODS_NUM IS NULL THEN
+            0
+           ELSE
+            T2.TOTAL_GOODS_NUM
+         END TOTAL_GOODS_NUM,
+         CASE
+           WHEN T3.ONLINE_PAY_ORDER_NUM IS NULL THEN
+            0
+           ELSE
+            T3.ONLINE_PAY_ORDER_NUM
+         END ONLINE_PAY_ORDER_NUM,
+         CASE
+           WHEN T4.OFFLINE_PAY_ORDER_NUM IS NULL THEN
+            0
+           ELSE
+            T4.OFFLINE_PAY_ORDER_NUM
+         END OFFLINE_PAY_ORDER_NUM,
+         CASE
+           WHEN T5.RETURNED_ORDER_NUM IS NULL THEN
+            0
+           ELSE
+            T5.RETURNED_ORDER_NUM
+         END RETURNED_ORDER_NUM,
+         CASE
+           WHEN T6.REFUSED_ORDER_NUM IS NULL THEN
+            0
+           ELSE
+            T6.REFUSED_ORDER_NUM
+         END REFUSED_ORDER_NUM,
+         CASE
+           WHEN T7.VALID_ORDER_NUM IS NULL THEN
+            0
+           ELSE
+            T7.VALID_ORDER_NUM
+         END VALID_ORDER_NUM,
+         CASE
+           WHEN T7.VALID_ORDER_AMOUNT IS NULL THEN
+            0
+           ELSE
+            T7.VALID_ORDER_AMOUNT
+         END VALID_ORDER_AMOUNT,
+         CASE
+           WHEN T8.VALID_GOODS_NUM IS NULL THEN
+            0
+           ELSE
+            T8.VALID_GOODS_NUM
+         END VALID_GOODS_NUM,
+         CASE
+           WHEN T9.PAYED_ORDER_NUM IS NULL THEN
+            0
+           ELSE
+            T9.PAYED_ORDER_NUM
+         END PAYED_ORDER_NUM,
+         T1.BIZ_DATE,
+         SYSDATE CREATE_TIME
+    FROM (SELECT REFERER,
+                 COUNT(1) TOTAL_ORDER_NUM,
+                 SUM(ORDER_AMOUNT) TOTAL_ORDER_AMOUNT,
+                 SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                 SYSDATE CREATE_TIME
+            FROM IUNI_ORDER_INFO T
+           WHERE T.OLEVEL IN ('normal', 'parent')
+             AND T.ADD_TIME <
+                 DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+           GROUP BY T.REFERER,
+                    SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10)
+           ORDER BY T.REFERER,
+                    SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) DESC) T1
+    LEFT JOIN (SELECT T.REFERER,
+                      SUM(OG.GOODS_NUMBER) TOTAL_GOODS_NUM,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T, IUNI_ORDER_GOODS OG
+                WHERE T.ORDER_SN = OG.ORDER_ID
+                  AND T.ORDER_TYPE IN ('normal', 'ys')
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T2
+      ON T1.BIZ_DATE = T2.BIZ_DATE
+     AND T1.REFERER = T2.REFERER
+    LEFT JOIN (SELECT T.REFERER,
+                      COUNT(1) ONLINE_PAY_ORDER_NUM,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T
+                WHERE T.PAY_TYPE = 1
+                  AND T.OLEVEL IN ('normal', 'parent')
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T3
+      ON T1.BIZ_DATE = T3.BIZ_DATE
+     AND T1.REFERER = T3.REFERER
+    LEFT JOIN (SELECT T.REFERER,
+                      COUNT(1) OFFLINE_PAY_ORDER_NUM,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T
+                WHERE T.PAY_TYPE = 0
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T4
+      ON T1.BIZ_DATE = T4.BIZ_DATE
+     AND T1.REFERER = T4.REFERER
+    LEFT JOIN (SELECT T.REFERER,
+                      COUNT(1) RETURNED_ORDER_NUM,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T
+                WHERE (T.ORDER_STATUS = 'recede' OR T.PAY_STATUS = 'refund' OR
+                      T.PAY_STATUS = 'refunded')
+                  AND T.OLEVEL IN ('normal', 'parent')
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T5
+      ON T1.BIZ_DATE = T5.BIZ_DATE
+     AND T1.REFERER = T5.REFERER
+    LEFT JOIN (SELECT T.REFERER,
+                      COUNT(1) REFUSED_ORDER_NUM,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T
+                WHERE T.SHIPPING_STATUS = 'declined'
+                  AND T.OLEVEL IN ('normal', 'parent')
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T6
+      ON T1.BIZ_DATE = T6.BIZ_DATE
+     AND T1.REFERER = T6.REFERER
+    LEFT JOIN (SELECT T.REFERER,
+                      COUNT(1) VALID_ORDER_NUM,
+                      SUM(ORDER_AMOUNT) VALID_ORDER_AMOUNT,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T
+                WHERE (T.PAY_STATUS = 'paid' OR
+                      (T.ORDER_STATUS = 'processed' AND T.PAY_TYPE = 0))
+                  AND T.SHIPPING_STATUS != 'declined'
+                  AND T.ORDER_TYPE IN ('normal', 'ysdj')
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T7
+      ON T1.BIZ_DATE = T7.BIZ_DATE
+     AND T1.REFERER = T7.REFERER
+    LEFT JOIN (SELECT T.REFERER,
+                      SUM(OG.GOODS_NUMBER) VALID_GOODS_NUM,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T, IUNI_ORDER_GOODS OG
+                WHERE T.ORDER_SN = OG.ORDER_ID
+                  AND (T.PAY_STATUS = 'paid' OR
+                      (T.ORDER_STATUS = 'processed' AND T.PAY_TYPE = 0))
+                  AND T.SHIPPING_STATUS != 'declined'
+                  AND T.ORDER_TYPE IN ('normal', 'ysdj')
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T8
+      ON T1.BIZ_DATE = T8.BIZ_DATE
+     AND T1.REFERER = T8.REFERER
+    LEFT JOIN (SELECT T.REFERER,
+                      COUNT(1) PAYED_ORDER_NUM,
+                      SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000), 1, 10) BIZ_DATE,
+                      SYSDATE CREATE_TIME
+                 FROM IUNI_ORDER_INFO T
+                WHERE T.PAY_STATUS = 'paid'
+                  AND T.ORDER_TYPE IN ('normal', 'ysdj')
+                  AND T.ADD_TIME <
+                      DATE_TO_UNIXTIMESTAMP(TO_CHAR(SYSDATE, 'YYYY-MM-DD')) * 1000
+                GROUP BY T.REFERER,
+                         SUBSTR(UNIXTIMESTAMP_TO_DATE(T.ADD_TIME / 1000),
+                                1,
+                                10)) T9
+      ON T1.BIZ_DATE = T9.BIZ_DATE
+     AND T1.REFERER = T9.REFERER
+
+
+
+
+
+        ]]>
+    </insert>
+
+    <!--统计IUNI商城前一天的用户注册情况-->
+    <!-- join (select to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                count(distinct t.id) login_user_num
+           from iuni_user t
+          where t.last_login_time < sysdate
+            and t.last_login_time >= sysdate - 15) t7 on t1.biz_date =
+                                                         t7.biz_date   -->
+    <insert id="insertIuniUserRegDailyStatByTask" parameterClass="map">
+   INSERT INTO IUNI_USER_REG_DAILY_STAT
+  (ID,
+   gionee_reg_num,
+   sina_reg_num,
+   qq_reg_num,
+   zfb_reg_num,
+   douban_reg_num,
+   buy_user_num,
+   BIZ_DATE,
+   CREATE_TIME)
+   <![CDATA[  
+  select S_IUNI_USER_REG_DAILY_STAT.Nextval id,
+         t1.gionee_reg_num,
+         t2.sina_reg_num,
+         t3.qq_reg_num,
+         t4.zfb_reg_num,
+         t5.douban_reg_num,
+         t6.buy_user_num,
+         t1.biz_date,
+         sysdate create_time
+    from (
+    select to_char(sysdate - 1, 'yyyy-mm-dd') biz_date, count(1) gionee_reg_num
+  from iuni_user t
+ where not exists
+ (select * from iuni_user_bind t2 where t.id = t2.user_id)
+   and t.register_time <
+       to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+   and t.register_time >=
+       to_date(to_char(sysdate - 1, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+         ) t1
+    join (select to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                 count(1) sina_reg_num
+            from iuni_user t
+            join iuni_user_bind t2 on t.id = t2.user_id
+           where t.register_time <
+                 to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t.register_time >=
+           to_date(to_char(sysdate - 1, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t2.o_type = 2) t2 on t1.biz_date = t2.biz_date
+    join (select to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                 count(1) qq_reg_num
+            from iuni_user t
+            join iuni_user_bind t2 on t.id = t2.user_id
+           where t.register_time <
+                 to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t.register_time >=
+           to_date(to_char(sysdate - 1, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t2.o_type = 3) t3 on t1.biz_date = t3.biz_date
+    join (select to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                 count(1) zfb_reg_num
+            from iuni_user t
+            join iuni_user_bind t2 on t.id = t2.user_id
+           where t.register_time <
+                 to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t.register_time >=
+           to_date(to_char(sysdate - 1, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t2.o_type = 5) t4 on t1.biz_date = t4.biz_date
+    join (select to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                 count(1) douban_reg_num
+            from iuni_user t
+            join iuni_user_bind t2 on t.id = t2.user_id
+           where t.register_time <
+                 to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t.register_time >=
+           to_date(to_char(sysdate - 1, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+             and t2.o_type = 6) t5 on t1.biz_date = t5.biz_date
+    join (select to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+                 count(distinct t.user_id) buy_user_num
+            from iuni_order_info t
+           where t.add_time <
+                 date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd'))*1000
+             and t.add_time >=
+                 date_to_unixtimestamp(to_char(sysdate - 30, 'yyyy-mm-dd'))*1000) t6 on t1.biz_date =
+                                                                                   t6.biz_date
+
+
+
+
+
+        ]]>
+    </insert>
+
+    <!--统计IUNI商城注册页面的前一天的PV和UV-->
+    <insert id="insertIuniPagePvuvDailyStatByTask" parameterClass="map">
+insert into IUNI_PAGE_PVUV_DAILY_STAT
+  (ID,PAGE_URL,PV, UV, IP, BIZ_DATE, CREATE_TIME)
+  select S_IUNI_PAGE_PVUV_DAILY_STAT.Nextval id,page_url, pv, uv,ip, biz_date, create_time from 
+  (
+   
+   select t.source_id page_url,
+           count(t.cookie_info) pv,
+           count(distinct t.cookie_info) uv,
+           count(distinct t.source_ip) ip,
+           to_char(sysdate - 1, 'yyyy-mm-dd') biz_date,
+           sysdate create_time
+     from T_REPORT_DATA_$month$ t
+  <![CDATA[  
+    where t.url_domain='rd.iuni.com'
+      and t.report_type = 'pv'
+      and t.create_time < to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+      and t.create_time >= to_date(to_char(sysdate - 1, 'yyyy-mm-dd'), 'yyyy-mm-dd')
+    group by t.source_id
+  ) t1 
+
+
+
+
+
+        ]]>
+    </insert>
+</sqlMap>

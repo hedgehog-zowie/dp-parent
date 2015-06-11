@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="Warehouse">
+
+    <typeAlias alias="Warehouse" type="com.iuni.dp.persist.datastat.common.model.IuniWmsWarehouse"/>
+
+    <resultMap id="Warehouse" class="Warehouse">
+        <result property="id" column="ID"/>
+        <result property="warehouseCode" column="WAREHOUSE_CODE"/>
+        <result property="warehouseName" column="WAREHOUSE_NAME"/>
+        <result property="warehouseAddress" column="WAREHOUSE_ADDRESS"/>
+        <result property="warehousePhone" column="WAREHOUSE_PHONE"/>
+        <result property="warehouseContact" column="WAREHOUSE_CONTACT"/>
+        <result property="warehouseType" column="WAREHOUSE_TYPE"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="defaultStatus" column="DEFAULT_STATUS"/>
+        <result property="remark" column="REMARK"/>
+        <result property="enabled" column="ENABLED"/>
+    </resultMap>
+
+    <select id="selectAllWarehouse" resultMap="Warehouse">
+        SELECT * FROM SYN_WMS_WAREHOUSE ORDER BY WAREHOUSE_CODE
+    </select>
+
+</sqlMap>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="iuniWxReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- 微信应用新增粉丝相关统计报表 -->
+        <action name="newFansStatView" class="wxAccessLogAction" method="newFansStatView">
+            <result name="success">/WEB-INF/views/stat/report/wxNewFansStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wxNewFansStat.jsp</result>
+        </action>
+
+        <action name="wxNewFansStat2Excel" class="wxAccessLogAction" method="wxNewFansStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">newFansStatView</result>
+        </action>
+
+        <action name="getWxNewFansStatByJSON" class="wxAccessLogAction" method="getWxNewFansStatByJSON">
+        </action>
+
+        <!-- 微信应用活跃用户相关统计报表 -->
+        <action name="activeUserStatView" class="wxAccessLogAction" method="activeUserStatView">
+            <result name="success">/WEB-INF/views/stat/report/wxActiveUserStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wxActiveUserStat.jsp</result>
+        </action>
+
+        <action name="wxActiveUserStat2Excel" class="wxAccessLogAction" method="wxActiveUserStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">activeUserStatView</result>
+        </action>
+
+        <action name="getWxActiveUserStatByJSON" class="wxAccessLogAction" method="getWxActiveUserStatByJSON">
+        </action>
+
+        <!-- 微信应用用户上线内容相关统计报表  -->
+        <action name="upwardCtxStatView" class="wxAccessLogAction" method="upwardCtxStatView">
+            <result name="success">/WEB-INF/views/stat/report/wxUpwardCtxStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wxUpwardCtxStat.jsp</result>
+        </action>
+
+        <action name="wxUpwardCtxStat2Excel" class="wxAccessLogAction" method="wxUpwardCtxStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">upwardCtxStatView</result>
+        </action>
+
+        <!-- 按条件查询微信公众帐号图片下载排行 -->
+        <action name="selectWxImageDownloadRanks" class="wxAccessLogAction" method="selectWxImageDownloadRanks">
+            <result name="success">/WEB-INF/views/stat/report/wxImageDownloadRank_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wxImageDownloadRank_list.jsp</result>
+        </action>
+
+        <!-- 导出Excel微信公众帐号图片下载排行 -->
+        <action name="wxImageDownloadRanks2Excel" class="wxAccessLogAction" method="wxImageDownloadRanks2Excel">
+        </action>
+    </package>
+
+</struts>

@@ -1,0 +1,78 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:amq="http://activemq.apache.org/schema/core" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+ 		http://activemq.apache.org/schema/core 
+ 		http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<amq:connectionFactory id="jmsConnectionFactory"
+		brokerURL="${activeMQ.tcp}" userName="${activeMQ.user}" password="${activeMQ.password}"/>
+		
+	<amq:queue name="wxAccessLogQueue" physicalName="wxAccessLogQueue" />
+	<amq:queue name="wxClickLogQueue" physicalName="wxClickLogQueue" />
+	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory">
+			<bean class="org.springframework.jms.connection.SingleConnectionFactory">
+				<property name="targetConnectionFactory" ref="jmsConnectionFactory" />
+			</bean>
+		</property>
+	</bean>
+
+	<!--获取微信访问日志 -->
+	<bean id="wxAccessLogConsumer" class="com.iuni.dp.mq.weixinmsg.consumer.WxAccessLogConsumer" />
+
+	<bean id="wxAccessLogMessageListenerAdapter"
+		class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+		<constructor-arg ref="wxAccessLogConsumer" />
+		<property name="defaultListenerMethod" value="receive" />
+	</bean>
+
+	<bean id="wxAccessLogMessageListenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="wxAccessLogQueue" />
+		<property name="messageListener" ref="wxAccessLogMessageListenerAdapter" />
+	</bean>
+
+	<!--广告微信点击日志 -->
+	<bean id="wxClickLogConsumer" class="com.iuni.dp.mq.weixinmsg.consumer.WxClickLogConsumer" />
+
+	<bean id="wxClickLogMessageListenerAdapter"
+		class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+		<constructor-arg ref="wxClickLogConsumer" />
+		<property name="defaultListenerMethod" value="receive" />
+	</bean>
+
+	<bean id="wxClickLogMessageListenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="wxClickLogQueue" />
+		<property name="messageListener" ref="wxClickLogMessageListenerAdapter" />
+	</bean>
+	
+	<!-- 金立相关客户端APP登入登出记录日志 -->
+	<!--
+	<amq:queue name="gnAppAccessLogAmqQueue" physicalName="gnAppAccessLogAmqQueue"/>
+	
+	<bean id="gnAppAccessLogProducer" class="com.iuni.dp.mq.appmsg.activemq.producer.GnAppAccessLogProducer">
+		<property name="template" ref="jmsTemplate" />
+		<property name="destination" ref="gnAppAccessLogAmqQueue" />
+		<property name="executor" ref="executor" />
+	</bean>
+	
+	<bean id="gnAppAccessLogMsgListenerAdapter" 
+		class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+		<constructor-arg ref="gnAppAccessLogConsumer"/>
+		<property name="defaultListenerMethod" value="receive"/>
+	</bean>
+	
+	<bean id="gnAppAccessLogMsgListenerContainer" 
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory"/>
+		<property name="destination" ref="gnAppAccessLogAmqQueue"/>
+		<property name="messageListener" ref="gnAppAccessLogMsgListenerAdapter"/>
+	</bean>
+	-->
+
+</beans>

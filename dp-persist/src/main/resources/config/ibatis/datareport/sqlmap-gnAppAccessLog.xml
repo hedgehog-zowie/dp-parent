@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="GnAppAccessLog">
+  
+  <typeAlias alias="GnAppAccessLog" type="com.iuni.dp.persist.datareport.model.GnAppAccessLog"/>
+
+  <resultMap id="GnAppAccessLogMap" class="GnAppAccessLog">
+    <result property="id" column="ID"/>  
+    <result property="appName" column="APP_NAME"/>
+    <result property="channelName" column="CHANNEL_NAME"/> 
+    <result property="apkVersion" column="APK_VERSION"/>  
+    <result property="imei" column="IMEI"/>  
+    <result property="registerUserId" column="REGISTER_USER_ID"/>
+    <result property="startupTime" column="STARTUP_TIME"/>
+    <result property="shutdownTime" column="SHUTDOWN_TIME"/>
+    <result property="status" column="STATUS"/>
+    <result property="mobileModel" column="MOBILE_MODEL"/>
+    <result property="mobileNumber" column="MOBILE_NUMBER"/>
+    <result property="modelHeight" column="MODEL_HEIGHT"/>
+    <result property="modelWidth" column="MODEL_WIDTH"/>
+    <result property="networkMode" column="NETWORK_MODE"/>
+    <result property="networkIp" column="NETWORK_IP"/>
+    <result property="locationCountry" column="LOCATION_COUNTRY"/>
+    <result property="locationProvince" column="LOCATION_PROVINCE"/>
+    <result property="locationCity" column="LOCATION_CITY"/>
+    <result property="locationTime" column="LOCATION_TIME"/>
+    <result property="reportTime" column="REPORT_TIME"/>   
+    <result property="createTime" column="CREATE_TIME"/>  
+  </resultMap>
+
+  <insert id="insertGnAppAccessLog" parameterClass="GnAppAccessLog">
+    insert into GN_APP_ACCESSLOG 
+    ( ID, APP_NAME, CHANNEL_NAME, APK_VERSION, IMEI, REGISTER_USER_ID, STARTUP_TIME, SHUTDOWN_TIME, STATUS
+    	, MOBILE_MODEL, MOBILE_NUMBER, MODEL_HEIGHT, MODEL_WIDTH, NETWORK_MODE, NETWORK_IP
+    	, LOCATION_COUNTRY, LOCATION_PROVINCE, LOCATION_CITY, LOCATION_TIME
+      	, REPORT_TIME, CREATE_TIME )
+    values 
+    ( #id#, #appName#, #channelName#, #apkVersion#, #imei#, #registerUserId#, #startupTime#, #shutdownTime#, #status#
+    	, #mobileModel#, #mobileNumber#, #modelHeight#, #modelWidth#, #networkMode#, #networkIp#
+    	, #locationCountry#, #locationProvince#, #locationCity#, #locationTime#
+      	, #reportTime#, SysTimestamp )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_GN_APP_ACCESSLOG.NEXTVAL as id FROM dual
+    </selectKey>  
+  </insert>
+  
+  <insert id="insertGnAppAccessLogEx" parameterClass="GnAppAccessLog">
+    insert into GN_APP_ACCESSLOG_EX 
+    ( ID, APP_NAME, CHANNEL_NAME, APK_VERSION, IMEI, REGISTER_USER_ID, STARTUP_TIME, SHUTDOWN_TIME, STATUS
+    	, MOBILE_MODEL, MOBILE_NUMBER, MODEL_HEIGHT, MODEL_WIDTH, NETWORK_MODE, NETWORK_IP
+    	, LOCATION_COUNTRY, LOCATION_PROVINCE, LOCATION_CITY, LOCATION_TIME
+      	, REPORT_TIME, CREATE_TIME )
+    values 
+    ( #id#, #appName#, #channelName#, #apkVersion#, #imei#, #registerUserId#, #startupTime#, #shutdownTime#, #status#
+    	, #mobileModel#, #mobileNumber#, #modelHeight#, #modelWidth#, #networkMode#, #networkIp#
+    	, #locationCountry#, #locationProvince#, #locationCity#, #locationTime#
+      	, #reportTime#, SysTimestamp )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_GN_APP_ACCESSLOG_EX.NEXTVAL as id FROM dual
+    </selectKey>  
+  </insert>
+ 
+</sqlMap>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+    <package name="exapi" extends="externalService" namespace="/exsevice/exapi">
+
+        <!-- StatScheme JSON Action -->
+        <action name="getIuniOrderStat4Cs" class="iuniOrderInfoAction" method="getIuniOrderStat4CsByJSON">
+        </action>
+
+        <action name="getIuniOrderStat4CsByUser" class="iuniOrderInfoAction" method="getIuniOrderStat4CsByUser">
+        </action>
+    </package>
+</struts>

@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="WxAccessLog" >
+
+  <typeAlias alias="WxAccessLog" type="com.iuni.dp.persist.datastat.model.WxAccessLog" />
+
+  <resultMap id="WxAccessLogMap" class="WxAccessLog">
+    <result property="id" column="ID"/>
+    <result property="userId" column="USER_ID" />
+    <result property="publicUserId" column="PUBLIC_USER_ID" />
+    <result property="msgType" column="MSG_TYPE" />
+    <result property="keyword" column="KEYWORD"/>
+    <result property="keywordType" column="KEYWORD_TYPE"/>
+    <result property="eventType" column="EVNET_TYPE"/>
+    <result property="hasResult" column="HAS_RESULT"/>
+    <result property="ruleId" column="RULE_ID"/>
+    <result property="imgId" column="IMG_ID"/>
+    <result property="imgName" column="IMG_NAME"/>
+    <result property="imgUrl" column="IMG_URL"/>
+    <result property="tagName" column="TAG_NAME"/>
+    <result property="txtId" column="TXT_ID"/>
+    <result property="costTime" column="COST_TIME"/>
+    <result property="logTime" column="LOG_TIME"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+
+  <sql id="WxAccessLog_columns" >
+    WAL.ID, WAL.USER_ID, WAL.PUBLIC_USER_ID, WAL.MSG_TYPE, WAL.KEYWORD, WAL.KEYWORD_TYPE, WAL.EVNET_TYPE, 
+    WAL.HAS_RESULT, WAL.RULE_ID, WAL.IMG_ID, WAL.IMG_NAME, WAL.IMG_URL, WAL.TAG_NAME, WAL.TXT_ID, 
+    WAL.COST_TIME, WAL.LOG_TIME, WAL.CREATE_TIME
+  </sql>
+  
+  <sql id="WxAccessLog_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="userId" prepend="AND" >
+        <![CDATA[  
+        WAL.USER_ID = #userId#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="publicUserId" prepend="AND" >
+        <![CDATA[  
+        WAL.PUBLIC_USER_ID = #publicUserId#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="logTime" prepend="AND" >
+        <![CDATA[  
+        WAL.LOG_TIME = #logTime#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="createTime" prepend="AND" >
+        <![CDATA[  
+        WAL.CREATE_TIME = #createTime#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="WxAccessLogStat_queryParams">
+  	<dynamic prepend="WHERE" >
+      <isNotNull property="msgType" prepend="AND" >
+        <![CDATA[  
+        WAL.MSG_TYPE <> #msgType#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="beginDate" prepend="AND" >
+        <![CDATA[  
+        WAL.LOG_TIME >= to_date(#beginDate#, 'yyyy-mm-dd')  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="endDate" prepend="AND" >
+        <![CDATA[  
+        WAL.LOG_TIME < to_date(#endDate#, 'yyyy-mm-dd')+1  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="WxAccessLogStat_queryParams_1">
+  	<dynamic prepend="WHERE" >
+      <isNotNull property="msgType" prepend="AND" >
+        <![CDATA[  
+        WAL.MSG_TYPE <> #msgType#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="beginDate" prepend="AND" >
+        <![CDATA[  
+        WAL.LOG_TIME >= to_date(#beginDate# || '-01', 'yyyy-mm-dd')  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="endDate" prepend="AND" >
+        <![CDATA[  
+        WAL.LOG_TIME < add_months(to_date(#endDate# || '-01', 'yyyy-mm-dd'),1)  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="WxAccessLogStat_queryParams_2">
+  	<dynamic prepend="WHERE" >
+      <isNotNull property="msgType" prepend="AND" >
+        <![CDATA[  
+        WAL.MSG_TYPE = #msgType#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="keywordType" prepend="AND" >
+        <![CDATA[  
+        WAL.KEYWORD_TYPE = #keywordType#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="beginDate" prepend="AND" >
+        <![CDATA[  
+        WAL.LOG_TIME >= to_date(#beginDate#, 'yyyy-mm-dd')  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="endDate" prepend="AND" >
+        <![CDATA[  
+        WAL.LOG_TIME < to_date(#endDate#, 'yyyy-mm-dd')+1  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="WxAccessLogStat_queryParams_3">
+  	<dynamic prepend="WHERE">
+		<isNotNull property="msgType" prepend="and">
+			WAL.MSG_TYPE = #msgType#
+		</isNotNull>
+		<isNotNull property="eventType" prepend="and">
+			WAL.EVNET_TYPE = 'subscribe'
+		</isNotNull>
+		<isNotNull property="beginDate" prepend="AND" >
+		    <![CDATA[  
+		    WAL.LOG_TIME >= to_date(#beginDate#, 'yyyy-mm-dd')  
+		    ]]>  
+		</isNotNull>
+		<isNotNull property="endDate" prepend="AND" >
+		    <![CDATA[  
+		    WAL.LOG_TIME < to_date(#endDate#, 'yyyy-mm-dd')+1  
+		    ]]>  
+		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="WxAccessLogStat_queryParams_4">
+  	<dynamic prepend="WHERE">
+		<isNotNull property="msgType" prepend="and">
+			WAL.MSG_TYPE = #msgType#
+		</isNotNull>
+		<isNotNull property="eventType" prepend="and">
+			WAL.EVNET_TYPE = 'unsubscribe'
+		</isNotNull>
+		<isNotNull property="beginDate" prepend="AND" >
+		    <![CDATA[  
+		    WAL.LOG_TIME >= to_date(#beginDate#, 'yyyy-mm-dd')  
+		    ]]>  
+		</isNotNull>
+		<isNotNull property="endDate" prepend="AND" >
+		    <![CDATA[  
+		    WAL.LOG_TIME < to_date(#endDate#, 'yyyy-mm-dd')+1  
+		    ]]>  
+		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectWxAccessLogById" resultMap="WxAccessLogMap" parameterClass="int">
+  	SELECT 
+  	<include refid="WxAccessLog_columns"/>
+  	FROM WX_ACCESS_LOG WAL
+  	WHERE WAL.ID = #id#
+  </select>
+  
+  <select id="selectWxAccessLogByExample" resultMap="WxAccessLogMap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	SELECT 
+	  	<include refid="WxAccessLog_columns"/>
+	  	FROM WX_ACCESS_LOG WAL
+	  	<include refid="WxAccessLog_queryParams"/>
+	  	ORDER BY WAL.LOG_TIME
+	) T
+  </select>
+  
+  <select id="selectWxAccessLogByPage" resultMap="WxAccessLogMap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	SELECT 
+		  	<include refid="WxAccessLog_columns"/>
+		  	FROM WX_ACCESS_LOG WAL
+		  	<include refid="WxAccessLog_queryParams"/>
+		  	ORDER BY WAL.LOG_TIME
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWxAccessLogCount" resultClass="int" parameterClass="map">
+  	SELECT COUNT(WAL.ID) FROM WX_ACCESS_LOG WAL
+  	<include refid="WxAccessLog_queryParams"/>
+  </select>
+  
+  <select id="selectActiveUserStatDailyByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select t."bizDate", count(distinct t.USER_ID) "activeUserNum" from 
+	  	(
+			select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate"
+			from WX_ACCESS_LOG WAL
+			<include refid="WxAccessLogStat_queryParams"/>
+		) t
+		group by t."bizDate"
+		order by t."bizDate"
+	) T
+  </select>
+  
+  <select id="selectActiveUserStatDailyByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select t."bizDate", count(distinct t.USER_ID) "activeUserNum" from 
+		  	(
+				select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate"
+				from WX_ACCESS_LOG WAL
+				<include refid="WxAccessLogStat_queryParams"/>
+			) t
+			group by t."bizDate"
+			order by t."bizDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectActiveUserStatDailyCount" resultClass="int" parameterClass="map">
+  	select count("bizDate") from 
+  	(
+  		select t."bizDate", count(distinct t.USER_ID) "activeUserNum" from 
+	  	(
+			select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate"
+			from WX_ACCESS_LOG WAL
+			<include refid="WxAccessLogStat_queryParams"/>
+		) t
+		group by t."bizDate"
+		order by t."bizDate"
+  	)
+  </select>
+  
+  <select id="selectActiveUserStatMonthlyByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select t."bizDate", count(distinct t.USER_ID) "activeUserNum" from 
+	  	(
+			select WAL.USER_ID, substr(to_char(WAL.LOG_TIME, 'yyyy-mm-dd'),1, instr(to_char(WAL.LOG_TIME, 'yyyy-mm-dd'),'-',1,2)-1) "bizDate"
+			from WX_ACCESS_LOG WAL
+			<include refid="WxAccessLogStat_queryParams_1"/>
+		) t
+		group by t."bizDate"
+		order by t."bizDate"
+	) T
+  </select>
+  
+  <select id="selectActiveUserStatMonthlyByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select t."bizDate", count(distinct t.USER_ID) "activeUserNum" from 
+		  	(
+				select WAL.USER_ID, substr(to_char(WAL.LOG_TIME, 'yyyy-mm-dd'),1, instr(to_char(WAL.LOG_TIME, 'yyyy-mm-dd'),'-',1,2)-1) "bizDate"
+				from WX_ACCESS_LOG WAL
+				<include refid="WxAccessLogStat_queryParams_1"/>
+			) t
+			group by t."bizDate"
+			order by t."bizDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectActiveUserStatMonthlyCount" resultClass="int" parameterClass="map">
+  	select count("bizDate") from 
+  	(
+  		select t."bizDate", count(distinct t.USER_ID) "activeUserNum" from 
+	  	(
+			select WAL.USER_ID, substr(to_char(WAL.LOG_TIME, 'yyyy-mm-dd'),1, instr(to_char(WAL.LOG_TIME, 'yyyy-mm-dd'),'-',1,2)-1) "bizDate"
+			from WX_ACCESS_LOG WAL
+			<include refid="WxAccessLogStat_queryParams_1"/>
+		) t
+		group by t."bizDate"
+		order by t."bizDate"
+  	)
+  </select>
+  
+    <select id="selectUpwardTextStatByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select temp.* from
+	  	(
+			select WAL.KEYWORD "content", count(WAL.ID) "count"
+			from WX_ACCESS_LOG WAL
+			<include refid="WxAccessLogStat_queryParams_2"/>
+			group by WAL.KEYWORD
+			order by WAL.KEYWORD
+		) temp 
+		order by temp."count" desc
+	) T
+  </select>
+  
+  <select id="selectUpwardTextStatByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select temp.* from
+		  	(
+				select WAL.KEYWORD "content", count(WAL.ID) "count"
+				from WX_ACCESS_LOG WAL
+				<include refid="WxAccessLogStat_queryParams_2"/>
+				group by WAL.KEYWORD
+				order by WAL.KEYWORD
+			) temp 
+			order by temp."count" desc
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectUpwardTextStatCount" resultClass="int" parameterClass="map">
+  	select count(temp."content") from
+  	(
+		select WAL.KEYWORD "content", count(WAL.ID) "count"
+		from WX_ACCESS_LOG WAL
+		<include refid="WxAccessLogStat_queryParams_2"/>
+		group by WAL.KEYWORD
+		order by WAL.KEYWORD
+	) temp
+  </select>
+  
+  <select id="selectNewFansStatByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select T5."bizDate", count(T5."userId") "newFansNum" from 
+		(
+			select T3."bizDate", T3.USER_ID "userId", T3."subscribe", T4."unsubscribe"
+				, decode(T4."unsubscribe", null, T3."subscribe"-0, T3."subscribe"-T4."unsubscribe") "count" from 
+			(
+				select T1."bizDate",T1.USER_ID, count(T1.EVNET_TYPE) "subscribe" from (
+				select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate" ,WAL.EVNET_TYPE 
+				from WX_ACCESS_LOG WAL
+				<include refid="WxAccessLogStat_queryParams_3"/>
+				) T1
+				group by T1."bizDate",T1.USER_ID
+				order by T1."bizDate",T1.USER_ID
+			) T3 left join 
+			(
+				select T1."bizDate",T1.USER_ID, count(T1.EVNET_TYPE) "unsubscribe" from (
+				select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate" ,WAL.EVNET_TYPE 
+				from WX_ACCESS_LOG WAL
+				<include refid="WxAccessLogStat_queryParams_4"/>
+				) T1
+				group by T1."bizDate",T1.USER_ID
+				order by T1."bizDate",T1.USER_ID
+			) T4 on (T3."bizDate" = T4."bizDate" and T3.USER_ID = T4.USER_ID)
+			order by T3."bizDate", T3.USER_ID
+		) T5
+		where T5."count" > 0
+		group by T5."bizDate"
+		order by T5."bizDate"
+	) T
+  </select>
+  
+  <select id="selectNewFansStatByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T5."bizDate", count(T5."userId") "newFansNum" from 
+			(
+				select T3."bizDate", T3.USER_ID "userId", T3."subscribe", T4."unsubscribe"
+					, decode(T4."unsubscribe", null, T3."subscribe"-0, T3."subscribe"-T4."unsubscribe") "count" from 
+				(
+					select T1."bizDate",T1.USER_ID, count(T1.EVNET_TYPE) "subscribe" from (
+					select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate" ,WAL.EVNET_TYPE 
+					from WX_ACCESS_LOG WAL
+					<include refid="WxAccessLogStat_queryParams_3"/>
+					) T1
+					group by T1."bizDate",T1.USER_ID
+					order by T1."bizDate",T1.USER_ID
+				) T3 left join 
+				(
+					select T1."bizDate",T1.USER_ID, count(T1.EVNET_TYPE) "unsubscribe" from (
+					select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate" ,WAL.EVNET_TYPE 
+					from WX_ACCESS_LOG WAL
+					<include refid="WxAccessLogStat_queryParams_4"/>
+					) T1
+					group by T1."bizDate",T1.USER_ID
+					order by T1."bizDate",T1.USER_ID
+				) T4 on (T3."bizDate" = T4."bizDate" and T3.USER_ID = T4.USER_ID)
+				order by T3."bizDate", T3.USER_ID
+			) T5
+			where T5."count" > 0
+			group by T5."bizDate"
+			order by T5."bizDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectNewFansStatCount" resultClass="int" parameterClass="map">
+  	select count("bizDate") from 
+  	(
+  		select T5."bizDate", count(T5."userId") "newFansNum" from 
+		(
+			select T3."bizDate", T3.USER_ID "userId", T3."subscribe", T4."unsubscribe"
+				, decode(T4."unsubscribe", null, T3."subscribe"-0, T3."subscribe"-T4."unsubscribe") "count" from 
+			(
+				select T1."bizDate",T1.USER_ID, count(T1.EVNET_TYPE) "subscribe" from (
+				select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate" ,WAL.EVNET_TYPE 
+				from WX_ACCESS_LOG WAL
+				<include refid="WxAccessLogStat_queryParams_3"/>
+				) T1
+				group by T1."bizDate",T1.USER_ID
+				order by T1."bizDate",T1.USER_ID
+			) T3 left join 
+			(
+				select T1."bizDate",T1.USER_ID, count(T1.EVNET_TYPE) "unsubscribe" from (
+				select WAL.USER_ID, to_char(WAL.LOG_TIME, 'yyyy-mm-dd') "bizDate" ,WAL.EVNET_TYPE 
+				from WX_ACCESS_LOG WAL
+				<include refid="WxAccessLogStat_queryParams_4"/>
+				) T1
+				group by T1."bizDate",T1.USER_ID
+				order by T1."bizDate",T1.USER_ID
+			) T4 on (T3."bizDate" = T4."bizDate" and T3.USER_ID = T4.USER_ID)
+			order by T3."bizDate", T3.USER_ID
+		) T5
+		where T5."count" > 0
+		group by T5."bizDate"
+		order by T5."bizDate"
+  	)
+  </select>
+  
+  <!--微信图片下载排行-->
+  <select id="selectWxImageDownloadRanks" resultClass="hashmap" parameterClass="map">
+ select t7.*
+  from (select t6.*, rownum rn
+          from (select *
+                  from (select t2.img_id "imgId",
+                               t2.img_name "imgName",
+                               t2.img_url "imgUrl",
+                               t2.tag_name "tagName",
+                               t2.show_count "showCount",
+                               CASE
+                                 WHEN t4.click_count is null THEN
+                                  0
+                                 ELSE
+                                  t4.click_count
+                               END "clickCount",
+                               CASE
+                                 WHEN t4.click_count is null THEN
+                                  '0.00%'
+                                 ELSE
+                                  to_char(t4.click_count / t2.show_count * 100,
+                                          'FM9999999999990.00') || '%'
+                               END "clickRate"
+                          from (select t.img_id,
+                                       t.img_name,
+                                       t.img_url,
+                                       t.tag_name,
+                                       count(1) show_count
+                                  from wx_access_log t
+                                 where t.img_id is not null
+                                <isNotNull property="endTime" prepend="AND" >
+        						<![CDATA[  
+        						 t.log_time <= to_date(#endTime#,'yyyy-mm-dd hh24:mi:ss')
+        						]]>  
+      							</isNotNull>
+                                 group by t.img_id,
+                                          t.img_name,
+                                          t.img_url,
+                                          t.tag_name) t2
+                          left join (select t3.img_id, count(1) click_count
+                                      from wx_click_log t3
+                                     where t3.img_id is not null
+                                <isNotNull property="endTime" prepend="AND" >
+        						<![CDATA[  
+        						 t3.log_time <= to_date(#endTime#,'yyyy-mm-dd hh24:mi:ss')
+        						]]>  
+      							</isNotNull>
+                                     group by t3.img_id) t4 on t2.img_id =
+                                                               t4.img_id) t5
+                 order by "showCount"  desc,
+                          "clickCount" desc,
+                          "clickRate"  desc) t6
+         where rownum <![CDATA[ <= ]]> #endRec#) t7
+ where rn <![CDATA[ >= ]]> #startRec#
+
+  </select>
+  
+    <!--微信图片下载排行-记录总数-->
+  <select id="selectWxImageDownloadRanksCount" resultClass="int" parameterClass="map">
+  	 select count(1)
+  from (select t.img_id,
+               t.img_name,
+               t.img_url,
+               t.tag_name,
+               count(1) show_count
+          from wx_access_log t
+         where t.img_id is not null
+               <isNotNull property="endTime" prepend="AND" >
+                <![CDATA[  
+                  t.log_time <= to_date(#endTime#,'yyyy-mm-dd hh24:mi:ss')
+        		]]>  
+      		   </isNotNull>
+         group by t.img_id, t.img_name, t.img_url, t.tag_name) t2
+  left join (select t3.img_id, count(1) click_count
+               from wx_click_log t3
+              where t3.img_id is not null
+               <isNotNull property="endTime" prepend="AND" >
+                <![CDATA[  
+                  t3.log_time <= to_date(#endTime#,'yyyy-mm-dd hh24:mi:ss')
+        		]]>  
+      		   </isNotNull>
+              group by t3.img_id) t4 on t2.img_id = t4.img_id
+  </select>
+  
+      <!--微信图片下载总数-->
+  <select id="selectWxImageDownloadTotalCount" resultClass="int" parameterClass="map">
+         select count(1) total_show_count
+           from wx_access_log t
+          where t.img_id is not null
+               <isNotNull property="endTime" prepend="AND" >
+                <![CDATA[  
+                  t.log_time <= to_date(#endTime#,'yyyy-mm-dd hh24:mi:ss')
+        		]]>  
+      		   </isNotNull>
+  </select>
+  <insert id="insertWxAccessLog" parameterClass="WxAccessLog" >
+    INSERT INTO WX_ACCESS_LOG( ID, USER_ID, PUBLIC_USER_ID, MSG_TYPE, KEYWORD, KEYWORD_TYPE, EVNET_TYPE, HAS_RESULT,
+    						   RULE_ID, IMG_ID, IMG_NAME, IMG_URL, TAG_NAME, TXT_ID, COST_TIME, LOG_TIME, CREATE_TIME)
+     VALUES ( #id#, #userId#, #publicUserId#, #msgType#, #keyword#, #keywordType#, #eventType#, #hasResult#, #ruleId#, 
+     		  #imgId#, #imgName#, #imgUrl#, #tagName#, #txtId#, #costTime#, #logTime#, SysDate)
+     <selectKey type="pre" keyProperty="id" resultClass="long">
+     	SELECT S_WX_ACCESS_LOG.NEXTVAL AS id FROM DUAL
+     </selectKey>
+  </insert>
+  
+  <delete id="deleteWxAccessLogById" parameterClass="int">
+  	DELETE FROM WX_ACCESS_LOG WAL
+  	WHERE WAL.ID = #id#
+  </delete>
+
+</sqlMap>

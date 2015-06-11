@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="iuniWmsWlReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- IUNI WMS 仓库出入库数量汇总报表（物流） -->
+        <action name="iuniWmsStockForWl" class="iuniWmsWlStockAction" method="iuniWmsStockForWl">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsStockForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsStockForWl.jsp</result>
+        </action>
+        <action name="iuniWmsStockForWl2Excel" class="iuniWmsWlStockAction" method="iuniWmsStockForWl2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsStockForWl</result>
+        </action>
+
+        <!-- IUNI WMS 仓库出入库来源汇总报表（物流） -->
+        <action name="iuniWmsStockSourceForWl" class="iuniWmsStockSourceAction" method="iuniWmsStockSourceForWl">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsStockSourceForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsStockSourceForWl.jsp</result>
+        </action>
+        <action name="iuniWmsStockSourceForWl2Excel" class="iuniWmsStockSourceAction"
+                method="iuniWmsStockSourceForWl2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsStockSourceForWl</result>
+        </action>
+
+        <!-- IUNI WMS 各渠道进退换数量汇总报表（物流） -->
+        <action name="iuniWmsStockChannelForWl" class="iuniWmsStockChannelAction" method="iuniWmsStockChannelForWl">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsStockChannelForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsStockChannelForWl.jsp</result>
+        </action>
+        <action name="iuniWmsStockChannelForWl2Excel" class="iuniWmsStockChannelAction"
+                method="iuniWmsStockChannelForWl2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsStockChannelForWl</result>
+        </action>
+
+        <!-- 调拨明细统计报表（物流） -->
+        <action name="iuniWmsTransferStatViewForWl" class="iuniWmsTransferStatForWlAction"
+                method="iuniWmsTransferStatViewForWl">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsTransferStatViewForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsTransferStatViewForWl.jsp</result>
+        </action>
+        <action name="iuniWmsTransferStatViewForWl2Excel" class="iuniWmsTransferStatForWlAction"
+                method="iuniWmsTransferStatViewForWl2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsTransferStatViewForWl</result>
+        </action>
+
+        <!-- 销售出库明细报表（物流） -->
+        <action name="iuniWmsStockMoveViewForWl" class="iuniWmsStockMoveViewForWlAction"
+                method="iuniWmsStockMoveViewForWl">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsStockMoveViewForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsStockMoveViewForWl.jsp</result>
+        </action>
+        <action name="iuniWmsStockMoveViewForWl2Excel" class="iuniWmsStockMoveViewForWlAction"
+                method="iuniWmsStockMoveViewForWl2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsStockMoveViewForWl</result>
+        </action>
+
+        <!-- 退货明细报表（物流） -->
+        <action name="iuniWmsBackGoodsViewForWl" class="iuniWmsBackGoodsViewForWlAction"
+                method="iuniWmsBackGoodsViewForWl">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsBackGoodsViewForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsBackGoodsViewForWl.jsp</result>
+        </action>
+        <action name="iuniWmsBackGoodsViewForWl2Excel" class="iuniWmsBackGoodsViewForWlAction"
+                method="iuniWmsBackGoodsViewForWl2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsBackGoodsViewForWl</result>
+        </action>
+
+        <!-- 正向订单时效统计表 -->
+        <action name="iuniWmsPositiveOrderWl" class="iuniWmsPositiveOrderWlAction" method="iuniWmsPositiveOrderWl">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsPositiveOrderWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsPositiveOrderWl.jsp</result>
+        </action>
+        <action name="iuniWmsPositiveOrderWl2Excel" class="iuniWmsPositiveOrderWlAction"
+                method="iuniWmsPositiveOrderWl2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsPositiveOrderWl</result>
+        </action>
+
+        <!-- 逆向签收表 - 退货 -->
+        <action name="iuniWmsReverseSignOfBackForWl" class="iuniWmsReverseSignForWlAction"
+                method="iuniWmsReverseSignOfBack">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsReverseSignOfBackForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsReverseSignOfBackForWl.jsp</result>
+        </action>
+        <action name="iuniWmsReverseSignOfBackForWl2Excel" class="iuniWmsReverseSignForWlAction"
+                method="iuniWmsReverseSignOfBack2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsReverseSignOfBackForWl</result>
+        </action>
+
+        <!-- 逆向签收表 - 换货 -->
+        <action name="iuniWmsReverseSignOfExchangeForWl" class="iuniWmsReverseSignForWlAction"
+                method="iuniWmsReverseSignOfExchange">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsReverseSignOfExchangeForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsReverseSignOfExchangeForWl.jsp</result>
+        </action>
+        <action name="iuniWmsReverseSignOfExchangeForWl2Excel" class="iuniWmsReverseSignForWlAction"
+                method="iuniWmsReverseSignOfExchange2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsReverseSignOfExchangeForWl</result>
+        </action>
+
+        <!-- 逆向签收表 - 维修 -->
+        <action name="iuniWmsReverseSignOfRepairForWl" class="iuniWmsReverseSignForWlAction"
+                method="iuniWmsReverseSignOfRepair">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsReverseSignOfRepairForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsReverseSignOfRepairForWl.jsp</result>
+        </action>
+        <action name="iuniWmsReverseSignOfRepairForWl2Excel" class="iuniWmsReverseSignForWlAction"
+                method="iuniWmsReverseSignOfRepair2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsReverseSignOfRepairForWl</result>
+        </action>
+
+        <!-- 运费报表 -->
+        <action name="iuniWmsFreightForWl" class="iuniWmsFreightForWlAction"
+                method="iuniWmsFreight">
+            <result name="success">/WEB-INF/views/stat/report/wmswl/iuniWmsFreightForWl.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmswl/iuniWmsFreightForWl.jsp</result>
+        </action>
+        <action name="iuniWmsFreightForWl2Excel" class="iuniWmsFreightForWlAction"
+                method="iuniWmsFreight2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWmsFreightForWl</result>
+        </action>
+
+    </package>
+
+</struts>

@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniUcLoginLog">
+
+  <typeAlias alias="IuniUcLoginLog" type="com.iuni.dp.persist.datastat.model.IuniUcLoginLog" />
+  <typeAlias alias="IuniUcOloginLog" type="com.iuni.dp.persist.datastat.model.IuniUcOloginLog"/>
+
+  <resultMap id="IuniUcLoginLogMap" class="IuniUcLoginLog">
+    <result property="id" column="ID"/> 
+    <result property="userName" column="USER_NAME"/>
+    <result property="mobile" column="MOBILE"/>
+    <result property="email" column="EMAIL"/>
+    <result property="loginResult" column="LOGIN_RESULT"/>
+    <result property="loginError" column="LOGIN_ERROR"/>
+    <result property="loginFrom" column="LOGIN_FROM"/> 
+    <result property="loginIp" column="LOGIN_IP"/>
+    <result property="loginTime" column="LOGIN_TIME"/>
+  </resultMap>
+  
+  <resultMap id="IuniUcOloginLogMap" class="IuniUcOloginLog">
+    <result property="id" column="ID"/> 
+    <result property="userId" column="USER_ID"/>
+    <result property="loginResult" column="LOGIN_RESULT"/>
+    <result property="oType" column="O_TYPE"/>
+    <result property="isBind" column="IS_BIND"/>
+    <result property="loginIp" column="LOGIN_IP"/>
+    <result property="loginTime" column="LOGIN_TIME"/>
+  </resultMap>
+  
+  <sql id="iuniUserLoginFreq_select_1">
+  	T0."regTime", T0."userId", T0."userName", T0."email", T0."mobile"
+	, case when T1."userId" is null then 0 else 1 end "s1day"
+	, case when T2."userId" is null then 0 else 1 end "s2to3day"
+	, case when T3."userId" is null then 0 else 1 end "s4to7day"
+	, case when T4."userId" is null then 0 else 1 end "s8to30day"
+	, case when T5."userId" is null then 0 else 1 end "s31to90day"
+  </sql>
+  
+  <sql id="iuniUserLoginFreq_queryParam_1">
+  	<dynamic prepend="where">
+  		<isNotNull property="beginDate" prepend="and">
+  			IU.REGISTER_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull property="endDate" prepend="and">
+  			IU.REGISTER_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iuniUserLoginFreq_queryParam_2">
+	<isNotNull property="beginDate" prepend="and">
+		IU.REGISTER_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+	</isNotNull>
+	<isNotNull property="endDate" prepend="and">
+		IU.REGISTER_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+	</isNotNull>
+  </sql>
+  
+  <sql id="iuniUserLoginFreq_query_1">
+  	select 
+	<include refid="iuniUserLoginFreq_select_1"/>
+	from
+	(
+	    select 
+	    IU.ID "userId", IU.USER_NAME "userName", IU.MAIL "email", IU.PHONENUM "mobile"
+	    ,to_char(IU.REGISTER_TIME, 'yyyy-mm-dd') "regTime" 
+	    from IUNI_USER IU
+	    <include refid="iuniUserLoginFreq_queryParam_1"/>
+	    order by IU.ID
+	) T0 
+	left join 
+	(
+	    select 
+		distinct IU.ID "userId"
+		from IUNI_UC_LOGINLOG IUL
+		left join IUNI_USER IU 
+		on (IU.USER_NAME = IUL.USER_NAME )
+		where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+		union
+		select 
+		distinct IU.ID "userId"
+		from IUNI_UC_LOGINLOG IUL
+		left join IUNI_USER IU 
+		on (IU.PHONENUM = IUL.MOBILE)
+		where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+		union
+		select 
+		distinct IU.ID "userId"
+		from IUNI_UC_LOGINLOG IUL
+		left join IUNI_USER IU 
+		on (IU.MAIL = IUL.EMAIL)
+		where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+		union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T1 on (T1."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T2 on (T2."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T3 on (T3."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T4 on (T4."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T5 on (T5."userId" = T0."userId")
+	order by T0."regTime"
+  </sql>
+  
+  <select id="selectIuniUserLoginFreqByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		<include refid="iuniUserLoginFreq_query_1"/>
+  	) T
+  </select>
+  
+  <select id="selectIuniUserLoginFreqByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	<include refid="iuniUserLoginFreq_query_1"/>
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniUserLoginFreqCount" resultClass="int" parameterClass="map">
+  	select count(*) "totalNum" from
+	(
+	    <include refid="iuniUserLoginFreq_query_1"/>
+	) 
+  </select>
+  
+  <sql id="iuniUserRegRetain_select_1">
+  	T0."regTime", count(T0."userId") "regNum", count(T1."userId") "retainUserOn1day"
+	, count(T2."userId") "retainUserOn2To3day", count(T3."userId") "retainUserOn4To7day"
+	, count(T4."userId") "retainUserOn8To30day", count(T5."userId") "retainUserOn31To90day"
+  </sql>
+  
+  <sql id="iuniUserRegRetain_query_1">
+  	select 
+	<include refid="iuniUserRegRetain_select_1"/>
+	from
+	(
+	    select 
+	    IU.ID "userId",to_char(IU.REGISTER_TIME, 'yyyy-mm-dd') "regTime" 
+	    from IUNI_USER IU
+	    <include refid="iuniUserLoginFreq_queryParam_1"/>
+	) T0 
+	left join 
+	(
+	    select 
+		distinct IU.ID "userId"
+		from IUNI_UC_LOGINLOG IUL
+		left join IUNI_USER IU 
+		on (IU.USER_NAME = IUL.USER_NAME )
+		where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+		union
+		select 
+		distinct IU.ID "userId"
+		from IUNI_UC_LOGINLOG IUL
+		left join IUNI_USER IU 
+		on (IU.PHONENUM = IUL.MOBILE)
+		where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+		union
+		select 
+		distinct IU.ID "userId"
+		from IUNI_UC_LOGINLOG IUL
+		left join IUNI_USER IU 
+		on (IU.MAIL = IUL.EMAIL)
+		where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+		union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+1
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T1 on (T1."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+2
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+4
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T2 on (T2."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+4
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+8
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T3 on (T3."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+8
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+31
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T4 on (T4."userId" = T0."userId")
+	left join 
+	(
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.USER_NAME = IUL.USER_NAME )
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.PHONENUM = IUL.MOBILE)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+	    select 
+	    distinct IU.ID "userId"
+	    from IUNI_UC_LOGINLOG IUL
+	    left join IUNI_USER IU 
+	    on (IU.MAIL = IUL.EMAIL)
+	    where IUL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+	    and IUL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+	    <include refid="iuniUserLoginFreq_queryParam_2"/>
+	    union
+		select 
+		distinct IU.ID "userId" 
+		from IUNI_UC_OLOGINLOG IUOL
+		left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+		where IUOL.LOGIN_TIME <![CDATA[ >= ]]> trunc(IU.REGISTER_TIME,'dd')+31
+		and IUOL.LOGIN_TIME <![CDATA[ < ]]> trunc(IU.REGISTER_TIME,'dd')+91
+		<include refid="iuniUserLoginFreq_queryParam_2"/>
+	) T5 on (T5."userId" = T0."userId")
+	group by T0."regTime"
+	order by T0."regTime"
+  </sql>
+  
+  <select id="selectIuniUserRegRetainByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		<include refid="iuniUserRegRetain_query_1"/>
+  	) T
+  </select>
+  
+  <select id="selectIuniUserRegRetainByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	<include refid="iuniUserRegRetain_query_1"/>
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniUserRegRetainCount" resultClass="int" parameterClass="map">
+  	select count(*) "totalNum" from
+	(
+	    <include refid="iuniUserRegRetain_query_1"/>
+	) 
+  </select>
+  
+  <sql id="iuniUserLoginNum_queryParam_1">
+	<isNotNull property="beginDate" prepend="and">
+		IUL.LOGIN_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+	</isNotNull>
+	<isNotNull property="endDate" prepend="and">
+		IUL.LOGIN_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+	</isNotNull>
+  </sql>
+  
+  <sql id="iuniUserLoginNum_queryParam_2">
+	<isNotNull property="beginDate" prepend="and">
+		IUOL.LOGIN_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+	</isNotNull>
+	<isNotNull property="endDate" prepend="and">
+		IUOL.LOGIN_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+	</isNotNull>
+  </sql>
+  
+  <sql id="iuniUserLoginNum_select_1">
+  	#beginDate#||'~'||#endDate# "statDate", T1.*
+	, IU.USER_NAME "userName", IU.MAIL "email", IU.PHONENUM "mobile"
+  </sql>
+  
+  <sql id="iuniUserLoginNum_query_1">
+  	select 
+	<include refid="iuniUserLoginNum_select_1"/>
+	from 
+	(
+	select 
+	T0."userId", sum(T0."loginNum") "loginNum"
+	from 
+	(
+	    select * from 
+	    (
+	        select 
+	        IU.ID "userId", count(IUL.ID) "loginNum"
+	        from IUNI_UC_LOGINLOG IUL
+	        left join IUNI_USER IU 
+	        on upper(IU.USER_NAME) = upper(IUL.USER_NAME)
+	        where IUL.USER_NAME is not null
+	        <include refid="iuniUserLoginNum_queryParam_1"/>
+	        group by IU.ID
+	    )
+	    union all
+	    select * from 
+	    (
+	        select 
+	        IU.ID "userId", count(IUL.ID) "loginNum"
+	        from IUNI_UC_LOGINLOG IUL
+	        left join IUNI_USER IU 
+	        on IU.PHONENUM = IUL.MOBILE
+	        where IUL.MOBILE is not null
+	        <include refid="iuniUserLoginNum_queryParam_1"/>
+	        group by IU.ID
+	    ) 
+	    union all
+	    select * from
+	    (
+	        select
+	        IU.ID "userId", count(IUL.ID) "loginNum"
+	        from IUNI_UC_LOGINLOG IUL
+	        left join IUNI_USER IU 
+	        on upper(IU.MAIL) = upper(IUL.EMAIL)
+	        where IUL.EMAIL is not null
+	        <include refid="iuniUserLoginNum_queryParam_1"/>
+	        group by IU.ID
+	    )
+	    union all
+	    select * from 
+	    (
+	        select 
+	        IU.ID "userId", count(IUOL.ID) "loginNum"
+	        from IUNI_UC_OLOGINLOG IUOL
+	        left join IUNI_USER IU on IU.ID = IUOL.USER_ID
+	        where IU.ID is not null
+	        <include refid="iuniUserLoginNum_queryParam_2"/>
+	        group by IU.ID
+	    )
+	) T0
+	group by T0."userId"
+	order by T0."userId"
+	) T1
+	left join IUNI_USER IU on IU.ID = T1."userId"
+  </sql>
+  
+  <select id="selectIuniUserLoginNumByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		<include refid="iuniUserLoginNum_query_1"/>
+  	) T
+  </select>
+  
+  <select id="selectIuniUserLoginNumByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	<include refid="iuniUserLoginNum_query_1"/>
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniUserLoginNumCount" resultClass="int" parameterClass="map">
+  	select count(*) "totalNum" from
+	(
+	    <include refid="iuniUserLoginNum_query_1"/>
+	) 
+  </select>
+  
+  <insert id="insertIuniUcLoginLog" parameterClass="IuniUcLoginLog">
+  	insert into IUNI_UC_LOGINLOG 
+    ( ID, USER_ID, USER_NAME, MOBILE, EMAIL, LOGIN_RESULT, LOGIN_ERROR, LOGIN_FROM, LOGIN_IP, LOGIN_TIME )
+    values 
+    ( #id#, #userId#, #userName#, #mobile#, #email#, #loginResult#, #loginError#, #loginFrom#, #loginIp#, #loginTime# )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_IUNI_UC_LOGINLOG.NEXTVAL as id FROM dual
+    </selectKey>
+  </insert>
+  
+  <insert id="insertIuniUcOloginLog" parameterClass="IuniUcOloginLog">
+  	insert into IUNI_UC_OLOGINLOG 
+    ( ID, USER_ID, LOGIN_RESULT, O_TYPE, IS_BIND, LOGIN_IP, LOGIN_TIME )
+    values 
+    ( #id#, #userId#, #loginResult#, #oType#, #isBind#, #loginIp#, #loginTime# )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_IUNI_UC_OLOGINLOG.NEXTVAL as id FROM dual
+    </selectKey>
+  </insert>
+  
+</sqlMap>

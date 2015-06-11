@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniSaleDailyStat">
+
+    <typeAlias alias="iuniSaleDailyStat" type="com.iuni.dp.persist.datastat.model.IuniSaleDailyStat"/>
+    <typeAlias alias="iuniDayOrderConvertRate" type="com.iuni.dp.persist.datastat.model.IuniDayOrderConvertRate"/>
+    <typeAlias alias="iuniDayPvuvUserReg" type="com.iuni.dp.persist.datastat.model.IuniDayPvuvUserReg"/>
+    <!--IUNI销售情况-->
+    <resultMap id="iuniSaleDailyStatResultMap" class="iuniSaleDailyStat">
+        <!--<result property="id" column="ID" />-->
+        <result property="totalOrderNum" column="TOTAL_ORDER_NUM"/>
+        <result property="totalOrderAmount" column="TOTAL_ORDER_AMOUNT"/>
+        <result property="totalGoodsNum" column="TOTAL_GOODS_NUM"/>
+        <result property="onlinePayOrderNum" column="ONLINE_PAY_ORDER_NUM"/>
+        <result property="offlinePayOrderNum" column="OFFLINE_PAY_ORDER_NUM"/>
+        <result property="returnedOrderNum" column="RETURNED_ORDER_NUM"/>
+        <result property="refusedOrderNum" column="REFUSED_ORDER_NUM"/>
+        <result property="validOrderNum" column="VALID_ORDER_NUM"/>
+        <result property="validOrderAmount" column="VALID_ORDER_AMOUNT"/>
+        <result property="validGoodsNum" column="VALID_GOODS_NUM"/>
+        <result property="payedOrderNum" column="PAYED_ORDER_NUM"/>
+        <result property="prePayedOrderNum" column="PRE_PAYED_ORDER_NUM"/>
+        <result property="bizDate" column="BIZ_DATE"/>
+        <!--<result property="createTime" column="CREATE_TIME" />-->
+
+        <result property="validOrderRate" column="valid_order_rate"/>
+        <result property="amountPerOrder" column="amount_per_order"/>
+        <result property="goodsNumPerOrder" column="goods_num_per_order"/>
+    </resultMap>
+
+    <resultMap id="iuniSaleDailyStatSumResultMap" class="iuniSaleDailyStat">
+        <!--<result property="id" column="ID" />-->
+        <result property="totalOrderNum" column="TOTAL_ORDER_NUM"/>
+        <result property="totalOrderAmount" column="TOTAL_ORDER_AMOUNT"/>
+        <result property="totalGoodsNum" column="TOTAL_GOODS_NUM"/>
+        <result property="onlinePayOrderNum" column="ONLINE_PAY_ORDER_NUM"/>
+        <result property="offlinePayOrderNum" column="OFFLINE_PAY_ORDER_NUM"/>
+        <result property="returnedOrderNum" column="RETURNED_ORDER_NUM"/>
+        <result property="refusedOrderNum" column="REFUSED_ORDER_NUM"/>
+        <result property="validOrderNum" column="VALID_ORDER_NUM"/>
+        <result property="validOrderAmount" column="VALID_ORDER_AMOUNT"/>
+        <result property="validGoodsNum" column="VALID_GOODS_NUM"/>
+        <result property="payedOrderNum" column="PAYED_ORDER_NUM"/>
+        <result property="prePayedOrderNum" column="PRE_PAYED_ORDER_NUM"/>
+        <!--<result property="bizDate" column="BIZ_DATE" />
+            <result property="createTime" column="CREATE_TIME" />-->
+
+        <result property="validOrderRate" column="valid_order_rate"/>
+        <result property="amountPerOrder" column="amount_per_order"/>
+        <result property="goodsNumPerOrder" column="goods_num_per_order"/>
+    </resultMap>
+    <!--IUNI订单转化率-->
+    <resultMap id="iuniDayOrderConvertRateResultMap" class="iuniDayOrderConvertRate">
+        <!--<result property="id" column="ID" />-->
+        <result property="pv" column="PV"/>
+        <result property="uv" column="UV"/>
+        <result property="totalOrderNum" column="TOTAL_ORDER_NUM"/>
+        <result property="payedOrderNum" column="payed_order_num"/>
+        <result property="onlinePayOrderNum" column="ONLINE_PAY_ORDER_NUM"/>
+        <result property="bizDate" column="BIZ_DATE"/>
+        <!--<result property="createTime" column="CREATE_TIME" />-->
+
+        <result property="orderConvertRate" column="order_convert_rate"/>
+        <result property="payedOrderRate" column="payed_order_rate"/>
+        <result property="onlinePayOrderRate" column="online_pay_order_rate"/>
+    </resultMap>
+
+    <resultMap id="iuniDayOrderConvertRateSumResultMap" class="iuniDayOrderConvertRate">
+        <result property="pv" column="PV"/>
+        <result property="uv" column="UV"/>
+        <result property="totalOrderNum" column="TOTAL_ORDER_NUM"/>
+        <result property="payedOrderNum" column="payed_order_num"/>
+        <result property="onlinePayOrderNum" column="ONLINE_PAY_ORDER_NUM"/>
+        <result property="orderConvertRate" column="order_convert_rate"/>
+        <result property="payedOrderRate" column="payed_order_rate"/>
+        <result property="onlinePayOrderRate" column="online_pay_order_rate"/>
+    </resultMap>
+    <!--IUNI用户注册-->
+    <resultMap id="iuniDayPvuvUserRegResultMap" class="iuniDayPvuvUserReg">
+        <result property="pv" column="PV"/>
+        <result property="uv" column="UV"/>
+        <result property="gioneeRegNum" column="gionee_reg_num"/>
+        <result property="regSuccRate" column="reg_succ_rate"/>
+        <result property="sinaRegNum" column="sina_reg_num"/>
+        <result property="qqRegNum" column="qq_reg_num"/>
+        <result property="zfbRegNum" column="zfb_reg_num"/>
+        <result property="doubanRegNum" column="douban_reg_num"/>
+        <result property="buyUserNum" column="buy_user_num"/>
+        <!--
+        <result property="loginUserNum" column="login_user_num" />-->
+        <result property="bizDate" column="BIZ_DATE"/>
+    </resultMap>
+    <resultMap id="iuniDayPvuvUserRegSumResultMap" class="iuniDayPvuvUserReg">
+        <result property="pv" column="PV"/>
+        <result property="uv" column="UV"/>
+        <result property="gioneeRegNum" column="gionee_reg_num"/>
+        <result property="regSuccRate" column="reg_succ_rate"/>
+        <result property="sinaRegNum" column="sina_reg_num"/>
+        <result property="qqRegNum" column="qq_reg_num"/>
+        <result property="zfbRegNum" column="zfb_reg_num"/>
+        <result property="doubanRegNum" column="douban_reg_num"/>
+        <result property="buyUserNum" column="buy_user_num"/>
+        <!--
+        <result property="loginUserNum" column="login_user_num" />-->
+    </resultMap>
+    <!-- 查询销售数据-->
+    <select id="queryIuniSaleDailyStats" resultMap="iuniSaleDailyStatResultMap" parameterClass="map">
+        select t2.*
+        from (select t1.*, rownum rn
+        from (select t.*,
+        CASE
+        WHEN t.total_order_num = 0 THEN
+        '0.00%'
+        ELSE
+        to_char(t.valid_order_num / t.total_order_num * 100,
+        'FM9999999999990.00') || '%'
+        END valid_order_rate,
+        CASE
+        WHEN t.valid_order_num = 0 THEN
+        '0.00'
+        ELSE
+        to_char(t.valid_order_amount / t.valid_order_num,
+        'FM9999999999990.00')
+        END amount_per_order,
+        CASE
+        WHEN t.valid_order_num = 0 THEN
+        '0.00'
+        ELSE
+        to_char(t.valid_goods_num / t.valid_order_num,
+        'FM9999999999990.00')
+        END goods_num_per_order
+        from iuni_sale_daily_stat t
+        <dynamic prepend="WHERE">
+            <isNotNull property="orderSource" prepend="AND">
+                t.order_referer = #orderSource#
+            </isNotNull>
+            <isNotNull property="beginDate" prepend="AND">
+                t.biz_date <![CDATA[>=]]> #beginDate#
+            </isNotNull>
+            <isNotNull property="endDate" prepend="AND">
+                t.biz_date <![CDATA[<=]]> #endDate#
+            </isNotNull>
+        </dynamic>
+        order by t.biz_date desc) t1
+        where rownum  <![CDATA[ <= ]]> #endRec#) t2
+        where rn  <![CDATA[ >= ]]>  #startRec#
+    </select>
+
+    <!-- 查询销售数据:总记录-->
+    <select id="queryIuniSaleDailyStatsCount" resultClass="int" parameterClass="map">
+        select count(1) from iuni_sale_daily_stat t
+        <dynamic prepend="WHERE">
+            <isNotNull property="orderSource" prepend="AND">
+                t.order_referer = #orderSource#
+            </isNotNull>
+            <isNotNull property="beginDate" prepend="AND">
+                t.biz_date <![CDATA[>=]]> #beginDate#
+            </isNotNull>
+            <isNotNull property="endDate" prepend="AND">
+                t.biz_date <![CDATA[<=]]> #endDate#
+            </isNotNull>
+        </dynamic>
+    </select>
+
+    <!-- 查询销售数据(总计)-->
+    <select id="queryIuniSaleDailyStatsSum" resultMap="iuniSaleDailyStatSumResultMap" parameterClass="map">
+        select sum(t.total_order_num) total_order_num,
+        sum(t.total_order_amount) total_order_amount,
+        sum(t.total_goods_num) total_goods_num,
+        sum(t.online_pay_order_num) online_pay_order_num,
+        sum(t.offline_pay_order_num) offline_pay_order_num,
+        sum(t.returned_order_num) returned_order_num,
+        sum(t.refused_order_num) refused_order_num,
+        sum(t.valid_order_num) valid_order_num,
+        sum(t.valid_order_amount) valid_order_amount,
+        sum(t.valid_goods_num) valid_goods_num,
+        sum(t.payed_order_num) payed_order_num,
+        sum(t.pre_payed_order_num) pre_payed_order_num,
+        CASE
+        WHEN sum(t.total_order_num) = 0 THEN
+        '0.00%'
+        ELSE
+        to_char(sum(t.valid_order_num) / sum(t.total_order_num) * 100,
+        'FM9999999999990.00') || '%'
+        END valid_order_rate,
+        CASE
+        WHEN sum(t.valid_order_num) = 0 THEN
+        '0.00'
+        ELSE
+        to_char(sum(t.valid_order_amount) / sum(t.valid_order_num),
+        'FM9999999999990.00')
+        END amount_per_order,
+        CASE
+        WHEN sum(t.valid_order_num) = 0 THEN
+        '0.00'
+        ELSE
+        to_char(sum(t.valid_goods_num) / sum(t.valid_order_num),
+        'FM9999999999990.00')
+        END goods_num_per_order
+        from iuni_sale_daily_stat t
+        <dynamic prepend="WHERE">
+            <isNotNull property="orderSource" prepend="AND">
+                t.order_referer = #orderSource#
+            </isNotNull>
+            <isNotNull property="beginDate" prepend="AND">
+                t.biz_date <![CDATA[>=]]> #beginDate#
+            </isNotNull>
+            <isNotNull property="endDate" prepend="AND">
+                t.biz_date <![CDATA[<=]]> #endDate#
+            </isNotNull>
+        </dynamic>
+    </select>
+
+    <!-- 查询日订单转化率-->
+    <select id="queryIuniDayOrderConvertRates" resultMap="iuniDayOrderConvertRateResultMap" parameterClass="map">
+        select t5.*
+        from (select t4.*, rownum rn
+        from (
+        select t3.pv,
+        t3.uv,
+        t3.total_order_num,
+        t3.payed_order_num,
+        t3.online_pay_order_num,
+        CASE
+        WHEN t3.uv = 0 THEN
+        '0.00%'
+        ELSE
+        to_char(t3.total_order_num / t3.uv*100, 'FM9999999999990.00')|| '%'
+        END order_convert_rate,
+        CASE
+        WHEN t3.total_order_num = 0 THEN
+        '0.00'
+        ELSE
+        to_char(t3.payed_order_num / t3.total_order_num * 100,
+        'FM9999999999990.00') || '%'
+        END payed_order_rate,
+        CASE
+        WHEN t3.total_order_num = 0 THEN
+        '0.00'
+        ELSE
+        to_char(t3.online_pay_order_num / t3.total_order_num * 100,
+        'FM9999999999990.00') || '%'
+        END online_pay_order_rate,
+        t3.biz_date
+        from (select
+        t2.order_referer,
+        t.pv,
+        t.uv,
+        t2.total_order_num,
+        t2.payed_order_num,
+        t2.online_pay_order_num,
+        t.stat_date biz_date
+        from iuni_sale_daily_stat t2
+        left join iuni_netflow_dailystat t
+        on t.stat_date = t2.biz_date
+        where t.url_domain = 'rd.iuni.com'
+        AND t2.order_referer in ('IUNI', 'IUNIDXD')) t3
+        <dynamic prepend="WHERE">
+            <isNotNull property="orderSource" prepend="AND">
+                t3.order_referer = #orderSource#
+            </isNotNull>
+            <isNotNull property="beginDate" prepend="AND">
+                t3.biz_date <![CDATA[>=]]> #beginDate#
+            </isNotNull>
+            <isNotNull property="endDate" prepend="AND">
+                t3.biz_date <![CDATA[<=]]> #endDate#
+            </isNotNull>
+        </dynamic>
+        order by t3.biz_date desc) t4
+        where rownum  <![CDATA[ <= ]]> #endRec#) t5
+        where rn  <![CDATA[ >= ]]>  #startRec#
+    </select>
+
+    <!-- 查询日订单转化率:总记录-->
+    <select id="queryIuniDayOrderConvertRatesCount" resultClass="int" parameterClass="map">
+        select count(1)
+        from iuni_sale_daily_stat t2
+        left join iuni_netflow_dailystat t
+        on t.stat_date = t2.biz_date
+        where t.url_domain = 'rd.iuni.com'
+        AND t2.order_referer in ('IUNI', 'IUNIDXD')
+        <isNotNull property="orderSource" prepend="AND">
+            t2.order_referer = #orderSource#
+        </isNotNull>
+        <isNotNull property="beginDate">
+            AND t.stat_date <![CDATA[>=]]> #beginDate#
+        </isNotNull>
+        <isNotNull property="endDate">
+            AND t.stat_date <![CDATA[<=]]> #endDate#
+        </isNotNull>
+    </select>
+
+    <!-- 查询日订单转化率(总计)-->
+    <select id="queryIuniDayOrderConvertRatesSum" resultMap="iuniDayOrderConvertRateSumResultMap" parameterClass="map">
+        select sum(t3.pv) pv,
+        sum(t3.uv) uv,
+        sum(t3.total_order_num) total_order_num,
+        sum(t3.payed_order_num) payed_order_num,
+        sum(t3.online_pay_order_num) online_pay_order_num,
+        CASE
+        WHEN sum(t3.uv) = 0 THEN
+        '0.00%'
+        ELSE
+        to_char(sum(t3.total_order_num) / sum(t3.uv), 'FM9999999999990.00')
+        END order_convert_rate,
+        CASE
+        WHEN sum(t3.total_order_num) = 0 THEN
+        '0.00'
+        ELSE
+        to_char(sum(t3.payed_order_num) / sum(t3.total_order_num) * 100,
+        'FM9999999999990.00') || '%'
+        END payed_order_rate,
+        CASE
+        WHEN sum(t3.total_order_num) = 0 THEN
+        '0.00'
+        ELSE
+        to_char(sum(t3.online_pay_order_num) / sum(t3.total_order_num) * 100,
+        'FM9999999999990.00') || '%'
+        END online_pay_order_rate
+        from (select
+        t2.order_referer,
+        t.pv,
+        t.uv,
+        t2.total_order_num,
+        t2.payed_order_num,
+        t2.online_pay_order_num,
+        t.stat_date biz_date
+        from iuni_sale_daily_stat t2
+        left join iuni_netflow_dailystat t
+        on t.stat_date = t2.biz_date
+        where t.url_domain = 'rd.iuni.com'
+        AND t2.order_referer in ('IUNI', 'IUNIDXD')) t3
+        <dynamic prepend="WHERE">
+            <isNotNull property="orderSource" prepend="AND">
+                t3.order_referer = #orderSource#
+            </isNotNull>
+            <isNotNull property="beginDate" prepend="AND">
+                t3.biz_date <![CDATA[>=]]> #beginDate#
+            </isNotNull>
+            <isNotNull property="endDate" prepend="AND">
+                t3.biz_date <![CDATA[<=]]> #endDate#
+            </isNotNull>
+        </dynamic>
+    </select>
+
+    <!-- 查询IUNI日用户注册情况-->
+    <select id="queryIuniUserRegDailyStats" resultMap="iuniDayPvuvUserRegResultMap" parameterClass="map">
+        select t4.*
+        from (select t3.*, rownum rn
+        from (
+        select t.pv,
+        t.uv,
+        t2.gionee_reg_num,
+        CASE
+        WHEN t.uv = 0 THEN
+        '0.00%'
+        ELSE
+        to_char(t2.gionee_reg_num / t.uv*100, 'FM9999999999990.00')||'%'
+        END reg_succ_rate,
+        t2.sina_reg_num,
+        t2.qq_reg_num,
+        t2.zfb_reg_num,
+        t2.douban_reg_num,
+        t2.buy_user_num,
+        t.biz_date
+        from iuni_page_pvuv_daily_stat t
+        left join iuni_user_reg_daily_stat t2 on t.biz_date = t2.biz_date
+        where t.page_url = 'http://passport.iuni.com/register.shtml'
+        <isNotNull property="beginDate">
+            AND t.biz_date <![CDATA[>=]]> #beginDate#
+        </isNotNull>
+        <isNotNull property="endDate">
+            AND t.biz_date <![CDATA[<=]]> #endDate#
+        </isNotNull>
+        order by t.biz_date desc) t3
+        where rownum  <![CDATA[ <= ]]> #endRec#) t4
+        where rn  <![CDATA[ >= ]]>  #startRec#
+    </select>
+
+    <!-- 查询IUNI日用户注册情况:总记录-->
+    <select id="queryIuniUserRegDailyStatsCount" resultClass="int" parameterClass="map">
+        select count(1)
+        from iuni_page_pvuv_daily_stat t
+        left join iuni_user_reg_daily_stat t2 on t.biz_date = t2.biz_date
+        where t.page_url = 'http://passport.iuni.com/register.shtml'
+        <isNotNull property="beginDate">
+            AND t.biz_date <![CDATA[>=]]> #beginDate#
+        </isNotNull>
+        <isNotNull property="endDate">
+            AND t.biz_date <![CDATA[<=]]> #endDate#
+        </isNotNull>
+    </select>
+
+    <!-- 查询IUNI日用户注册情况：总计-->
+    <select id="queryIuniUserRegDailyStatsSum" resultMap="iuniDayPvuvUserRegSumResultMap" parameterClass="map">
+        select sum(t.pv) pv,
+        sum(t.uv) uv,
+        sum(t2.gionee_reg_num) gionee_reg_num,
+        CASE
+        WHEN sum(t.uv) = 0 THEN
+        '0.00%'
+        ELSE
+        to_char(sum(t2.gionee_reg_num) / sum(t.uv)*100, 'FM9999999999990.00')||'%'
+        END reg_succ_rate,
+        sum(t2.sina_reg_num) sina_reg_num,
+        sum(t2.qq_reg_num) qq_reg_num,
+        sum(t2.zfb_reg_num) zfb_reg_num,
+        sum(t2.douban_reg_num) douban_reg_num,
+        sum(t2.buy_user_num) buy_user_num
+        from iuni_page_pvuv_daily_stat t
+        left join iuni_user_reg_daily_stat t2 on t.biz_date = t2.biz_date
+        where t.page_url = 'http://passport.iuni.com/register.shtml'
+        <isNotNull property="beginDate">
+            AND t.biz_date <![CDATA[>=]]> #beginDate#
+        </isNotNull>
+        <isNotNull property="endDate">
+            AND t.biz_date <![CDATA[<=]]> #endDate#
+        </isNotNull>
+    </select>
+</sqlMap>

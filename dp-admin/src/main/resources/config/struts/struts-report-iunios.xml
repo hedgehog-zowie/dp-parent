@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="iuniOSReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- IUNI OS 累计总用户数相关统计查询 -->
+        <action name="iuniosTotalUserStatView" class="iuniOSAccessLogAction" method="iuniosTotalUserStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniosTotalUserStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniosTotalUserStat.jsp</result>
+        </action>
+
+        <action name="iuniosTotalUserStat2Excel" class="iuniOSAccessLogAction" method="iuniosTotalUserStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniosTotalUserStatView</result>
+        </action>
+
+        <!-- IUNI OS用户数据按区间统计报表 -->
+        <action name="iuniosUserNumOnPeriodStatView" class="iuniOSAccessLogAction"
+                method="iuniosUserNumOnPeriodStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniosUserNumOnPeriodStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniosUserNumOnPeriodStat.jsp</result>
+        </action>
+
+        <action name="iuniosUserNumOnPeriodStat2Excel" class="iuniOSAccessLogAction"
+                method="iuniosUserNumOnPeriodStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniosUserNumOnPeriodStatView</result>
+        </action>
+
+        <!-- IUNI OS留存用户按日统计 -->
+        <action name="iuniosRemainUserOnDayStatView" class="iuniOSImeiLogAction" method="iuniosRemainUserOnDayStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniosRemainUserOnDayStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniosRemainUserOnDayStat.jsp</result>
+        </action>
+
+        <action name="iuniosRemainUserOnDayStat2Excel" class="iuniOSImeiLogAction"
+                method="iuniosRemainUserOnDayStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniosRemainUserOnDayStatView</result>
+        </action>
+
+        <action name="getiuniosRemainUserOnDayStatByJSON" class="iuniOSImeiLogAction"
+                method="getiuniosRemainUserOnDayStatByJSON">
+        </action>
+
+        <!-- IUNI OS 用户数版本分布统计 -->
+        <action name="iuniosVersionDistributeView" class="iuniOSAccessLogAction" method="iuniosVersionDistributeView">
+            <result name="success">/WEB-INF/views/stat/report/iuniosVersionDistribute.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniosVersionDistribute.jsp</result>
+        </action>
+
+        <action name="iuniosVersionDistribute2Excel" class="iuniOSAccessLogAction"
+                method="iuniosVersionDistribute2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniosVersionDistributeView</result>
+        </action>
+
+        <action name="getIuniosVersionDistributeByJSON" class="iuniOSAccessLogAction"
+                method="getIuniosVersionDistributeByJSON">
+        </action>
+
+        <!-- IUNI OS 用户数区域分布统计 -->
+        <action name="iuniosAreaDistributeView" class="iuniOSAccessLogAction" method="iuniosAreaDistributeView">
+            <result name="success">/WEB-INF/views/stat/report/iuniosAreaDistribute.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniosAreaDistribute.jsp</result>
+        </action>
+
+        <action name="iuniosAreaDistribute2Excel" class="iuniOSAccessLogAction" method="iuniosAreaDistribute2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniosAreaDistributeView</result>
+        </action>
+
+        <action name="getIuniosAreaDistributeByJSON" class="iuniOSAccessLogAction"
+                method="getIuniosAreaDistributeByJSON">
+        </action>
+
+        <!-- 获取IUNI OS应用名列表 -->
+        <action name="getIuniOSAppNamesByJSON" class="iuniOSAccessLogAction" method="getIuniOSAppNamesByJSON">
+        </action>
+
+        <!-- 获取IUNI OS版本号列表 -->
+        <action name="getIuniOSApkVersionsByJSON" class="iuniOSAccessLogAction" method="getIuniOSApkVersionsByJSON">
+        </action>
+    </package>
+
+</struts>

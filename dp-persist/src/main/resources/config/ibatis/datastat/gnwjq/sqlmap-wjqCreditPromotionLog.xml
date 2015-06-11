@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="WjqCreditPromotionLog" >
+
+  <typeAlias alias="WjqCreditPromotionLog" type="com.iuni.dp.persist.datastat.model.WjqCreditPromotionLog" />
+
+  <resultMap id="WjqCreditPromotionLogMap" class="WjqCreditPromotionLog">
+    <result property="cprid" column="CPRID"/>
+    <result property="uid" column="U_ID"/>
+    <result property="rid" column="RID"/>
+    <result property="ruid" column="RUID"/>
+    <result property="ip" column="IP"/>
+    <result property="cycleNum" column="CYCLENUM"/>
+    <result property="extcredits1" column="EXTCREDITS1"/>
+    <result property="extcredits2" column="EXTCREDITS2"/>
+    <result property="extcredits3" column="EXTCREDITS3"/>
+    <result property="extcredits4" column="EXTCREDITS4"/>
+    <result property="extcredits5" column="EXTCREDITS5"/>
+    <result property="extcredits6" column="EXTCREDITS6"/>
+    <result property="extcredits7" column="EXTCREDITS7"/>
+    <result property="extcredits8" column="EXTCREDITS8"/>
+    <result property="dateline" column="DATELINE"/>
+    <result property="regtime" column="REGTIME"/>
+    <result property="visitime" column="VISITIME"/>
+  </resultMap>
+
+  <sql id="WjqCreditPromotionLog_columns" >
+    PCCPL.CPRID, PCCPL.U_ID, PCCPL.RID, PCCPL.RUID, PCCPL.IP, PCCPL.CYCLENUM
+    , PCCPL.EXTCREDITS1, PCCPL.EXTCREDITS2, PCCPL.EXTCREDITS3, PCCPL.EXTCREDITS4
+    , PCCPL.EXTCREDITS5, PCCPL.EXTCREDITS6, PCCPL.EXTCREDITS7, PCCPL.EXTCREDITS8
+    , PCCPL.DATELINE, PCCPL.REGTIME, PCCPL.VISITIME
+  </sql>
+  
+  <sql id="WjqCreditPromotionLog_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="uid" prepend="AND" >
+        <![CDATA[  
+        PCCPL.U_ID = #uid#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="createTime" prepend="AND" >
+        <![CDATA[  
+        to_date(UNIXTIMESTAMP_TO_DATE(PCCPL.DATELINE) = to_date(#createTime#, 'yyyy-mm-dd hh24:mi:ss')  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="WjqUserPromotion_queryParams_0">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="userId">
+  			T0.u_id = #userId#
+  		</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			T0."logDate" <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			T0."logDate" <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="WjqUserPromotion_queryParams_1">
+  	<dynamic prepend="and">
+    	<isNotNull prepend="and" property="beginDate">
+    		rpd.create_time <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+    	</isNotNull>
+    	<isNotNull prepend="and" property="endDate">
+    		rpd.create_time <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+    	</isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="WjqUserPromotion_queryParams_2">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="userId">
+  			T0."userId" = '' || #userId# || ''
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="WjqUserPromotion_queryParams_3">
+  	<dynamic prepend="and">
+    	<isNotNull prepend="and" property="beginDate">
+    		T0."logDate" <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+    	</isNotNull>
+    	<isNotNull prepend="and" property="endDate">
+    		T0."logDate" <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+    	</isNotNull>
+    </dynamic>
+  </sql>
+  
+  <select id="selectWjqCreditPromotionLogById" resultMap="WjqCreditPromotionLogMap" parameterClass="int">
+  	SELECT 
+  	<include refid="WjqCreditPromotionLog_columns"/>
+  	FROM PRE_COMMON_CREDIT_PROMOTION_LO PCCPL
+  	WHERE PCCPL.CPRID = #id#
+  </select>
+  
+  <select id="selectWjqCreditPromotionLogByExample" resultMap="WjqCreditPromotionLogMap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	SELECT 
+	  	<include refid="WjqCreditPromotionLog_columns"/>
+	  	FROM PRE_COMMON_CREDIT_PROMOTION_LO PCCPL
+	  	<include refid="WjqCreditPromotionLog_queryParams"/>
+	  	ORDER BY to_date(UNIXTIMESTAMP_TO_DATE(PCCPL.DATELINE)
+	) T
+  </select>
+  
+  <select id="selectWjqCreditPromotionLogByPage" resultMap="WjqCreditPromotionLogMap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	SELECT 
+		  	<include refid="WjqCreditPromotionLog_columns"/>
+		  	FROM PRE_COMMON_CREDIT_PROMOTION_LO PCCPL
+		  	<include refid="WjqCreditPromotionLog_queryParams"/>
+		  	ORDER BY to_date(UNIXTIMESTAMP_TO_DATE(PCCPL.DATELINE)
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWjqCreditPromotionLogCount" resultClass="int" parameterClass="map">
+  	SELECT COUNT(PCCPL.CPRID) FROM PRE_COMMON_CREDIT_PROMOTION_LO PCCPL
+  	<include refid="WjqCreditPromotionLog_queryParams"/>
+  </select>
+  
+  <select id="selectWjqUserPromotionByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select T2."bizDate", T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip"  from 
+		(
+		    SELECT T1."bizDate", T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+		    (
+		        SELECT T0."bizDate", T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+		        (
+		            SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+		                , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+		                , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+		            FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+		        ) T0
+		        <include refid="WjqUserPromotion_queryParams_0"/>
+		        group by T0."bizDate", T0.u_id
+		        order by T0."bizDate", T0.u_id
+		    ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+		    order by T1."bizDate", T1."regNum" desc
+		) T2 left join 
+		(
+		    select T0."bizDate", T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+		    (
+		        select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId", to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+		        from $tbl_rptData$ rpd  
+		        where rpd.url_domain = 'rd.wanjiquan.com'
+		        and rpd.report_type = 'pv'
+		        and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+		        and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+		        and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+		        <include refid="WjqUserPromotion_queryParams_1"/>
+		    ) T0
+		    <include refid="WjqUserPromotion_queryParams_2"/>
+		    group by T0."bizDate", T0."userId"
+		    order by T0."bizDate", T0."userId"
+		) T3 on (T2."bizDate" = T3."bizDate" and T2."userId" = T3."userId")
+		order by T2."bizDate", T2."regNum" desc, T2."userId"
+	) T
+  </select>
+  
+  <select id="selectWjqUserPromotionByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T2."bizDate", T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip"  from 
+			(
+			    SELECT T1."bizDate", T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+			    (
+			        SELECT T0."bizDate", T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+			        (
+			            SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+			                , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+			                , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+			            FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+			        ) T0
+			        <include refid="WjqUserPromotion_queryParams_0"/>
+			        group by T0."bizDate", T0.u_id
+			        order by T0."bizDate", T0.u_id
+			    ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+			    order by T1."bizDate", T1."regNum" desc
+			) T2 left join 
+			(
+			    select T0."bizDate", T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+			    (
+			        select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId", to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+			        from $tbl_rptData$ rpd  
+			        where rpd.url_domain = 'rd.wanjiquan.com'
+			        and rpd.report_type = 'pv'
+			        and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+			        and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+		        	and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+			        <include refid="WjqUserPromotion_queryParams_1"/>
+			    ) T0
+			    <include refid="WjqUserPromotion_queryParams_2"/>
+			    group by T0."bizDate", T0."userId"
+			    order by T0."bizDate", T0."userId"
+			) T3 on (T2."bizDate" = T3."bizDate" and T2."userId" = T3."userId")
+			order by T2."bizDate", T2."regNum" desc, T2."userId"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWjqUserPromotionCount" resultClass="int" parameterClass="map">
+  	select count(T4."userId") from 
+  	(
+  		select T2."bizDate", T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip"  from 
+		(
+		    SELECT T1."bizDate", T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+		    (
+		        SELECT T0."bizDate", T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+		        (
+		            SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+		                , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+		                , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+		            FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+		        ) T0
+		        <include refid="WjqUserPromotion_queryParams_0"/>
+		        group by T0."bizDate", T0.u_id
+		        order by T0."bizDate", T0.u_id
+		    ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+		    order by T1."bizDate", T1."regNum" desc
+		) T2 left join 
+		(
+		    select T0."bizDate", T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+		    (
+		        select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId", to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+		        from $tbl_rptData$ rpd  
+		        where rpd.url_domain = 'rd.wanjiquan.com'
+		        and rpd.report_type = 'pv'
+		        and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+		        and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+		        and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+		        <include refid="WjqUserPromotion_queryParams_1"/>
+		    ) T0
+		    <include refid="WjqUserPromotion_queryParams_2"/>
+		    group by T0."bizDate", T0."userId"
+		    order by T0."bizDate", T0."userId"
+		) T3 on (T2."bizDate" = T3."bizDate" and T2."userId" = T3."userId")
+		order by T2."bizDate", T2."regNum" desc, T2."userId"
+  	) T4
+  </select>
+  
+  <select id="selectWjqPostsPromotionByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip", #dynamic_bizDate# "bizDate" from 
+		(
+		    SELECT T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+		    (
+		        SELECT T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+		        (
+		            SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+		                , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+		                , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+		            FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+		        ) T0
+		        where T0.u_id in (select pfp.authorid from PRE_FORUM_POST pfp where pfp.tid = #themeId#)
+		        <include refid="WjqUserPromotion_queryParams_3"/>
+		        group by T0.u_id
+		        order by T0.u_id
+		    ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+		    order by T1."regNum" desc, T1.u_id
+		) T2 left join 
+		(
+		    select T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+		    (
+		        select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId", to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+		        from $tbl_rptData$ rpd  
+		        where rpd.url_domain = 'rd.wanjiquan.com'
+		        and rpd.report_type = 'pv'
+		        and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+		        and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+		        and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+		        <include refid="WjqUserPromotion_queryParams_1"/>
+		    ) T0
+		    where T0."userId" in (select pfp.authorid from PRE_FORUM_POST pfp where pfp.tid = #themeId#)
+		    group by T0."userId"
+		    order by T0."userId"
+		) T3 on (T2."userId" = T3."userId")
+		order by T2."regNum" desc, T2."userId"
+	) T
+  </select>
+  
+  <select id="selectWjqPostsPromotionByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip", #dynamic_bizDate# "bizDate" from 
+			(
+			    SELECT T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+			    (
+			        SELECT T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+			        (
+			            SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+			                , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+			                , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+			            FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+			        ) T0
+			        where T0.u_id in (select pfp.authorid from PRE_FORUM_POST pfp where pfp.tid = #themeId#)
+			        <include refid="WjqUserPromotion_queryParams_3"/>
+			        group by T0.u_id
+			        order by T0.u_id
+			    ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+			    order by T1."regNum" desc, T1.u_id
+			) T2 left join 
+			(
+			    select T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+			    (
+			        select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId", to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+			        from $tbl_rptData$ rpd  
+			        where rpd.url_domain = 'rd.wanjiquan.com'
+			        and rpd.report_type = 'pv'
+			        and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+			        and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+		        	and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+			        <include refid="WjqUserPromotion_queryParams_1"/>
+			    ) T0
+			    where T0."userId" in (select pfp.authorid from PRE_FORUM_POST pfp where pfp.tid = #themeId#)
+			    group by T0."userId"
+			    order by T0."userId"
+			) T3 on (T2."userId" = T3."userId")
+			order by T2."regNum" desc, T2."userId"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWjqPostsPromotionCount" resultClass="int" parameterClass="map">
+  	select count(T4."userId") from 
+  	(
+  		select T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip", #dynamic_bizDate# "bizDate" from 
+		(
+		    SELECT T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+		    (
+		        SELECT T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+		        (
+		            SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+		                , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+		                , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+		            FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+		        ) T0
+		        where T0.u_id in (select pfp.authorid from PRE_FORUM_POST pfp where pfp.tid = #themeId#)
+		        <include refid="WjqUserPromotion_queryParams_3"/>
+		        group by T0.u_id
+		        order by T0.u_id
+		    ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+		    order by T1."regNum" desc, T1.u_id
+		) T2 left join 
+		(
+		    select T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+		    (
+		        select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId", to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+		        from $tbl_rptData$ rpd  
+		        where rpd.url_domain = 'rd.wanjiquan.com'
+		        and rpd.report_type = 'pv'
+		        and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+		        and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+		        and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+		        <include refid="WjqUserPromotion_queryParams_1"/>
+		    ) T0
+		    where T0."userId" in (select pfp.authorid from PRE_FORUM_POST pfp where pfp.tid = #themeId#)
+		    group by T0."userId"
+		    order by T0."userId"
+		) T3 on (T2."userId" = T3."userId")
+  	) T4
+  </select>
+  
+  <select id="selectWjqUserPromotionPreview" resultClass="hashmap" parameterClass="map">
+  	select * from 
+	(
+		SELECT SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+		(
+		    SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+		        , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+		    FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+		) T0
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="bizDate">
+				T0."bizDate" = #bizDate#
+			</isNotNull>
+		</dynamic>
+	) T1 cross join
+	(
+		select count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+		(
+		    select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId", to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+		    from $tbl_rptData$ rpd  
+		    where rpd.url_domain = 'rd.wanjiquan.com'
+		    and rpd.report_type = 'pv'
+		    <dynamic prepend="and">
+		    	<isNotNull prepend="and" property="bizDate">
+		    		rpd.create_time <![CDATA[ >= ]]> to_date(#bizDate#, 'yyyy-mm-dd')
+		    	</isNotNull>
+		    	<isNotNull prepend="and" property="bizDate">
+		    		rpd.create_time <![CDATA[ < ]]> to_date(#bizDate#, 'yyyy-mm-dd')+1
+		    	</isNotNull>
+		    </dynamic>
+		) T0
+	) T2
+  </select>
+  
+  <select id="selectWjqUserPromotionSumByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	    select T2."bizDate", T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip"  from 
+	    (
+	        SELECT T1."bizDate", T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+	        (
+	            SELECT decode(#beginDate#, null, '1970-01-01', #beginDate#) || '至' || decode(#endDate#, null, to_char(SysDate, 'yyyy-mm-dd'), #endDate#) "bizDate" 
+	            	, T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+	            (
+	                SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+	                    , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+	                    , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+	                FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+	            ) T0
+	            <include refid="WjqUserPromotion_queryParams_0"/>
+	            group by T0.u_id
+	            order by T0.u_id
+	        ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+	    ) T2 left join 
+	    (
+	        select T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+	        (
+	            select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId"
+	            	, to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+	            from $tbl_rptData$ rpd  
+	            where rpd.url_domain = 'rd.wanjiquan.com'
+	            and rpd.report_type = 'pv'
+	            and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+	            and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+	            and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+	            <include refid="WjqUserPromotion_queryParams_1"/>
+	        ) T0
+	        <include refid="WjqUserPromotion_queryParams_2"/>
+	        group by T0."userId"
+	        order by T0."userId"
+	    ) T3 on (T2."userId" = T3."userId")
+	    order by T2."regNum" desc, T2."userId"
+	) T
+  </select>
+  
+  <select id="selectWjqUserPromotionSumByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T2."bizDate", T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip"  from 
+		    (
+		        SELECT T1."bizDate", T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+		        (
+		            SELECT decode(#beginDate#, null, '1970-01-01', #beginDate#) || '至' || decode(#endDate#, null, to_char(SysDate, 'yyyy-mm-dd'), #endDate#) "bizDate" 
+		            	, T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+		            (
+		                SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+		                    , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+		                    , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+		                FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+		            ) T0
+		            <include refid="WjqUserPromotion_queryParams_0"/>
+		            group by T0.u_id
+		            order by T0.u_id
+		        ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+		    ) T2 left join 
+		    (
+		        select T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+		        (
+		            select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId"
+		            	, to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+		            from $tbl_rptData$ rpd  
+		            where rpd.url_domain = 'rd.wanjiquan.com'
+		            and rpd.report_type = 'pv'
+		            and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+		            and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+		            and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+		            <include refid="WjqUserPromotion_queryParams_1"/>
+		        ) T0
+		        <include refid="WjqUserPromotion_queryParams_2"/>
+		        group by T0."userId"
+		        order by T0."userId"
+		    ) T3 on (T2."userId" = T3."userId")
+		    order by T2."regNum" desc, T2."userId"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectWjqUserPromotionSumCount" resultClass="int" parameterClass="map">
+  	SELECT count(T."userId") FROM
+	(
+	    select T2."userId", T2."userName", T2."regNum", T2."visitNum", T3."pv", T3."uv", T3."ip"  from 
+	    (
+	        SELECT T1.u_id "userId", pcm.username "userName", T1."regNum", T1."visitNum" FROM 
+	        (
+	            SELECT T0.u_id, SUM(T0.regtime) "regNum", SUM(T0.visitime) "visitNum" FROM 
+	            (
+	                SELECT pccpl.u_id, pccpl.regtime, pccpl.visitime
+	                    , to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss') "logDate"
+	                    , to_char(to_date(UNIXTIMESTAMP_TO_DATE(pccpl.dateline),'yyyy-mm-dd hh24:mi:ss'), 'yyyy-mm-dd') "bizDate"
+	                FROM PRE_COMMON_CREDIT_PROMOTION_LO pccpl
+	            ) T0
+	            <include refid="WjqUserPromotion_queryParams_0"/>
+	            group by T0.u_id
+	            order by T0.u_id
+	        ) T1 LEFT JOIN PRE_COMMON_MEMBER pcm ON pcm.u_id = T1.u_id
+	    ) T2 left join 
+	    (
+	        select T0."userId", count(T0.id) "pv", count(distinct T0.cookie_info) "uv", count(distinct T0.source_ip) "ip" from 
+	        (
+	            select rpd.id, rpd.cookie_info, rpd.source_ip, substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) "userId"
+	            	, to_char(rpd.create_time, 'yyyy-mm-dd') "bizDate"
+	            from $tbl_rptData$ rpd  
+	            where rpd.url_domain = 'rd.wanjiquan.com'
+	            and rpd.report_type = 'pv'
+	            and instr(rpd.report_content,'|',1,3) <![CDATA[ <> ]]> 0
+	            and substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1) is not null
+	            and replace(translate(substr(rpd.report_content, instr(rpd.report_content,'|',1,3)+1), '0123456789', '0'), '0', '') is null
+	            <include refid="WjqUserPromotion_queryParams_1"/>
+	        ) T0
+	        <include refid="WjqUserPromotion_queryParams_2"/>
+	        group by T0."userId"
+	        order by T0."userId"
+	    ) T3 on (T2."userId" = T3."userId")
+	    order by T2."regNum" desc, T2."userId"
+	) T
+  </select>
+  
+  <insert id="insertWjqCreditPromotionLog" parameterClass="WjqCreditPromotionLog" >
+    INSERT INTO PRE_COMMON_CREDIT_PROMOTION_LO( PCCPL.CPRID, PCCPL.U_ID, PCCPL.RID, PCCPL.RUID, PCCPL.IP, PCCPL.CYCLENUM
+    , PCCPL.EXTCREDITS1, PCCPL.EXTCREDITS2, PCCPL.EXTCREDITS3, PCCPL.EXTCREDITS4
+    , PCCPL.EXTCREDITS5, PCCPL.EXTCREDITS6, PCCPL.EXTCREDITS7, PCCPL.EXTCREDITS8
+    , PCCPL.DATELINE, PCCPL.REGTIME, PCCPL.VISITIME)
+     VALUES ( #cprid#, #uid#, #rid#, #ruid#, #ip#, #cycleNum#
+     		, #extcredits1#, #extcredits2#, #extcredits3#, #extcredits4#
+     		, #extcredits5#, #extcredits6#, #extcredits7#, #extcredits8#
+     		, date_to_unixtimestamp(to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'))
+     		, #regtime#, #visitime#)
+     <selectKey type="pre" keyProperty="cprid" resultClass="long">
+     	SELECT S_pre_common_credit_promotion.NEXTVAL AS id FROM DUAL
+     </selectKey>
+  </insert>
+  
+  <delete id="deleteWjqCreditPromotionLogById" parameterClass="long">
+  	DELETE FROM PRE_COMMON_CREDIT_PROMOTION_LO PCCPL
+  	WHERE PCCPL.CPRID = #id#
+  </delete>
+
+</sqlMap>

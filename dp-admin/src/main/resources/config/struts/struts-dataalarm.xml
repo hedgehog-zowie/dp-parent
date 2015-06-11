@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+    <package name="alarm" extends="dp-admin" namespace="/dp/alarm">
+
+        <!-- Receiver Action -->
+        <action name="receiverListView" class="receivePersonAction" method="receiverListView">
+            <result name="error">/WEB-INF/views/alarm/receiver/receiver_list.jsp</result>
+            <result name="success">/WEB-INF/views/alarm/receiver/receiver_list.jsp</result>
+        </action>
+
+        <action name="receiverEditView" class="receivePersonAction" method="receiverEditView">
+            <result name="success">/WEB-INF/views/alarm/receiver/receiver_add.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/receiver/receiver_add.jsp</result>
+        </action>
+
+        <action name="addReceiver" class="receivePersonAction" method="addReceiver">
+            <result name="success" type="chain">receiverListView</result>
+            <result name="input">/WEB-INF/views/alarm/receiver/receiver_add.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/receiver/receiver_add.jsp</result>
+        </action>
+
+        <action name="updateReceiver" class="receivePersonAction" method="updateReceiver">
+            <result name="success" type="chain">receiverListView</result>
+            <result name="input">/WEB-INF/views/alarm/receiver/receiver_add.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/receiver/receiver_add.jsp</result>
+        </action>
+
+        <action name="removeReceiver" class="receivePersonAction" method="removeReceiver">
+            <result name="success" type="chain">receiverListView</result>
+            <result name="error">/WEB-INF/views/alarm/receiver/receiver_list.jsp</result>
+        </action>
+
+        <!-- MsgType Action -->
+        <action name="msgTypeListView" class="msgTypeAction" method="msgTypeListView">
+            <result name="success">/WEB-INF/views/alarm/msg/msgType_list.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/msg/msgType_list.jsp</result>
+        </action>
+
+        <action name="msgTypeEditView" class="msgTypeAction" method="msgTypeEditView">
+            <result name="success">/WEB-INF/views/alarm/msg/msgType_add.jsp</result>
+            <result name="input">/WEB-INF/views/alarm/msg/msgType_add.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/msg/msgType_add.jsp</result>
+        </action>
+
+        <action name="relReceiverView" class="msgTypeAction" method="relReceiverView">
+            <result name="success">/WEB-INF/views/alarm/msg/msgReceiver_list.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/msg/msgReceiver_list.jsp</result>
+        </action>
+
+        <action name="addMsgType" class="msgTypeAction" method="addMsgType">
+            <result name="success" type="chain">msgTypeListView</result>
+            <result name="error">/WEB-INF/views/alarm/msg/msgReceiver_list.jsp</result>
+        </action>
+
+        <action name="updateMsgType" class="msgTypeAction" method="updateMsgType">
+            <result name="success" type="chain">msgTypeListView</result>
+            <result name="error">/WEB-INF/views/alarm/msg/msgReceiver_list.jsp</result>
+        </action>
+
+        <action name="removeMsgType" class="msgTypeAction" method="removeMsgType">
+            <result name="success" type="chain">msgTypeListView</result>
+            <result name="error">/WEB-INF/views/alarm/msg/msgType_list.jsp</result>
+        </action>
+
+        <!-- MsgAlarm Action -->
+        <action name="msgAlarmListView" class="msgAlarmAction" method="msgAlarmListView">
+            <result name="success">/WEB-INF/views/alarm/msg/msgAlarm_list.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/msg/msgAlarm_list.jsp</result>
+        </action>
+
+        <!-- BusLog Action -->
+        <action name="busLogListView" class="busLogAction" method="busLogListView">
+            <result name="success">/WEB-INF/views/alarm/log/busLog_list.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/log/busLog_list.jsp</result>
+        </action>
+
+        <!-- OptLog Action -->
+        <action name="optLogListView" class="optLogAction" method="optLogListView">
+            <result name="success">/WEB-INF/views/alarm/log/optLog_list.jsp</result>
+            <result name="error">/WEB-INF/views/alarm/log/optLog_list.jsp</result>
+        </action>
+
+    </package>
+</struts>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ReceivePerson">
+  
+  <typeAlias alias="ReceivePerson"  type="com.iuni.dp.persist.dataalarm.model.ReceivePerson"/>
+
+  <resultMap id="ReceivePersonMap" class="ReceivePerson">
+  	<result property="receivePersonId" column="receive_person_id"/>
+  	<result property="code" column="code"/>
+  	<result property="name" column="name"/>
+  	<result property="mobile" column="mobile"/>
+  	<result property="email" column="email"/>
+    <result property="createTime" column="create_time"/>  
+    <result property="creator" column="creator"/> 
+    <result property="remark" column="remark"/>
+  </resultMap>
+  
+  <select id="getReceivePersonListByMsgTypeId"  resultMap="ReceivePersonMap"  parameterClass="String">
+     select rp.* 
+     from t_receive_person rp,t_person_type_relation ptr   
+     where rp.receive_person_id=ptr.receive_person_id
+       and ptr.msg_type_id=#msgTypeId#
+     order by ptr.msg_type_id,ptr.receive_person_id
+  </select>
+  
+  <select id="getAllReceivePerson" resultMap="ReceivePersonMap">
+  	SELECT rp.* FROM t_receive_person rp
+  		ORDER BY rp.code
+  </select>
+  
+  <select id="getReceivePersonByPage" resultMap="ReceivePersonMap" parameterClass="java.util.Map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM RN FROM 
+  		(
+  			SELECT rp.receive_person_id, rp.code, rp.name, rp.mobile, rp.email
+  		, rp.create_time, rp.creator, rp.remark
+  	FROM t_receive_person rp
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="code">
+  			rp.code '%' || #code# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="name">
+  			rp.name '%' || #name# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="mobile">
+  			rp.mobile '%' || #mobile# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="email">
+  			rp.email '%' || #email# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="beginDate">
+  			<![CDATA[ rp.create_time >= to_date(#createTime#, 'yyyy-mm-dd hh24:mi:ss') ]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="endDate">
+  			<![CDATA[ rp.create_time <= to_date(#createTime#, 'yyyy-mm-dd hh24:mi:ss') ]]>
+  		</isNotNull>
+  	</dynamic>
+  	ORDER BY rp.create_time DESC, rp.code
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE RN <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="getTotalCount" resultClass="int" parameterClass="java.util.Map">
+  	SELECT COUNT(rp.receive_person_id) FROM t_receive_person rp
+  	<dynamic prepend="WHERE">
+  		<isNotNull prepend="AND" property="code">
+  			rp.code '%' || #code# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="name">
+  			rp.name '%' || #name# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="mobile">
+  			rp.mobile '%' || #mobile# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="email">
+  			rp.email '%' || #email# || '%'
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="createTime">
+  			<![CDATA[ rp.create_time >= to_date(#createTime#, 'yyyy-mm-dd hh24:mi:ss') ]]>
+  		</isNotNull>
+  		<isNotNull prepend="AND" property="createTime">
+  			<![CDATA[ rp.create_time <= to_date(#createTime#, 'yyyy-mm-dd hh24:mi:ss') ]]>
+  		</isNotNull>
+  	</dynamic>
+  </select>
+  
+  <select id="getReceivePersonById" parameterClass="int" resultMap="ReceivePersonMap">
+  	SELECT rp.* FROM t_receive_person rp 
+  		WHERE rp.receive_person_id = #id#
+  </select>
+  
+  <insert id="insertReceivePerson" parameterClass="ReceivePerson">
+  	INSERT INTO t_receive_person (
+  		receive_person_id, code, name, mobile, email, create_time, creator, remark) 
+  	VALUES (
+  		#receivePersonId#, #code#, #name#, #mobile#, #email#, #createTime#, #creator#, #remark#
+  	)
+  	<selectKey resultClass="int" type="pre" keyProperty="receivePersonId">
+  		SELECT S_t_receive_person.NEXTVAL as receivePersonId from dual
+  	</selectKey>
+  </insert>
+  
+  <update id="updateReceivePerson" parameterClass="ReceivePerson">
+	UPDATE t_receive_person rp 
+	SET rp.code = #code#,rp.name = #name#,rp.mobile = #mobile#, rp.email = #email#, rp.remark = #remark#
+	WHERE rp.receive_person_id = #receivePersonId#
+  </update>
+  
+  <delete id="deleteReceivePersonById" parameterClass="int">
+  	DELETE rp FROM t_receive_person rp WHERE rp.receive_person_id = #id#
+  </delete>
+ 
+</sqlMap>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"
+	   default-autowire="no">
+	
+	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<!-- 数据库驱动 -->
+		<property name="driverClass" value="${jdbc.driver.class}" />
+		<!--相应驱动的jdbcUrl-->
+		<property name="jdbcUrl" value="${jdbc.dp.url}" />
+		<!-- 数据库的用户名-->
+		<property name="username" value="${jdbc.dp.username}" />
+		<!-- 数据库的密码-->
+		<property name="password" value="${jdbc.dp.password}" />
+		<!--检查数据库连接池中空闲连接的间隔时间，单位是秒，默认值：240*60，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInSeconds" value="${jdbc.dp.idleConnectionTestPeriodInSeconds}" />
+		<!-- 连接池中未使用的链接最大存活时间，单位是秒，默认值：60*60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInSeconds" value="${jdbc.dp.idleMaxAgeInSeconds}" />
+		<!-- 每个分区最大的连接数-->
+		<property name="maxConnectionsPerPartition" value="${jdbc.dp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${jdbc.dp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定-->
+		<property name="partitionCount" value="${jdbc.dp.partitionCount}"/>
+		<!-- 当连接池中的连接耗尽的时候 BoneCP一次同时获取的连接数，每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${jdbc.dp.acquireIncrement}" />
+		<!--缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${jdbc.dp.statementsCacheSize}" />
+		<!--每个分区释放链接助理进程的数量，默认值：3，除非你的一个数据库连接的时间内做了很多工作，不然过多的助理进程会影响你的性能-->
+		<property name="releaseHelperThreads" value="${jdbc.dp.releaseHelperThreads}" />
+	</bean>
+	
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>classpath:config/ibatis/sqlmap-config.xml</value>
+		</property>
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClient"/>
+		</property>
+	</bean>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="txManager"/>
+	
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!--  
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="batchSave*" propagation="REQUIRED" rollback-for="java.sql.SQLException"/>
+	   		<tx:method name="reportDataPut*" read-only="true"/>
+	   		<tx:method name="reportDataBatchPut*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:pointcut id="allReportServiceMethod" expression="execution(* com.gionee.dp.report.service.impl.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="allReportServiceMethod" />
+	</aop:config>
+	-->
+    
+</beans>

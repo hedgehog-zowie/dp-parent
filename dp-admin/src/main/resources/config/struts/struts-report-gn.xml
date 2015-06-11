@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="gnReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- MallDailyStatAction -->
+        <action name="mallDailyStatListView" class="mallDailyStatAction" method="mallDailyStatListView">
+            <result name="success">/WEB-INF/views/stat/report/mallDailyStat_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallDailyStat_list.jsp</result>
+        </action>
+
+        <action name="mallDailyStatList2Excel" class="mallDailyStatAction" method="mallDailyStatList2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">mallDailyStatListView</result>
+        </action>
+
+        <!-- MallGoodsDailyStatAction -->
+        <action name="mallGoodsDailyStatListView" class="mallGoodsDailyStatAction" method="mallGoodsDailyStatListView">
+            <result name="success">/WEB-INF/views/stat/report/mallGoodsDailyStat_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallGoodsDailyStat_list.jsp</result>
+        </action>
+
+        <action name="mallGoodsDailyStatList2Excel" class="mallGoodsDailyStatAction"
+                method="mallGoodsDailyStatList2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">mallGoodsDailyStatListView</result>
+        </action>
+
+        <!-- 站外推广数据(总表) -->
+        <action name="queryMallAdPvuvOrderTotals" class="mallAdChannelStatAction" method="queryMallAdPvuvOrderTotals">
+            <result name="success">/WEB-INF/views/stat/report/mallAdPvuvOrderTotal_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallAdPvuvOrderTotal_list.jsp</result>
+        </action>
+
+        <!-- 站外推广数据(日表) -->
+        <action name="queryMallAdPvuvOrderDailys" class="mallAdChannelStatAction" method="queryMallAdPvuvOrderDailys">
+            <result name="success">/WEB-INF/views/stat/report/mallAdPvuvOrderDaily_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallAdPvuvOrderDaily_list.jsp</result>
+        </action>
+
+        <!-- 站外推广数据(推广数据表) -->
+        <action name="queryMallAdPvuvOrderDailysForFinal" class="mallAdChannelStatAction"
+                method="queryMallAdPvuvOrderDailysForFinal">
+            <result name="success">/WEB-INF/views/stat/report/mallAdPvuvOrderPromotation_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallAdPvuvOrderPromotation_list.jsp</result>
+        </action>
+
+        <!-- @Deprecated站外推广数据(总表:明细表) -->
+        <action name="queryMallAdPvuvOrderDetailsForTotal" class="mallAdChannelStatAction"
+                method="queryMallAdPvuvOrderDetailsForTotal">
+            <result name="success">/WEB-INF/views/stat/report/mallAdGoodsOrderDetail_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallAdGoodsOrderDetail_list.jsp</result>
+        </action>
+
+        <!-- @Deprecated站外推广数据(日表/推广数据表:明细表) -->
+        <action name="queryMallAdPvuvOrderDetailsForDaily" class="mallAdChannelStatAction"
+                method="queryMallAdPvuvOrderDetailsForDaily">
+            <result name="success">/WEB-INF/views/stat/report/mallAdGoodsOrderDetail_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallAdGoodsOrderDetail_list.jsp</result>
+        </action>
+
+        <!-- 站外推广数据(总表日表/推广数据表:明细表) -->
+        <action name="queryMallAdPvuvOrderDetails" class="mallAdChannelStatAction" method="queryMallAdPvuvOrderDetails">
+            <result name="success">/WEB-INF/views/stat/report/mallAdGoodsOrderDetail_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallAdGoodsOrderDetail_list.jsp</result>
+        </action>
+        <!-- 导出excel站外推广数据(总表) -->
+        <action name="mallAdPvuvOrderTotals2Excel" class="mallAdChannelStatAction" method="mallAdPvuvOrderTotals2Excel">
+        </action>
+        <!-- 导出excel站外推广数据(日表) -->
+        <action name="mallAdPvuvOrderDailys2Excel" class="mallAdChannelStatAction" method="mallAdPvuvOrderDailys2Excel">
+        </action>
+        <!-- 导出excel站外推广数据(推广数据表) -->
+        <action name="mallAdPvuvOrderDailysForFinal2Excel" class="mallAdChannelStatAction"
+                method="mallAdPvuvOrderDailysForFinal2Excel">
+        </action>
+        <!-- 导出excel站外推广数据(总表之明细表) -->
+        <action name="mallAdPvuvOrderDetailsForTotal2Excel" class="mallAdChannelStatAction"
+                method="mallAdPvuvOrderDetailsForTotal2Excel">
+        </action>
+        <!-- 导出excel站外推广数据(日表之明细表) -->
+        <action name="mallAdPvuvOrderDetailsForDaily2Excel" class="mallAdChannelStatAction"
+                method="mallAdPvuvOrderDetailsForDaily2Excel">
+        </action>
+
+        <!-- 查询金立商城销售数据-->
+        <action name="queryMallSaleDailyStats" class="mallSaleDailyStatAction" method="queryMallSaleDailyStats">
+            <result name="success">/WEB-INF/views/stat/report/mallSaleDaily_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallSaleDaily_list.jsp</result>
+        </action>
+        <!-- 导出Excel金立商城销售数据-->
+        <action name="mallSaleDailyStats2Excel" class="mallSaleDailyStatAction" method="mallSaleDailyStats2Excel">
+        </action>
+
+        <!-- 查询金立商城会员注册及订单信息-->
+        <action name="queryMallUserOrderDailyStats" class="mallUserOrderDailyStatAction"
+                method="queryMallUserOrderDailyStats">
+            <result name="success">/WEB-INF/views/stat/report/mallUserOrderDaily_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallUserOrderDaily_list.jsp</result>
+        </action>
+        <!-- 导出Excel金立商城会员注册及订单信息-->
+        <action name="mallUserOrderDailyStats2Excel" class="mallUserOrderDailyStatAction"
+                method="mallUserOrderDailyStats2Excel">
+        </action>
+        <!-- 查询金立商城CPS推广订单信息-->
+        <action name="queryMallYqfOrderDailyStats" class="mallYqfOrderDailyStatAction"
+                method="queryMallYqfOrderDailyStats">
+            <result name="success">/WEB-INF/views/stat/report/mallYqfOrderDaily_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallYqfOrderDaily_list.jsp</result>
+        </action>
+        <!-- 导出Excel金立商城CPS推广订单信息-->
+        <action name="mallYqfOrderDailyStats2Excel" class="mallYqfOrderDailyStatAction"
+                method="mallYqfOrderDailyStats2Excel">
+        </action>
+
+        <!-- 商城前端埋点位置 -->
+        <action name="mallBuriedPointListView" class="mallBuriedPointSiteAction" method="mallBuriedPointListView">
+            <result name="success">/WEB-INF/views/stat/form/mallBuriedPoint_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/form/mallBuriedPoint_list.jsp</result>
+        </action>
+
+        <action name="mallBuriedPointEditView" class="mallBuriedPointSiteAction" method="mallBuriedPointEditView">
+            <result name="success">/WEB-INF/views/stat/form/mallBuriedPoint_add.jsp</result>
+            <result name="input">/WEB-INF/views/stat/form/mallBuriedPoint_add.jsp</result>
+            <result name="error">/WEB-INF/views/stat/form/mallBuriedPoint_add.jsp</result>
+        </action>
+
+        <action name="addMallBuriedPoint" class="mallBuriedPointSiteAction" method="addMallBuriedPoint">
+            <result name="success" type="chain">mallBuriedPointListView</result>
+            <result name="error">/WEB-INF/views/stat/form/mallBuriedPoint_list.jsp</result>
+        </action>
+
+        <action name="updateMallBuriedPoint" class="mallBuriedPointSiteAction" method="updateMallBuriedPoint">
+            <result name="success" type="chain">mallBuriedPointListView</result>
+            <result name="error">/WEB-INF/views/stat/form/mallBuriedPoint_list.jsp</result>
+        </action>
+
+        <action name="removeMallBuriedPoint" class="mallBuriedPointSiteAction" method="removeMallBuriedPoint">
+            <result name="success" type="chain">mallBuriedPointListView</result>
+            <result name="error">/WEB-INF/views/stat/form/mallBuriedPoint_list.jsp</result>
+        </action>
+
+        <!-- 前端埋点点击率统计 -->
+        <action name="mbpsClickrateStatView" class="mallBuriedPointStatAction" method="mbpsClickrateStatView">
+            <result name="success">/WEB-INF/views/stat/report/mallBuriedPointClickrateStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/mallBuriedPointClickrateStat.jsp</result>
+        </action>
+
+        <action name="mbpsClickrateStat2Excel" class="mallBuriedPointStatAction" method="mbpsClickrateStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">mbpsClickrateStatView</result>
+        </action>
+    </package>
+
+</struts>

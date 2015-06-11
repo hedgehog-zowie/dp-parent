@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="OrderSource">
+
+    <typeAlias alias="OrderSource" type="com.iuni.dp.persist.datastat.common.model.OrderSource"/>
+
+    <resultMap id="orderSource" class="OrderSource">
+        <result column="SOURCE_CODE" property="sourceCode" jdbcType="VARCHAR"/>
+        <result column="SOURCE_NAME" property="sourceName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 查询WMS系统的订单来源 -->
+    <select id="selectWmsOrderSource" resultMap="orderSource">
+		SELECT DISTINCT (WMS_SOURCE_CODE) SOURCE_CODE, WMS_SOURCE_NAME SOURCE_NAME FROM IUNI_ORDER_SOURCE ORDER BY WMS_SOURCE_CODE
+	</select>
+
+    <!-- 查询订单系统的订单来源 -->
+    <select id="selectOMOrderSource" resultMap="orderSource">
+        SELECT DISTINCT (ORDER_SOURCE_CODE) SOURCE_CODE,
+        ORDER_SOURCE_NAME SOURCE_NAME
+        FROM IUNI_ORDER_SOURCE
+        WHERE ORDER_SOURCE_CODE IS NOT NULL
+        ORDER BY ORDER_SOURCE_CODE
+    </select>
+
+    <!-- 查询订单系统的大客户来源 -->
+    <select id="selectOMBigAccount" resultMap="orderSource">
+        SELECT DISTINCT (BIG_ACCOUNT_SN) SOURCE_CODE,
+        CONTACT_NAME SOURCE_NAME
+        FROM IUNI_BIG_ACCOUNT_INFO
+        ORDER BY BIG_ACCOUNT_SN
+    </select>
+
+    <!-- 查询WMS系统的大客户订单来源 -->
+    <select id="selectWmsTransferSource" resultMap="orderSource">
+        SELECT DISTINCT(CODE) SOURCE_CODE, NAME SOURCE_NAME FROM SYN_WMS_TRANSFER_PARTNER
+        WHERE  CODE NOT IN ('88888', '110538') AND C_PARENT_ID IS NULL
+        ORDER BY CODE
+    </select>
+
+</sqlMap>

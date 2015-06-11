@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+    <package name="system" extends="dp-admin" namespace="/dp/sys">
+
+        <!-- 日志管理 -->
+        <action name="getLogs" class="logAction" method="getLogs">
+            <result name="success">/WEB-INF/system/log_list.jsp</result>
+        </action>
+        <action name="deleteLogs" class="logAction" method="deleteLogs">
+            <result name="success">/WEB-INF/system/log_list.jsp</result>
+        </action>
+
+        <!-- 系统参数管理 -->
+        <action name="addSysParam" class="sysParamAction" method="addSysParam">
+            <result name="success">/WEB-INF/system/sysParam_input.jsp</result>
+        </action>
+        <action name="showSysParam" class="sysParamAction" method="showSysParam">
+            <result name="success">/WEB-INF/system/sysParam_list.jsp</result>
+        </action>
+        <action name="preUpdateSysParam" class="sysParamAction" method="preUpdateSysParam">
+            <result name="success">/WEB-INF/system/sysParam_update.jsp</result>
+        </action>
+        <action name="saveSysParam" class="sysParamAction" method="saveSysParam">
+            <result name="success">/WEB-INF/system/sysParam_list.jsp</result>
+        </action>
+        <action name="updateSysParam" class="sysParamAction" method="updateSysParam">
+            <result name="success">/WEB-INF/system/sysParam_list.jsp</result>
+        </action>
+
+        <!-- SQL查询 -->
+        <action name="goQuerySql" class="querySqlAction" method="goquerySql">
+            <result name="success">/WEB-INF/system/querySql.jsp</result>
+        </action>
+        <action name="querySql" class="querySqlAction" method="exeQuery">
+            <result name="success">/WEB-INF/system/querySql.jsp</result>
+            <result name="error">/WEB-INF/system/querySql.jsp</result>
+        </action>
+
+    </package>
+</struts>

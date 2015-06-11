@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniWmsSku">
+
+    <typeAlias alias="IuniWmsSku" type="com.iuni.dp.persist.datastat.common.model.IuniWmsSku"/>
+
+    <resultMap id="IuniWmsSku" class="IuniWmsSku">
+        <result column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="WARES_ID" property="waresId" jdbcType="VARCHAR"/>
+        <result column="SKU_NAME" property="skuName" jdbcType="VARCHAR"/>
+        <result column="SKU_CODE" property="skuCode" jdbcType="VARCHAR"/>
+        <result column="SKU_BARCODE" property="skuBarcode" jdbcType="VARCHAR"/>
+        <result column="ITEM_IDS" property="itemIds" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="ENABLED" property="enabled" jdbcType="VARCHAR"/>
+        <result column="MATERIAL_CODE" property="materialCode" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="selectIuniWmsSku_where_1">
+        <dynamic prepend="where">
+            <isNotNull property="goodsTypeList" prepend="and">
+                SWWC.ID IN
+                <iterate property="goodsTypeList" open="(" close=")" conjunction=",">
+                    #goodsTypeList[]#
+                </iterate>
+            </isNotNull>
+            <isNotNull property="phoneList" prepend="and">
+                SWW.ID IN
+                <iterate property="phoneList" open="(" close=")" conjunction=",">
+                    #phoneList[]#
+                </iterate>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    <select id="selectIuniWmsSku" resultClass="hashmap" parameterClass="map">
+        SELECT SWS.ID "skuId", SWS.SKU_NAME "skuName",SWW.ID "waresId" FROM SYN_WMS_SKU SWS
+        LEFT JOIN SYN_WMS_WARES SWW ON SWS.WARES_ID=SWW.ID
+        LEFT JOIN SYN_WMS_WARES_CATEGORY SWWC ON SWW.CAT_ID=SWWC.ID
+        <include refid="selectIuniWmsSku_where_1"/>
+        ORDER BY SWS.SKU_NAME
+    </select>
+
+    <select id="selectWaresCategory" resultClass="hashmap" parameterClass="map">
+        SELECT ID "id", CAT_NAME "catName" FROM SYN_WMS_WARES_CATEGORY SWWC WHERE SWWC.ID <![CDATA[ <> ]]> 0;
+    </select>
+
+    <select id="selectWares" resultClass="hashmap" parameterClass="map">
+        SELECT ID "id", WARES_NAME "waresName" FROM SYN_WMS_WARES SWW
+        <dynamic prepend="WHERE">
+            <isNotNull prepend="and" property="catId">
+                SWW.CAT_ID = #catId#
+            </isNotNull>
+        </dynamic>
+    </select>
+
+</sqlMap>

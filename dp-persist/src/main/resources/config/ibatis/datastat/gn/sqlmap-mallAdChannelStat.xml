@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="MallAdChannelStat" >
+  <typeAlias alias="MallAdPvuvOrderTotal"  type="com.iuni.dp.persist.datastat.model.MallAdPvuvOrderTotal"/>
+  <typeAlias alias="MallAdPvuvOrderDaily"  type="com.iuni.dp.persist.datastat.model.MallAdPvuvOrderDaily"/>
+  <typeAlias alias="MallAdGoodsOrderDetail"  type="com.iuni.dp.persist.datastat.model.MallAdGoodsOrderDetail"/>
+  <!--站外推广数据(总表)-->
+  <select id="queryMallAdPvuvOrderTotals" resultClass="MallAdPvuvOrderTotal" parameterClass="map" >
+ select t7.*
+  from (select t6.*, rownum rn
+         from (select * 
+          from (select t4.ad_id adId,
+                       t4.ad_name adName,
+                       t4.channel_name channelName,
+                       sum(t4.channel_pv) totalPv,
+                       sum(t4.channel_uv) totalUv,
+                               CASE
+                                 WHEN sum(t4.valid_order_num) is null THEN
+                                  0
+                                 ELSE
+                                  sum(t4.valid_order_num)
+                               END validOrderNum,
+                               CASE
+                                 WHEN sum(t4.total_order_num) is null THEN
+                                  0
+                                 ELSE
+                                  sum(t4.total_order_num)
+                               END totalOrderNum,
+                               CASE
+                                 WHEN sum(t4.back_order_num) is null THEN
+                                  0
+                                 ELSE
+                                  sum(t4.back_order_num)
+                               END backOrderNum
+                  from (select t3.ad_id,
+                               t3.ad_name,
+                               t1.channel_name,
+                               t1.channel_pv,
+                               t1.channel_uv,
+                               t2.valid_order_num,
+                               t2.total_order_num,
+                               t2.back_order_num,
+                               t1.biz_date
+                          from mall_ad_pvuv_daily_stat  t1  
+                               left join mall_ad_order_daily_stat t2 on t1.ad_id = t2.ad_id and t1.channel_name = t2.channel_name and t1.biz_date = t2.biz_date
+                               join jlsp_ad  t3 on t1.ad_id = t3.ad_id
+                         <dynamic prepend="WHERE" >
+                           <isNotNull property="adId" prepend="AND" >
+        					t3.ad_id = #adId#  
+      					   </isNotNull>
+      					   <isNotNull property="adName" prepend="AND" >
+        					t3.ad_name like  '%$adName$%' 
+      					  </isNotNull>
+      					  <isNotNull property="channelName" prepend="AND" >
+       						t1.channel_name like  '%$channelName$%' 
+   				   		  </isNotNull>
+                         </dynamic>
+      					  ) t4
+                
+                 group by t4.ad_id, t4.ad_name, t4.channel_name
+                 ) t5
+                order by t5.validOrderNum desc, t5.totalOrderNum desc)t6
+         where rownum  <![CDATA[ <= ]]> #endRec#
+        ) t7
+ where rn <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+    <!--站外推广数据(总表):查询总记录数-->
+  <select id="queryMallAdPvuvOrderTotalsCount" resultClass="int" parameterClass="map" >
+  select count(1)
+  from (select t4.ad_id adId,
+               t4.ad_name adName,
+               t4.channel_name channelName,
+               sum(t4.channel_pv) totalPv,
+               sum(t4.channel_uv) totalUv,
+               sum(t4.valid_order_num) validOrderNum,
+               sum(t4.total_order_num) totalOrderNum,
+               sum(t4.back_order_num) backOrderNum
+          from (select t3.ad_id,
+                       t3.ad_name,
+                       t1.channel_name,
+                       t1.channel_pv,
+                       t1.channel_uv,
+                       t2.valid_order_num,
+                       t2.total_order_num,
+                       t2.back_order_num,
+                       t1.biz_date
+                     from mall_ad_pvuv_daily_stat  t1  
+                          left join mall_ad_order_daily_stat t2 on t1.ad_id = t2.ad_id and t1.channel_name = t2.channel_name and t1.biz_date = t2.biz_date
+                          join jlsp_ad  t3 on t1.ad_id = t3.ad_id
+                  <dynamic prepend="WHERE" >                        
+                   <isNotNull property="adId" prepend="AND" >
+        		   t3.ad_id = #adId#  
+      			   </isNotNull>
+      			   <isNotNull property="adName" prepend="AND" >
+        			t3.ad_name like  '%$adName$%' 
+      			   </isNotNull>
+      			   <isNotNull property="channelName" prepend="AND" >
+       				t1.channel_name like  '%$channelName$%' 
+   				   </isNotNull>	
+                  </dynamic>
+      				) t4
+         group by t4.ad_id, t4.ad_name, t4.channel_name) t5
+
+  </select>
+  
+  <!--站外推广数据(日表)-->
+  <select id="queryMallAdPvuvOrderDailys" resultClass="MallAdPvuvOrderDaily" parameterClass="map" >
+ select t6.*
+  from (select t5.*, rownum rn
+          from (select t4.*
+                  from (select t3.ad_id adId,
+                               t3.ad_name adName,
+                               t1.channel_name channelName,
+                               t1.channel_pv channelPv,
+                               t1.channel_uv channelUv,
+                               CASE
+                                 WHEN t2.valid_order_num is null THEN
+                                  0
+                                 ELSE
+                                  t2.valid_order_num
+                               END validOrderNum,
+                               CASE
+                                 WHEN t2.total_order_num is null THEN
+                                  0
+                                 ELSE
+                                  t2.total_order_num
+                               END totalOrderNum,
+                               CASE
+                                 WHEN t2.back_order_num is null THEN
+                                  0
+                                 ELSE
+                                  t2.back_order_num
+                               END backOrderNum,
+                               t1.biz_date bizDate
+                          from mall_ad_pvuv_daily_stat t1
+                          left join mall_ad_order_daily_stat t2 on t1.ad_id =
+                                                                   t2.ad_id
+                                                               and t1.channel_name =
+                                                                   t2.channel_name
+                                                               and t1.biz_date =
+                                                                   t2.biz_date
+                          join jlsp_ad t3 on t1.ad_id = t3.ad_id
+                   <dynamic prepend="WHERE" > 
+   				   <isNotNull property="beginDate" prepend="AND" >
+       			    t1.biz_date <![CDATA[>=]]> #beginDate# 
+   				   </isNotNull>
+   				   <isNotNull property="endDate" prepend="AND" >
+       			    t1.biz_date <![CDATA[<=]]> #endDate# 
+   				   </isNotNull>
+   				   <isNotNull property="adId" prepend="AND" >
+       			    t3.ad_id = #adId#  
+   				   </isNotNull>
+   				   <isNotNull property="adName" prepend="AND" >
+       			    t3.ad_name like  '%$adName$%' 
+    			   </isNotNull>
+   				   <isNotNull property="channelName" prepend="AND" >
+       				t1.channel_name like  '%$channelName$%' 
+   				  </isNotNull>		
+   				  </dynamic>
+   				  ) t4
+                 order by t4.bizDate       desc,
+                          t4.validOrderNum desc,
+                          t4.totalOrderNum desc) t5
+         where rownum  <![CDATA[ <= ]]> #endRec#) t6
+ where rn <![CDATA[ >= ]]> #startRec#
+
+  </select>
+  
+    <!--站外推广数据(日表):查询总记录数-->
+  <select id="queryMallAdPvuvOrderDailysCount" resultClass="int" parameterClass="map" >
+  	select count(1) from
+  	(
+     select  t3.ad_id adId,
+       t3.ad_name adName,
+       t1.channel_name channelName,
+       t1.channel_pv channelPv,
+       t1.channel_uv channelUv,
+       t2.valid_order_num validOrderNum,
+       t2.total_order_num totalOrderNum,
+       t2.back_order_num backOrderNum,
+       t1.biz_date bizDate
+      from mall_ad_pvuv_daily_stat  t1  
+               left join mall_ad_order_daily_stat t2 on t1.ad_id = t2.ad_id and t1.channel_name = t2.channel_name and t1.biz_date = t2.biz_date
+               join jlsp_ad  t3 on t1.ad_id = t3.ad_id
+       <dynamic prepend="WHERE" > 
+		<isNotNull property="beginDate" prepend="AND" >
+		t1.biz_date <![CDATA[>=]]> #beginDate# 
+		</isNotNull>
+		<isNotNull property="endDate" prepend="AND" >
+		t1.biz_date <![CDATA[<=]]> #endDate# 
+		</isNotNull>
+		<isNotNull property="adId" prepend="AND" >
+       t3.ad_id = #adId#  
+		</isNotNull>
+		<isNotNull property="adName" prepend="AND" >
+       t3.ad_name like  '%$adName$%' 
+		</isNotNull>
+		<isNotNull property="channelName" prepend="AND" >
+       t1.channel_name like  '%$channelName$%' 
+		</isNotNull>	
+	   </dynamic>	
+   )t4	  	   
+  </select>
+  
+  <!--站外推广数据(推广数据表)-->
+  <select id="queryMallAdPvuvOrderDailysForFinal" resultClass="MallAdPvuvOrderDaily" parameterClass="map" >
+ select t6.*
+  from (select t5.*, rownum rn
+          from (select t4.*
+                  from (select t3.ad_id adId,
+                               t3.ad_name adName,
+                               t1.channel_name channelName,
+                               t1.channel_pv channelPv,
+                               t1.channel_uv channelUv,
+                               CASE
+                                 WHEN t2.valid_order_num is null THEN
+                                  0
+                                 ELSE
+                                  t2.valid_order_num
+                               END validOrderNum,
+                               CASE
+                                 WHEN t2.total_order_num is null THEN
+                                  0
+                                 ELSE
+                                  t2.total_order_num
+                               END totalOrderNum,
+                               CASE
+                                 WHEN t2.back_order_num is null THEN
+                                  0
+                                 ELSE
+                                  t2.back_order_num
+                               END backOrderNum,
+                               t1.biz_date bizDate,
+                               CASE
+                                 WHEN to_char(t2.create_time, 'yyyy-MM-dd') is null THEN
+                                  to_char(to_date(t1.biz_date, 'yyyy-MM-dd') + 22,
+                                          'yyyy-MM-dd')
+                                 ELSE
+                                  to_char(t2.create_time, 'yyyy-MM-dd')
+                               END outDate
+                          from mall_ad_pvuv_daily_stat t1
+                          left join mall_ad_order_daily_stat_final t2 on t1.ad_id =
+                                                                         t2.ad_id
+                                                                     and t1.channel_name =
+                                                                         t2.channel_name
+                                                                     and t1.biz_date =
+                                                                         t2.biz_date
+                          join jlsp_ad t3 on t1.ad_id = t3.ad_id
+   <dynamic prepend="WHERE" > 
+   <isNull property="beginDate" prepend="AND" > 
+       t1.biz_date<![CDATA[ <= ]]> to_char(sysdate-22,'yyyy-MM-dd')    
+   </isNull>
+   <isNull property="endDate" prepend="AND" > 
+       t1.biz_date<![CDATA[ <= ]]> to_char(sysdate-22,'yyyy-MM-dd')    
+   </isNull>
+   <isNotNull property="beginDate" prepend="AND" >
+	   t1.biz_date <![CDATA[>=]]> #beginDate# 
+   </isNotNull>
+   <isNotNull property="endDate" prepend="AND" >
+	   t1.biz_date <![CDATA[<=]]> #endDate# 
+   </isNotNull>
+   <isNotNull property="adId" prepend="AND" >
+       t3.ad_id = #adId#  
+   </isNotNull>
+   <isNotNull property="adName" prepend="AND" >
+       t3.ad_name like  '%$adName$%' 
+   </isNotNull>
+   <isNotNull property="channelName" prepend="AND" >
+       t1.channel_name like  '%$channelName$%' 
+   </isNotNull> 
+   </dynamic>
+   ) t4
+                 order by t4.bizDate       desc,
+                          t4.validOrderNum desc,
+                          t4.totalOrderNum desc) t5
+         where rownum  <![CDATA[ <= ]]> #endRec#) t6
+ where rn <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+    <!--站外推广数据(推广数据表):查询总记录数-->
+  <select id="queryMallAdPvuvOrderDailysForFinalCount" resultClass="int" parameterClass="map" >
+  	select count(1) from
+  	(
+     select t3.ad_id adId,
+       t3.ad_name adName,
+       t1.channel_name channelName,
+       t1.channel_pv channelPv,
+       t1.channel_uv channelUv,
+       t2.valid_order_num validOrderNum,
+       t2.total_order_num totalOrderNum,
+       t2.back_order_num backOrderNum,
+       t1.biz_date bizDate,
+       to_char(t2.create_time,'yyyy-MM-dd') outDate
+      from mall_ad_pvuv_daily_stat  t1  
+               left join mall_ad_order_daily_stat_final t2 on t1.ad_id = t2.ad_id and t1.channel_name = t2.channel_name and t1.biz_date = t2.biz_date
+               join jlsp_ad  t3 on t1.ad_id = t3.ad_id
+  <dynamic prepend="WHERE" > 
+   <isNull property="beginDate" prepend="AND" > 
+       t1.biz_date<![CDATA[ <= ]]> to_char(sysdate-22,'yyyy-MM-dd')    
+   </isNull>
+   <isNull property="endDate" prepend="AND" > 
+       t1.biz_date<![CDATA[ <= ]]> to_char(sysdate-22,'yyyy-MM-dd')    
+   </isNull>
+   <isNotNull property="beginDate" prepend="AND" >
+	   t1.biz_date <![CDATA[>=]]> #beginDate# 
+   </isNotNull>
+   <isNotNull property="endDate" prepend="AND" >
+	   t1.biz_date <![CDATA[<=]]> #endDate# 
+   </isNotNull>
+   <isNotNull property="adId" prepend="AND" >
+       t3.ad_id = #adId#  
+   </isNotNull>
+   <isNotNull property="adName" prepend="AND" >
+       t3.ad_name like  '%$adName$%' 
+   </isNotNull>
+   <isNotNull property="channelName" prepend="AND" >
+       t1.channel_name like  '%$channelName$%' 
+   </isNotNull> 
+  </dynamic>
+   )t4
+  </select>
+  
+  <!--@Deprecated站外推广数据(总表:明细表)-->
+  <select id="queryMallAdPvuvOrderDetailsForTotal" resultClass="MallAdGoodsOrderDetail" parameterClass="map" >
+  	select t4.*
+    from (
+     select t3.*, rownum rn
+     from (
+          select substr(unixtimestamp_to_date(t1.add_time), 1, 10) bizDate,
+        t2.goods_name goodsName,
+        t2.goods_sn goodsSn,
+        t2.goods_number goodsNum,
+        t2.goods_price goodsPrice,
+        t1.order_amount orderAmount,
+        t1.order_sn oredrSn,
+        t1.order_status orderStatus,
+        unixtimestamp_to_date(t1.pay_time) payTime
+   from jlsp_order_info t1, jlsp_order_goods t2
+  where t1.order_id = t2.order_id
+    and t1.from_ad = #adId#
+    and t1.referer = #channelName#
+             ) t3
+         where rownum  <![CDATA[ <= ]]> #endRec#
+        ) t4
+ where rn <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <!--@Deprecated站外推广数据(总表:明细表):查询总记录数-->
+  <select id="queryMallAdPvuvOrderDetailsForTotalCount" resultClass="int" parameterClass="map" >
+     select count(1)
+     from (
+          select substr(unixtimestamp_to_date(t1.add_time), 1, 10) bizDate,
+        t2.goods_name goodsName,
+        t2.goods_sn goodsSn,
+        t2.goods_number goodsNum,
+        t2.goods_price goodsPrice,
+        t1.order_amount orderAmount,
+        t1.order_sn oredrSn,
+        t1.order_status orderStatus,
+        unixtimestamp_to_date(t1.pay_time) payTime
+   from jlsp_order_info t1, jlsp_order_goods t2
+  where t1.order_id = t2.order_id
+    and t1.from_ad = #adId#
+    and t1.referer = #channelName#
+          )
+  </select>
+  <!--@Deprecated站外推广数据(日表/推广数据表:明细表)-->
+  <select id="queryMallAdPvuvOrderDetailsForDaily" resultClass="MallAdGoodsOrderDetail" parameterClass="map" >
+  select t4.*
+  from (select t3.*, rownum rn
+     from (
+      select substr(unixtimestamp_to_date(t1.add_time), 1, 10) bizDate,
+        t2.goods_name goodsName,
+        t2.goods_sn goodsSn,
+        t2.goods_number goodsNum,
+        t2.goods_price goodsPrice,
+        t1.order_amount orderAmount,
+        t1.order_sn oredrSn,
+        t1.order_status orderStatus,
+        unixtimestamp_to_date(t1.pay_time) payTime
+   from jlsp_order_info t1, jlsp_order_goods t2
+  where t1.order_id = t2.order_id
+    and t1.from_ad = #adId#
+    and t1.referer = #channelName#
+    and substr(unixtimestamp_to_date(t1.add_time), 1, 10) = #bizDate#
+           ) t3
+         where rownum  <![CDATA[ <= ]]> #endRec#
+        ) t4
+ where rn <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+    <!--@Deprecated站外推广数据(日表/推广数据表:明细表):查询总记录数-->
+  <select id="queryMallAdPvuvOrderDetailsForDailyCount" resultClass="int" parameterClass="map" >
+     select count(1)
+     from (
+          select substr(unixtimestamp_to_date(t1.add_time), 1, 10) bizDate,
+        t2.goods_name goodsName,
+        t2.goods_sn goodsSn,
+        t2.goods_number goodsNum,
+        t2.goods_price goodsPrice,
+        t1.order_amount orderAmount,
+        t1.order_sn oredrSn,
+        t1.order_status orderStatus,
+        unixtimestamp_to_date(t1.pay_time) payTime
+   from jlsp_order_info t1, jlsp_order_goods t2
+  where t1.order_id = t2.order_id
+    and t1.from_ad = #adId#
+    and t1.referer = #channelName#
+    and substr(unixtimestamp_to_date(t1.add_time), 1, 10) = #bizDate#
+          )
+  </select>
+  
+    <!--站外推广数据(总表/日表/推广数据表:明细表)-->
+  <select id="queryMallAdPvuvOrderDetails" resultClass="MallAdGoodsOrderDetail" parameterClass="map" >
+  select t4.*
+  from (select t3.*, rownum rn
+     from (
+      select substr(unixtimestamp_to_date(t1.add_time), 1, 10) bizDate,
+        t2.goods_name goodsName,
+        t2.goods_sn goodsSn,
+        t2.goods_number goodsNum,
+        t2.goods_price goodsPrice,
+        t1.order_amount orderAmount,
+        t1.order_sn oredrSn,
+        t1.order_status orderStatus,
+        unixtimestamp_to_date(t1.pay_time) payTime
+   from jlsp_order_info t1, jlsp_order_goods t2
+  where t1.order_id = t2.order_id
+   <isNotNull property="bizDate" prepend="AND" >
+       substr(unixtimestamp_to_date(t1.add_time), 1, 10) = #bizDate# 
+   </isNotNull>
+   <isNotNull property="adId" prepend="AND" >
+       t1.from_ad = #adId#
+   </isNotNull>
+   <isNotNull property="channelName" prepend="AND" >
+       t1.referer = #channelName#
+   </isNotNull> 
+     order by bizDate desc
+           ) t3
+         where rownum  <![CDATA[ <= ]]> #endRec#
+        ) t4
+ where rn <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+    <!--站外推广数据(总表/日表/推广数据表:明细表):查询总记录数-->
+  <select id="queryMallAdPvuvOrderDetailsCount" resultClass="int" parameterClass="map" >
+     select count(1)
+     from (
+          select substr(unixtimestamp_to_date(t1.add_time), 1, 10) bizDate,
+        t2.goods_name goodsName,
+        t2.goods_sn goodsSn,
+        t2.goods_number goodsNum,
+        t2.goods_price goodsPrice,
+        t1.order_amount orderAmount,
+        t1.order_sn oredrSn,
+        t1.order_status orderStatus,
+        unixtimestamp_to_date(t1.pay_time) payTime
+   from jlsp_order_info t1, jlsp_order_goods t2
+  where t1.order_id = t2.order_id
+   <isNotNull property="bizDate" prepend="AND" >
+       substr(unixtimestamp_to_date(t1.add_time), 1, 10) = #bizDate# 
+   </isNotNull>
+   <isNotNull property="adId" prepend="AND" >
+       t1.from_ad = #adId#
+   </isNotNull>
+   <isNotNull property="channelName" prepend="AND" >
+       t1.referer = #channelName#
+   </isNotNull>
+          )
+  </select>
+</sqlMap>

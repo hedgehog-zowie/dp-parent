@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="gnWmsReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- 查询WMS商城销售数据-->
+        <action name="queryWmsOrderGoodsList" class="wmsOrderGoodsAction" method="queryWmsOrderGoodsList">
+            <result name="success">/WEB-INF/views/stat/report/wmsOrderGoods_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wmsOrderGoods_list.jsp</result>
+        </action>
+
+        <!-- 导出Excel WMS销售数据-->
+        <action name="wmsOrderGoodsList2Excel" class="wmsOrderGoodsAction" method="wmsOrderGoodsList2Excel">
+        </action>
+    </package>
+
+</struts>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<!--指定web应用的默认编码集，相当于调用HttpServletRequest的setCharacterEncoding方法 -->
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+
+	<!--该属性指定需要Struts 2处理的请求后缀，该属性的默认值是action，即所有匹配*.action的请求都由Struts 2处理 如果用户需要制定多个请求后缀，则多个后缀之间以英文逗号隔开 -->
+	<constant name="struts.action.extension" value=",do,action"></constant>
+
+	<!--设置浏览器是否缓存静态内容，默认值为true，生产环境下使用，开发阶段最好关闭 -->
+	<constant name="struts.serve.static.browserCache" value="true"></constant>
+
+	<!--当struts的配置文件修改后，系统是否自动重新加载该文件，默认值为false，生产环境下使用，开发阶段最好打开 -->
+	<constant name="struts.configuration.xml.reload" value="true"></constant>
+
+	<!--开发模式下使用，可以打印出更详细的错误信息 -->
+	<constant name="struts.devMode" value="false" />
+
+	<!-- 默认的视图主题,标签不支持label ; theme属性包括xhtml,html,simple,ajax ,默认是xhtml -->
+	<constant name="struts.ui.theme" value="simple"></constant>
+
+	<!--Struts2集成Spring：所有action对象由Spring来负责创建 -->
+	<constant name="struts.objectFactory" value="spring"></constant>
+	
+
+	<!-- 支持页面使用静态方法和属性 -->
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true"></constant>
+
+	<include file="struts-default.xml" />
+ 
+	<package name="dp-api" extends="struts-default">
+		 
+		 
+			
+    </package>
+
+	<include file="config/struts/struts-dataReport.xml"></include>
+	
+</struts>

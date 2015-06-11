@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+    <settings cacheModelsEnabled="false" enhancementEnabled="true"
+              lazyLoadingEnabled="false" maxRequests="512" maxSessions="256"
+              maxTransactions="128" useStatementNamespaces="true"/>
+
+    <typeHandler javaType="object" callback="com.iuni.dp.persist.common.utils.OracleObjectTypeHandler"/>
+
+    <!-- data report -->
+    <sqlMap resource="config/ibatis/datareport/sqlmap-reportDataByMon.xml"/>
+    <sqlMap resource="config/ibatis/datareport/sqlmap-gnAppAccessLog.xml"/>
+    <sqlMap resource="config/ibatis/datareport/sqlmap-gnAppImeiLog.xml"/>
+
+    <!-- system -->
+    <sqlMap resource="config/ibatis/sys/sqlmap-system.xml"/>
+    <sqlMap resource="config/ibatis/sys/sqlmap-log.xml"/>
+    <sqlMap resource="config/ibatis/sys/sqlmap-menu.xml"/>
+    <sqlMap resource="config/ibatis/sys/sqlmap-permission.xml"/>
+    <sqlMap resource="config/ibatis/sys/sqlmap-sqlquery.xml"/>
+    <sqlMap resource="config/ibatis/sys/sqlmap-sysParam.xml"/>
+    <sqlMap resource="config/ibatis/sys/sqlmap-user.xml"/>
+
+    <!-- data alarm -->
+    <sqlMap resource="config/ibatis/dataalarm/sqlmap-msgAlarm.xml"/>
+    <sqlMap resource="config/ibatis/dataalarm/sqlmap-receivePerson.xml"/>
+    <sqlMap resource="config/ibatis/dataalarm/sqlmap-msgType.xml"/>
+    <sqlMap resource="config/ibatis/dataalarm/sqlmap-alarmSchedule.xml"/>
+    <sqlMap resource="config/ibatis/dataalarm/sqlmap-busLog.xml"/>
+    <sqlMap resource="config/ibatis/dataalarm/sqlmap-optLog.xml"/>
+
+    <!-- data stat start -->
+
+    <!-- common -->
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-statScheme.xml"/>
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-statScheduledResult.xml"/>
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-statSnapshotResult.xml"/>
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-warehouse.xml"/>
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-supplier.xml"/>
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-wmsSku.xml"/>
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-orderSource.xml"/>
+    <sqlMap resource="config/ibatis/datastat/common/sqlmap-transferPartner.xml"/>
+
+    <!-- gn -->
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallPvuvDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallOrderDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallGoodsPvuvDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallGoodsOrderDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallAdChannelStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallSaleDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallUserOrderDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallYqfOrderDailyStat.xml"/>
+    <!-- GN 预售相关 -->
+    <sqlMap resource="config/ibatis/datastat/gn/sqlmap-mallBuriedPointSite.xml"/>
+
+    <!-- gnapp -->
+    <sqlMap resource="config/ibatis/datastat/gnapp/sqlmap-gnAppAccessLog.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gnapp/sqlmap-gnAppImeiLog.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gnapp/sqlmap-gnAppOrderDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gnapp/sqlmap-gnAppUsageDailyStat.xml"/>
+
+    <!-- gnwjq -->
+    <sqlMap resource="config/ibatis/datastat/gnwjq/sqlmap-wjqCreditPromotionLog.xml"/>
+
+    <!-- gnwms -->
+    <!--wms订单数据-->
+    <sqlMap resource="config/ibatis/datastat/gnwms/sqlmap-wmsOrderGoods.xml"/>
+
+    <!-- gnwx -->
+    <sqlMap resource="config/ibatis/datastat/gnwx/sqlmap-wxAccessLog.xml"/>
+    <sqlMap resource="config/ibatis/datastat/gnwx/sqlmap-wxClickLog.xml"/>
+
+    <!-- iuni -->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniNetflowDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniPageNetflowDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniIpAreaDailyStat.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-reportDataByMon.xml"/>
+    <!-- IUNI 前端埋点相关统计 -->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniBuriedPointSite.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniBuriedPointDailyStat.xml"/>
+    <!-- IUNI SMS 相关统计 -->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniSmsSendlogHis.xml"/>
+    <!-- IUNI 订单区域分布相关统计 -->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniOrderInfo.xml"/>
+    <!-- IUNI 区域查询 -->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniRegion.xml"/>
+    <!--IUNI商城销售统计-->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniSaleDailyStat.xml"/>
+    <!-- IUNI 用户中心登陆日志 -->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniUcLoginLog.xml"/>
+    <!-- IUNI 退货单 -->
+    <sqlMap resource="config/ibatis/datastat/iuni/sqlmap-iuniReturnGoodsInfo.xml"/>
+
+    <!-- iuniwms -->
+    <!-- IUNI WMS 调拨单 -->
+    <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniWmsTransfer.xml"/>
+    <!-- IUNI WMS 销售单 -->
+    <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniwmsSalesOrder.xml"/>
+    <!-- IUNI WMS 库存明细 -->
+    <!--<sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniWmsStock.xml"/>-->
+    <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniWmsDailyStock.xml"/>
+
+    <!-- IUNI 保修 -->
+    <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniRepairs.xml"/>
+
+    <!-- iuniwms for wl -->
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsStockForWl.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsStockSourceForWl.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsStockChannelForWl.xml"/>
+
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsReceive.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsStockMoveForWl.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsOrderEffectiveTime.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsReverseForWl.xml"/>
+    <sqlMap resource="config/ibatis/datastat/iuniwmswl/sqlmap-iuniWmsFreight.xml"/>
+
+    <!-- 支付宝 -->
+    <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniAlipay.xml"/>
+
+</sqlMapConfig>

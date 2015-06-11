@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="OptLog">
+	
+	<typeAlias alias="OptLog" type="com.iuni.dp.persist.dataalarm.model.OptLog"/>
+	
+	<resultMap id="OptLogMap" class="OptLog">
+		<result property="optLogId" column="opt_log_id"/>
+		<result property="operatorId" column="opt_id"/>
+		<result property="operatorName" column="opt_name"/>
+		<result property="operatorIp" column="opt_ip"/>
+		<result property="optType" column="opt_type"/>
+		<result property="busType" column="bus_type"/>
+		<result property="executeResult" column="execut_result"/>
+		<result property="createTime" column="create_time"/>
+		<result property="remark" column="remark"/>
+	</resultMap>
+	
+	<select id="getAllOptLog" resultMap="OptLogMap">
+		SELECT ol.* FROM t_opt_log ol
+		ORDER BY ol.create_time DESC
+	</select>
+
+</sqlMap>

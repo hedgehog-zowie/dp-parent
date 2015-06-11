@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AlarmSchedule">
+  
+  <typeAlias alias="AlarmSchedule"  type="com.iuni.dp.persist.dataalarm.model.AlarmSchedule"/>
+
+  <resultMap id="AlarmScheduleMap" class="AlarmSchedule">
+  	<result property="alarmScheduleId" column="alarm_schedule_id"/>
+  	<result property="msgAlarmId" column="msg_alarm_id"/>
+  	<result property="msgTypeId" column="msg_type_id"/>
+    <result property="nextExecuteTime" column="next_execute_time"/>
+  	<result property="executeFailNum" column="execute_fail_num"/>
+    <result property="createTime" column="create_time"/>
+    <result property="remark" column="remark"/>
+  	<result property="sendEmailFlag" column="send_email_flag"/>
+  	<result property="sendSmsFlag" column="send_sms_flag"/>
+    <result property="senderStrategyCode" column="sender_strategy_code"/>
+    <result property="senderDelaySeconds" column="sender_delay_seconds"/>  
+    <result property="senderTimingSeconds" column="sender_timing_seconds"/> 
+    <result property="executeStrategyCode" column="execute_strategy_code"/>    
+    <result property="executeNumber" column="execute_number"/>
+  	<result property="executeDelaySeconds" column="execute_delay_seconds"/>
+    <result property="failStrategyCode" column="fail_strategy_code"/>  
+    <result property="failRepeatNumber" column="fail_repeat_number"/> 
+    <result property="failDelaySeconds" column="fail_delay_seconds"/>
+    <result property="msgAlarm" column="msg_alarm_id" select="MsgAlarm.getMsgAlarmByMsgAlarmId" /> 
+  </resultMap>
+  
+  <insert id="insertAlarmSchedule" parameterClass="AlarmSchedule">
+    insert into t_alarm_schedule (
+    			  alarm_schedule_id,
+				  msg_alarm_id,
+				  msg_type_id,
+				  next_execute_time,
+				  execute_fail_num,	
+				  create_time,
+				  remark,
+				  send_email_flag,
+				  send_sms_flag,
+				  sender_strategy_code,
+				  sender_delay_seconds,
+				  sender_timing_seconds,
+				  execute_strategy_code,
+				  execute_number,
+				  execute_delay_seconds,
+				  fail_strategy_code,
+				  fail_repeat_number,
+				  fail_delay_seconds 
+	)
+    values (  
+    		  #alarmScheduleId#,
+			  #msgAlarmId#, 
+			  #msgTypeId#, 
+			  #nextExecuteTime#,
+			  #executeFailNum#,
+			  NOW(),
+			  #remark#,
+			  #sendEmailFlag#,
+			  #sendSmsFlag#,
+			  #senderStrategyCode#,
+			  #senderDelaySeconds#,
+			  #senderTimingSeconds#,
+			  #executeStrategyCode#,
+			  #executeNumber#,
+			  #executeDelaySeconds#,
+			  #failStrategyCode#,
+			  #failRepeatNumber#,
+			  #failDelaySeconds#
+    )
+    <selectKey resultClass="int" type="pre" keyProperty="alarmScheduleId" >
+        SELECT S_t_alarm_schedule.NEXTVAL as alarmScheduleId FROM dual
+    </selectKey>
+  </insert>
+  
+  <delete id="deleteAlarmSchedule" parameterClass="int">
+    delete 
+    from t_alarm_schedule  
+    where msg_alarm_id = #msgAlarmId#
+  </delete>  
+  
+  <update id="updateNextExecuteTimeExecuteFailNum" parameterClass="java.util.Map">
+     update t_alarm_schedule  
+     set next_execute_time = #nextExecuteTime#
+	     <isNotNull prepend="," property="executeFailNum"> 
+		     execute_fail_num = #executeFailNum#
+		</isNotNull> 
+     where msg_alarm_id = #msgAlarmId#
+  </update>
+  
+  <update id="updateExecuteFailNumAddOne" parameterClass="int">
+     update t_alarm_schedule  
+     set execute_fail_num=execute_fail_num + 1
+     where msg_alarm_id = #msgAlarmId#
+  </update>
+  
+  <select id="getToDoAlarmScheduleList" parameterClass="int" resultMap="AlarmScheduleMap">
+    select *
+    from t_alarm_schedule
+    where next_execute_time  <![CDATA[ <= ]]> sysdate
+    ORDER BY next_execute_time ASC
+    limit 0,#maxLimitOneTime#
+  </select>
+  
+  <select id="getAlarmScheduleByMsgAlarmId" parameterClass="int" resultMap="AlarmScheduleMap">
+     select *
+     from t_alarm_schedule
+     where msg_alarm_id = #msgAlarmId#
+  </select>
+ 
+</sqlMap>

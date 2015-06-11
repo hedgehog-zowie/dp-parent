@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="TransferPartner">
+
+    <typeAlias alias="IuniWmsTransferPartner" type="com.iuni.dp.persist.datastat.common.model.IuniWmsTransferPartner"/>
+
+    <resultMap id="wmsTransferPartner" class="IuniWmsTransferPartner">
+        <result column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="CODE" property="code" jdbcType="VARCHAR"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="C_PARENT_ID" property="cParentId" jdbcType="VARCHAR"/>
+        <result column="C_ISLEAF" property="cIsleaf" jdbcType="VARCHAR"/>
+        <result column="C_ENABLE" property="cEnable" jdbcType="TIMESTAMP"/>
+        <result column="C_LEVEL" property="cLevel" jdbcType="VARCHAR"/>
+        <result column="C_TYPE" property="cType" jdbcType="VARCHAR"/>
+        <result column="C_LONGCODE" property="cLongCode" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectTransferPartner" resultMap="wmsTransferPartner">
+		SELECT * FROM SYN_WMS_TRANSFER_PARTNER T WHERE T.C_PARENT_ID IS NULL
+	</select>
+
+</sqlMap>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+           http://www.springframework.org/schema/context  
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-autowire="byName">
+
+    <!-- 启用注释配置，减少XML配置量 -->
+    <context:component-scan base-package="com.iuni.dp">
+        <context:exclude-filter type="regex" expression="com\.iuni\.dp\.persist\.datareport\..*"/>
+        <context:exclude-filter type="regex" expression="com\.iuni\.dp\.service\.datareport\..*"/>
+    </context:component-scan>
+
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:dp-config.properties</value>
+                <value>classpath:dp-dbconfig.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <import resource="classpath:config/spring/applicationContext-*.xml"/>
+
+</beans>

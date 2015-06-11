@@ -1,0 +1,1308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="GnAppAccessLog">
+
+  <typeAlias alias="GnAppAccessLog4Stat" type="com.iuni.dp.persist.datastat.model.GnAppAccessLog" />
+
+  <resultMap id="GnAppAccessLog4StatMap" class="GnAppAccessLog4Stat">
+    <result property="id" column="ID"/>  
+    <result property="appName" column="APP_NAME"/>
+    <result property="channelName" column="CHANNEL_NAME"/> 
+    <result property="apkVersion" column="APK_VERSION"/>  
+    <result property="imei" column="IMEI"/>  
+    <result property="registerUserId" column="REGISTER_USER_ID"/>
+    <result property="startupTime" column="STARTUP_TIME"/>
+    <result property="shutdownTime" column="SHUTDOWN_TIME"/>
+    <result property="status" column="STATUS"/>
+    <result property="mobileModel" column="MOBILE_MODEL"/>
+    <result property="mobileNumber" column="MOBILE_NUMBER"/>
+    <result property="reportTime" column="REPORT_TIME"/>   
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+
+  <sql id="GnAppAccessLog4Stat_queryParams_1">
+  	<dynamic prepend="and">
+    	<isNotNull prepend="and" property="appName">
+    		GAA.APP_NAME = #appName#
+    	</isNotNull>
+    	<isNotNull prepend="and" property="apkVersions">
+    		GAA.APK_VERSION in
+    		<iterate open="(" close=")" conjunction="," property="apkVersions">
+    			#apkVersions[]#
+    		</iterate>
+    	</isNotNull>
+    	<isNotNull prepend="and" property="beginDate">
+    		GAA.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+    	</isNotNull>
+    	<isNotNull prepend="and" property="endDate">
+    		GAA.REPORT_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+    	</isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="GnAppAccessLog4Stat_queryParams_2">
+  	<dynamic prepend="where">
+    	<isNotNull prepend="and" property="appName">
+    		GAI.APP_NAME = #appName#
+    	</isNotNull>
+    	<isNotNull prepend="and" property="apkVersions">
+    		GAI.APK_VERSION in
+    		<iterate open="(" close=")" conjunction="," property="apkVersions">
+    			#apkVersions[]#
+    		</iterate>
+    	</isNotNull>
+    	<isNotNull prepend="and" property="beginDate">
+    		GAI.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+    	</isNotNull>
+    	<isNotNull prepend="and" property="endDate">
+    		GAI.REPORT_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+    	</isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="GnAppAccessLog4Stat_queryParams_3">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="appName">
+    		GAA.APP_NAME = #appName#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="channelNames">
+  			GAA.CHANNEL_NAME in 
+  			<iterate open="(" close=")" conjunction="," property="channelNames">
+  				#channelNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			GAA.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			GAA.REPORT_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="GnAppAccessLog4Stat_queryParams_4">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="appName">
+    		GAA.APP_NAME = #appName#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="channelNames">
+  			GAA.CHANNEL_NAME in 
+  			<iterate open="(" close=")" conjunction="," property="channelNames">
+  				#channelNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			GAA.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate# || '-01', 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			GAA.REPORT_TIME <![CDATA[ < ]]> add_months(to_date(#endDate# || '-01', 'yyyy-mm-dd'),1)
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="GnAppAccessLog4Stat_queryParams_5">
+  	<dynamic prepend="and">
+  		<isNotNull prepend="and" property="appName">
+    		GAA.APP_NAME = #appName#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="channelNames">
+  			GAA.CHANNEL_NAME in 
+  			<iterate open="(" close=")" conjunction="," property="channelNames">
+  				#channelNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			GAA.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			GAA.REPORT_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="GnAppAccessLog4Stat_queryParams_6">
+  	<dynamic prepend="and">
+  		<isNotNull prepend="and" property="appName">
+    		GAA.APP_NAME = #appName#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="channelNames">
+  			GAA.CHANNEL_NAME in 
+  			<iterate open="(" close=")" conjunction="," property="channelNames">
+  				#channelNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+    		GAA.APK_VERSION in
+    		<iterate open="(" close=")" conjunction="," property="apkVersions">
+    			#apkVersions[]#
+    		</iterate>
+    	</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			GAA.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			GAA.REPORT_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="GnAppAccessLog4Stat_queryParams_7">
+  	<dynamic prepend="where">
+    	<isNotNull prepend="and" property="appName">
+    		GAI.APP_NAME = #appName#
+    	</isNotNull>
+    	<isNotNull prepend="and" property="channelNames">
+  			GAI.CHANNEL_NAME in 
+  			<iterate open="(" close=")" conjunction="," property="channelNames">
+  				#channelNames[]#
+  			</iterate>
+  		</isNotNull>
+    	<isNotNull prepend="and" property="apkVersions">
+    		GAI.APK_VERSION in
+    		<iterate open="(" close=")" conjunction="," property="apkVersions">
+    			#apkVersions[]#
+    		</iterate>
+    	</isNotNull>
+    	<isNotNull prepend="and" property="beginDate">
+    		GAI.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+    	</isNotNull>
+    	<isNotNull prepend="and" property="endDate">
+    		GAI.REPORT_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+    	</isNotNull>
+    </dynamic>
+  </sql>
+  
+  <sql id="iunios_queryParams_userStat_1">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			GAA.CHANNEL_NAME = 'IUNI OS'
+  		</isParameterPresent>
+  		<isNotNull prepend="and" property="appNames">
+  			GAA.APP_NAME in
+  			<iterate open="(" close=")" conjunction="," property="appNames">
+  				#appNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+  			GAA.APK_VERSION in
+  			<iterate open="(" close=")" conjunction="," property="apkVersions">
+  				#apkVersions[]#
+  			</iterate>
+  		</isNotNull>
+		<isNotNull prepend="and" property="beginDate">
+			GAA.STARTUP_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+		</isNotNull>
+		<isNotNull prepend="and" property="endDate">
+  			GAA.STARTUP_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iunios_queryParams_userStat_2">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			GAI.CHANNEL_NAME = 'IUNI OS'
+  		</isParameterPresent>
+  		<isNotNull prepend="and" property="appNames">
+  			GAI.APP_NAME in
+  			<iterate open="(" close=")" conjunction="," property="appNames">
+  				#appNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+  			GAI.APK_VERSION in
+  			<iterate open="(" close=")" conjunction="," property="apkVersions">
+  				#apkVersions[]#
+  			</iterate>
+  		</isNotNull>
+		<isNotNull prepend="and" property="beginDate">
+			GAI.FIRST_LAUNCH_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+		</isNotNull>
+		<isNotNull prepend="and" property="endDate">
+  			GAI.FIRST_LAUNCH_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iunios_queryParams_userStat_3">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			GAA.CHANNEL_NAME = 'IUNI OS'
+  		</isParameterPresent>
+  		<isNotNull prepend="and" property="appNames">
+  			GAA.APP_NAME in
+  			<iterate open="(" close=")" conjunction="," property="appNames">
+  				#appNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+  			GAA.APK_VERSION in
+  			<iterate open="(" close=")" conjunction="," property="apkVersions">
+  				#apkVersions[]#
+  			</iterate>
+  		</isNotNull>
+		<isNotNull prepend="and" property="periodItems[].beginDate">
+			GAA.STARTUP_TIME <![CDATA[ >= ]]> to_date(#periodItems[].beginDate#, 'yyyy-mm-dd')
+		</isNotNull>
+		<isNotNull prepend="and" property="periodItems[].endDate">
+  			GAA.STARTUP_TIME <![CDATA[ < ]]> to_date(#periodItems[].endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iunios_queryParams_userStat_4">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			GAI.CHANNEL_NAME = 'IUNI OS'
+  		</isParameterPresent>
+  		<isNotNull prepend="and" property="appNames">
+  			GAI.APP_NAME in
+  			<iterate open="(" close=")" conjunction="," property="appNames">
+  				#appNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+  			GAI.APK_VERSION in
+  			<iterate open="(" close=")" conjunction="," property="apkVersions">
+  				#apkVersions[]#
+  			</iterate>
+  		</isNotNull>
+		<isNotNull prepend="and" property="periodItems[].beginDate">
+			GAI.FIRST_LAUNCH_TIME <![CDATA[ >= ]]> to_date(#periodItems[].beginDate#, 'yyyy-mm-dd')
+		</isNotNull>
+		<isNotNull prepend="and" property="periodItems[].endDate">
+  			GAI.FIRST_LAUNCH_TIME <![CDATA[ < ]]> to_date(#periodItems[].endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectChannelTrendByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select T3."channelName", T3."avgTime", T3."launchUserNum", T3."launchNum", T3."newUserNum"
+		    , case when T3."launchUserNum" >0 then CONCAT(TO_CHAR(round(T3."newUserNum"/T3."launchUserNum", 5)*100,'990.99'),'%') 
+		    else '0.00%' end "newUserRatio"
+		from
+		(
+		    select T0."channelName", T1."avgTime"
+		    , decode(sign(T0."launchUserNum" - T1."launchUserNum"),-1,T1."launchUserNum",T0."launchUserNum") "launchUserNum"
+		    , decode(sign(T0."launchNum" - T1."launchNum"),-1,T1."launchNum",T0."launchNum") "launchNum"
+		    , case when T2."newUserNum" >0 then T2."newUserNum" else 0 end "newUserNum"
+		    from
+		    (
+		        select 
+		        GAA.CHANNEL_NAME "channelName", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+		        from GN_APP_ACCESSLOG GAA 
+		        where GAA.STATUS = 0
+		        <include refid="GnAppAccessLog4Stat_queryParams_1"/>
+		        group by GAA.CHANNEL_NAME
+		        order by GAA.CHANNEL_NAME
+		    ) T0 left join 
+		    (
+		        select T2."channelName", T2."launchNum", T2."launchUserNum"
+		        , floor(T2."avgTime"/3600)||':'||floor(mod(T2."avgTime",3600)/60)||':'||round(mod(T2."avgTime",60),2) "avgTime" from 
+		        (
+		            select GAA.CHANNEL_NAME "channelName", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+		            , avg((GAA.SHUTDOWN_TIME+0)-(GAA.STARTUP_TIME+0))*86400 "avgTime"
+		            from GN_APP_ACCESSLOG GAA 
+		            where GAA.STATUS = 1
+		            <include refid="GnAppAccessLog4Stat_queryParams_1"/>
+		            group by GAA.CHANNEL_NAME
+		            order by GAA.CHANNEL_NAME
+		        ) T2
+		    ) T1 on T0."channelName" = T1."channelName"
+		    left join 
+		    (
+		        select GAI.CHANNEL_NAME "channelName", count(distinct GAI.IMEI) "newUserNum" 
+		        from GN_APP_IMEILOG GAI
+		        <include refid="GnAppAccessLog4Stat_queryParams_2"/>
+		        group by GAI.CHANNEL_NAME
+		        order by GAI.CHANNEL_NAME
+		    ) T2 on T0."channelName" = T2."channelName"
+		) T3
+	) T
+  </select>
+  
+  <select id="selectChannelTrendByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T3."channelName", T3."avgTime", T3."launchUserNum", T3."launchNum", T3."newUserNum"
+			    , case when T3."launchUserNum" >0 then CONCAT(TO_CHAR(round(T3."newUserNum"/T3."launchUserNum", 5)*100,'990.99'),'%') 
+			    else '0.00%' end "newUserRatio"
+			from
+			(
+			    select T0."channelName", T1."avgTime"
+			    , decode(sign(T0."launchUserNum" - T1."launchUserNum"),-1,T1."launchUserNum",T0."launchUserNum") "launchUserNum"
+			    , decode(sign(T0."launchNum" - T1."launchNum"),-1,T1."launchNum",T0."launchNum") "launchNum"
+			    , case when T2."newUserNum" >0 then T2."newUserNum" else 0 end "newUserNum"
+			    from
+			    (
+			        select 
+			        GAA.CHANNEL_NAME "channelName", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+			        from GN_APP_ACCESSLOG GAA 
+			        where GAA.STATUS = 0
+			        <include refid="GnAppAccessLog4Stat_queryParams_1"/>
+			        group by GAA.CHANNEL_NAME
+			        order by GAA.CHANNEL_NAME
+			    ) T0 left join 
+			    (
+			        select T2."channelName", T2."launchNum", T2."launchUserNum"
+			        , floor(T2."avgTime"/3600)||':'||floor(mod(T2."avgTime",3600)/60)||':'||round(mod(T2."avgTime",60),2) "avgTime" from 
+			        (
+			            select GAA.CHANNEL_NAME "channelName", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+			            , avg((GAA.SHUTDOWN_TIME+0)-(GAA.STARTUP_TIME+0))*86400 "avgTime"
+			            from GN_APP_ACCESSLOG GAA 
+			            where GAA.STATUS = 1
+			            <include refid="GnAppAccessLog4Stat_queryParams_1"/>
+			            group by GAA.CHANNEL_NAME
+			            order by GAA.CHANNEL_NAME
+			        ) T2
+			    ) T1 on T0."channelName" = T1."channelName"
+			    left join 
+			    (
+			        select GAI.CHANNEL_NAME "channelName", count(distinct GAI.IMEI) "newUserNum" 
+			        from GN_APP_IMEILOG GAI
+			        <include refid="GnAppAccessLog4Stat_queryParams_2"/>
+			        group by GAI.CHANNEL_NAME
+			        order by GAI.CHANNEL_NAME
+			    ) T2 on T0."channelName" = T2."channelName"
+			) T3
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectChannelTrendCount" resultClass="int" parameterClass="map">
+  	select count(T3."channelName")
+	from
+	(
+	    select T0."channelName", T1."avgTime"
+	    , decode(sign(T0."launchUserNum" - T1."launchUserNum"),-1,T1."launchUserNum",T0."launchUserNum") "launchUserNum"
+	    , decode(sign(T0."launchNum" - T1."launchNum"),-1,T1."launchNum",T0."launchNum") "launchNum"
+	    , case when T2."newUserNum" >0 then T2."newUserNum" else 0 end "newUserNum"
+	    from
+	    (
+	        select 
+	        GAA.CHANNEL_NAME "channelName", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+	        from GN_APP_ACCESSLOG GAA 
+	        where GAA.STATUS = 0
+	        <include refid="GnAppAccessLog4Stat_queryParams_1"/>
+	        group by GAA.CHANNEL_NAME
+	        order by GAA.CHANNEL_NAME
+	    ) T0 left join 
+	    (
+	        select T2."channelName", T2."launchNum", T2."launchUserNum"
+	        , floor(T2."avgTime"/3600)||':'||floor(mod(T2."avgTime",3600)/60)||':'||round(mod(T2."avgTime",60),2) "avgTime" from 
+	        (
+	            select GAA.CHANNEL_NAME "channelName", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+	            , avg((GAA.SHUTDOWN_TIME+0)-(GAA.STARTUP_TIME+0))*86400 "avgTime"
+	            from GN_APP_ACCESSLOG GAA 
+	            where GAA.STATUS = 1
+	            <include refid="GnAppAccessLog4Stat_queryParams_1"/>
+	            group by GAA.CHANNEL_NAME
+	            order by GAA.CHANNEL_NAME
+	        ) T2
+	    ) T1 on T0."channelName" = T1."channelName"
+	    left join 
+	    (
+	        select GAI.CHANNEL_NAME "channelName", count(distinct GAI.IMEI) "newUserNum" 
+	        from GN_APP_IMEILOG GAI
+	        <include refid="GnAppAccessLog4Stat_queryParams_2"/>
+	        group by GAI.CHANNEL_NAME
+	        order by GAI.CHANNEL_NAME
+	    ) T2 on T0."channelName" = T2."channelName"
+	) T3
+  </select>
+  
+  <select id="selectRegisterOfChannelByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.REGISTER_USER_ID) "registerNum"  from
+		(
+		    select GAA.CHANNEL_NAME, GAA.REGISTER_USER_ID, to_char(GAA.REPORT_TIME, 'yyyy-mm-dd') "bizDate"
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+		) T0
+		group by T0.CHANNEL_NAME, T0."bizDate"
+		order by T0.CHANNEL_NAME, T0."bizDate"
+	) T
+  </select>
+  
+  <select id="selectRegisterOfChannelByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.REGISTER_USER_ID) "registerNum"  from
+			(
+			    select GAA.CHANNEL_NAME, GAA.REGISTER_USER_ID, to_char(GAA.REPORT_TIME, 'yyyy-mm-dd') "bizDate"
+			    from GN_APP_ACCESSLOG GAA
+			    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+			) T0
+			group by T0.CHANNEL_NAME, T0."bizDate"
+			order by T0.CHANNEL_NAME, T0."bizDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectRegisterOfChannelCount" resultClass="int" parameterClass="map">
+  	select count(*) from 
+  	(
+  		select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.REGISTER_USER_ID) "registerNum"  from
+		(
+		    select GAA.CHANNEL_NAME, GAA.REGISTER_USER_ID, to_char(GAA.REPORT_TIME, 'yyyy-mm-dd') "bizDate"
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+		) T0
+		group by T0.CHANNEL_NAME, T0."bizDate"
+  	)
+  </select>
+  
+  <select id="selectActiveUserOfChannelDailyByExample" resultClass="hashmap" parameterClass="map">
+	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "activeUserNum" from 
+		(
+		    select GAA.CHANNEL_NAME ,GAA.IMEI, to_char(GAA.REPORT_TIME, 'yyyy-mm-dd') "bizDate"  
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+		) T0
+		group by T0.CHANNEL_NAME, T0."bizDate"
+		order by T0.CHANNEL_NAME, T0."bizDate"
+	) T
+  </select>
+  
+  <select id="selectActiveUserOfChannelDailyByPage" resultClass="hashmap" parameterClass="map">
+	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "activeUserNum" from 
+			(
+			    select GAA.CHANNEL_NAME ,GAA.IMEI, to_char(GAA.REPORT_TIME, 'yyyy-mm-dd') "bizDate"  
+			    from GN_APP_ACCESSLOG GAA
+			    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+			) T0
+			group by T0.CHANNEL_NAME, T0."bizDate"
+			order by T0.CHANNEL_NAME, T0."bizDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectActiveUserOfChannelDailyCount" resultClass="int" parameterClass="map">
+	select count(*) from
+	(
+		select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "activeUserNum" from 
+		(
+		    select GAA.CHANNEL_NAME ,GAA.IMEI, to_char(GAA.REPORT_TIME, 'yyyy-mm-dd') "bizDate"  
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+		) T0
+		group by T0.CHANNEL_NAME, T0."bizDate"
+	)
+  </select>
+  
+  <select id="selectActiveUserOfChannelMonthlyByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "activeUserNum" from 
+		(
+			select GAA.CHANNEL_NAME, GAA.IMEI
+			, substr(to_char(GAA.REPORT_TIME, 'yyyy-mm-dd'),1, instr(to_char(GAA.REPORT_TIME, 'yyyy-mm-dd'),'-',1,2)-1) "bizDate"
+			from GN_APP_ACCESSLOG GAA
+			<include refid="GnAppAccessLog4Stat_queryParams_4"/>
+		) T0
+		group by T0.CHANNEL_NAME, T0."bizDate"
+		order by T0.CHANNEL_NAME, T0."bizDate"
+	) T
+  </select>
+  
+  <select id="selectActiveUserOfChannelMonthlyByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "activeUserNum" from 
+			(
+				select GAA.CHANNEL_NAME, GAA.IMEI
+				, substr(to_char(GAA.REPORT_TIME, 'yyyy-mm-dd'),1, instr(to_char(GAA.REPORT_TIME, 'yyyy-mm-dd'),'-',1,2)-1) "bizDate"
+				from GN_APP_ACCESSLOG GAA
+				<include refid="GnAppAccessLog4Stat_queryParams_4"/>
+			) T0
+			group by T0.CHANNEL_NAME, T0."bizDate"
+			order by T0.CHANNEL_NAME, T0."bizDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectActiveUserOfChannelMonthlyCount" resultClass="int" parameterClass="map">
+  	select count(*) from
+  	(
+  		select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "activeUserNum" from 
+		(
+			select GAA.CHANNEL_NAME, GAA.IMEI
+			, substr(to_char(GAA.REPORT_TIME, 'yyyy-mm-dd'),1, instr(to_char(GAA.REPORT_TIME, 'yyyy-mm-dd'),'-',1,2)-1) "bizDate"
+			from GN_APP_ACCESSLOG GAA
+			<include refid="GnAppAccessLog4Stat_queryParams_4"/>
+		) T0
+		group by T0.CHANNEL_NAME, T0."bizDate"
+		order by T0.CHANNEL_NAME, T0."bizDate"
+  	)
+  </select>
+  
+  <select id="selectLaunchNumDistribution" resultClass="hashmap" parameterClass="map">
+  	select T0."imei"
+	, decode(sign(T0."launchNum" - T1."launchNum"),-1,T1."launchNum",T0."launchNum")/(to_date(#endDate#, 'yyyy-mm-dd')-to_date(#beginDate#, 'yyyy-mm-dd')+1) "avgLaunchNum"
+	from 
+	(
+	    select GAA.IMEI "imei", count(GAA.IMEI) "launchNum"
+	    from GN_APP_ACCESSLOG GAA
+	    where GAA.STATUS = 0
+	    <include refid="GnAppAccessLog4Stat_queryParams_5"/>
+	    group by GAA.IMEI
+	    order by GAA.IMEI
+	) T0 left join 
+	(
+	    select GAA.IMEI "imei", count(GAA.IMEI) "launchNum"
+	    from GN_APP_ACCESSLOG GAA
+	    where GAA.STATUS = 1
+	    <include refid="GnAppAccessLog4Stat_queryParams_5"/>
+	    group by GAA.IMEI
+	    order by GAA.IMEI
+	) T1 on T0."imei" = T1."imei"
+  </select>
+  
+  <select id="selectAppUserStatOnModelByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select 
+		T3."mobileModel", T3."avgTime", T3."avgTimeFmt", T3."launchUserNum", T3."launchNum", T3."newUserNum"
+		, case when T3."launchUserNum" >0 then CONCAT(TO_CHAR(round(T3."newUserNum"/T3."launchUserNum", 5)*100,'990.99'),'%') 
+		else '0.00%' end "newUserRatio"
+		from
+		(
+		    select T0."mobileModel"
+		    , case when T1."avgTime" is null then 0 else T1."avgTime" end "avgTime"
+		    , case when T1."avgTimeFmt" is null then '00:00:00' else T1."avgTimeFmt" end "avgTimeFmt"
+		    , decode(sign(T0."launchUserNum" - T1."launchUserNum"),-1,T1."launchUserNum",T0."launchUserNum") "launchUserNum"
+		    , decode(sign(T0."launchNum" - T1."launchNum"),-1,T1."launchNum",T0."launchNum") "launchNum"
+		    , case when T2."newUserNum" >0 then T2."newUserNum" else 0 end "newUserNum"
+		    from
+		    (
+		        select 
+		        GAA.MOBILE_MODEL "mobileModel", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+		        from GN_APP_ACCESSLOG GAA 
+		        where GAA.STATUS = 0
+		        <include refid="GnAppAccessLog4Stat_queryParams_6"/>
+		        group by GAA.MOBILE_MODEL
+		        order by GAA.MOBILE_MODEL
+		    ) T0 left join 
+		    (
+		        select T2."mobileModel", T2."launchNum", T2."launchUserNum", ROUND(T2."avgTime",2) "avgTime"
+		        , floor(T2."avgTime"/3600)||':'||floor(mod(T2."avgTime",3600)/60)||':'||round(mod(T2."avgTime",60),2) "avgTimeFmt" 
+		        from 
+		        (
+		            select GAA.MOBILE_MODEL "mobileModel", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+		            , avg((GAA.SHUTDOWN_TIME+0)-(GAA.STARTUP_TIME+0))*86400 "avgTime"
+		            from GN_APP_ACCESSLOG GAA 
+		            where GAA.STATUS = 1
+		            <include refid="GnAppAccessLog4Stat_queryParams_6"/>
+		            group by GAA.MOBILE_MODEL
+		            order by GAA.MOBILE_MODEL
+		        ) T2
+		    ) T1 on T0."mobileModel" = T1."mobileModel"
+		    left join 
+		    (
+		        select GAI.MOBILE_MODEL "mobileModel", count(distinct GAI.IMEI) "newUserNum" 
+		        from GN_APP_IMEILOG GAI
+		        <include refid="GnAppAccessLog4Stat_queryParams_7"/>
+		        group by GAI.MOBILE_MODEL
+		        order by GAI.MOBILE_MODEL
+		    ) T2 on T0."mobileModel" = T2."mobileModel"
+		) T3
+	) T
+  </select>
+  
+  <select id="selectAppUserStatOnModelByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+			T3."mobileModel", T3."avgTime", T3."avgTimeFmt", T3."launchUserNum", T3."launchNum", T3."newUserNum"
+			, case when T3."launchUserNum" >0 then CONCAT(TO_CHAR(round(T3."newUserNum"/T3."launchUserNum", 5)*100,'990.99'),'%') 
+			else '0.00%' end "newUserRatio"
+			from
+			(
+			    select T0."mobileModel"
+			    , case when T1."avgTime" is null then 0 else T1."avgTime" end "avgTime"
+			    , case when T1."avgTimeFmt" is null then '00:00:00' else T1."avgTimeFmt" end "avgTimeFmt"
+			    , decode(sign(T0."launchUserNum" - T1."launchUserNum"),-1,T1."launchUserNum",T0."launchUserNum") "launchUserNum"
+			    , decode(sign(T0."launchNum" - T1."launchNum"),-1,T1."launchNum",T0."launchNum") "launchNum"
+			    , case when T2."newUserNum" >0 then T2."newUserNum" else 0 end "newUserNum"
+			    from
+			    (
+			        select 
+			        GAA.MOBILE_MODEL "mobileModel", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+			        from GN_APP_ACCESSLOG GAA 
+			        where GAA.STATUS = 0
+			        <include refid="GnAppAccessLog4Stat_queryParams_6"/>
+			        group by GAA.MOBILE_MODEL
+			        order by GAA.MOBILE_MODEL
+			    ) T0 left join 
+			    (
+			        select T2."mobileModel", T2."launchNum", T2."launchUserNum", ROUND(T2."avgTime",2) "avgTime"
+			        , floor(T2."avgTime"/3600)||':'||floor(mod(T2."avgTime",3600)/60)||':'||round(mod(T2."avgTime",60),2) "avgTimeFmt" 
+			        from 
+			        (
+			            select GAA.MOBILE_MODEL "mobileModel", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+			            , avg((GAA.SHUTDOWN_TIME+0)-(GAA.STARTUP_TIME+0))*86400 "avgTime"
+			            from GN_APP_ACCESSLOG GAA 
+			            where GAA.STATUS = 1
+			            <include refid="GnAppAccessLog4Stat_queryParams_6"/>
+			            group by GAA.MOBILE_MODEL
+			            order by GAA.MOBILE_MODEL
+			        ) T2
+			    ) T1 on T0."mobileModel" = T1."mobileModel"
+			    left join 
+			    (
+			        select GAI.MOBILE_MODEL "mobileModel", count(distinct GAI.IMEI) "newUserNum" 
+			        from GN_APP_IMEILOG GAI
+			        <include refid="GnAppAccessLog4Stat_queryParams_7"/>
+			        group by GAI.MOBILE_MODEL
+			        order by GAI.MOBILE_MODEL
+			    ) T2 on T0."mobileModel" = T2."mobileModel"
+			) T3
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectAppUserStatOnModelCount" resultClass="int" parameterClass="map">
+  	select count(*) from
+  	(
+  		select 
+		T3."mobileModel", T3."avgTime", T3."avgTimeFmt", T3."launchUserNum", T3."launchNum", T3."newUserNum"
+		, case when T3."launchUserNum" >0 then CONCAT(TO_CHAR(round(T3."newUserNum"/T3."launchUserNum", 5)*100,'990.99'),'%') 
+		else '0.00%' end "newUserRatio"
+		from
+		(
+		    select T0."mobileModel"
+		    , case when T1."avgTime" is null then 0 else T1."avgTime" end "avgTime"
+		    , case when T1."avgTimeFmt" is null then '00:00:00' else T1."avgTimeFmt" end "avgTimeFmt"
+		    , decode(sign(T0."launchUserNum" - T1."launchUserNum"),-1,T1."launchUserNum",T0."launchUserNum") "launchUserNum"
+		    , decode(sign(T0."launchNum" - T1."launchNum"),-1,T1."launchNum",T0."launchNum") "launchNum"
+		    , case when T2."newUserNum" >0 then T2."newUserNum" else 0 end "newUserNum"
+		    from
+		    (
+		        select 
+		        GAA.MOBILE_MODEL "mobileModel", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+		        from GN_APP_ACCESSLOG GAA 
+		        where GAA.STATUS = 0
+		        <include refid="GnAppAccessLog4Stat_queryParams_6"/>
+		        group by GAA.MOBILE_MODEL
+		        order by GAA.MOBILE_MODEL
+		    ) T0 left join 
+		    (
+		        select T2."mobileModel", T2."launchNum", T2."launchUserNum", ROUND(T2."avgTime",2) "avgTime"
+		        , floor(T2."avgTime"/3600)||':'||floor(mod(T2."avgTime",3600)/60)||':'||round(mod(T2."avgTime",60),2) "avgTimeFmt" 
+		        from 
+		        (
+		            select GAA.MOBILE_MODEL "mobileModel", count(GAA.IMEI) "launchNum", count(distinct GAA.IMEI) "launchUserNum"
+		            , avg((GAA.SHUTDOWN_TIME+0)-(GAA.STARTUP_TIME+0))*86400 "avgTime"
+		            from GN_APP_ACCESSLOG GAA 
+		            where GAA.STATUS = 1
+		            <include refid="GnAppAccessLog4Stat_queryParams_6"/>
+		            group by GAA.MOBILE_MODEL
+		            order by GAA.MOBILE_MODEL
+		        ) T2
+		    ) T1 on T0."mobileModel" = T1."mobileModel"
+		    left join 
+		    (
+		        select GAI.MOBILE_MODEL "mobileModel", count(distinct GAI.IMEI) "newUserNum" 
+		        from GN_APP_IMEILOG GAI
+		        <include refid="GnAppAccessLog4Stat_queryParams_7"/>
+		        group by GAI.MOBILE_MODEL
+		        order by GAI.MOBILE_MODEL
+		    ) T2 on T0."mobileModel" = T2."mobileModel"
+		) T3
+  	)
+  </select>
+  
+  <select id="selectChannelList" resultClass="hashmap" parameterClass="map">
+    select distinct GAA.CHANNEL_NAME "channelName" from GN_APP_ACCESSLOG GAA
+    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+  </select>
+  
+  <select id="selectApkVersionList" resultClass="hashmap" parameterClass="map">
+    select distinct GAA.APK_VERSION "apkVersion" from GN_APP_ACCESSLOG GAA
+    <include refid="GnAppAccessLog4Stat_queryParams_3"/>
+  </select>
+  
+  <select id="selectIuniOSTotalUserByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select 
+	  	<isNotNull property="appNames" >
+	  		GAA.APP_NAME "appName"
+	  	</isNotNull>
+	  	<isNull property="appNames">
+	  		'ALL' "appName"
+	  	</isNull>
+	  	, #beginDate#||'~'||#endDate# "statDate"
+	  	, 'IUNI OS' "channelName"
+	  	, count(distinct GAA.IMEI) "userNum"
+		from GN_APP_ACCESSLOG GAA
+		<include refid="iunios_queryParams_userStat_1"/>
+		<isNotNull property="appNames">
+			group by GAA.APP_NAME
+			order by GAA.APP_NAME
+		</isNotNull>
+	) T
+  </select>
+  
+  <select id="selectIuniOSTotalUserByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+		  	<isNotNull property="appNames" >
+		  		GAA.APP_NAME "appName"
+		  	</isNotNull>
+		  	<isNull property="appNames">
+		  		'ALL' "appName"
+		  	</isNull>
+		  	, #beginDate#||'~'||#endDate# "statDate"
+		  	, 'IUNI OS' "channelName"
+		  	, count(distinct GAA.IMEI) "userNum"
+			from GN_APP_ACCESSLOG GAA
+			<include refid="iunios_queryParams_userStat_1"/>
+			<isNotNull property="appNames">
+				group by GAA.APP_NAME
+				order by GAA.APP_NAME
+			</isNotNull>
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniOSTotalUserCount" resultClass="int" parameterClass="map">
+  	select count(*) from
+  	(
+  		select 
+  		<isNotNull property="appNames" >
+	  		GAA.APP_NAME "appName"
+	  	</isNotNull>
+	  	<isNull property="appNames">
+	  		'ALL' "appName"
+	  	</isNull>
+	  	, #beginDate#||'~'||#endDate# "statDate"
+	  	, 'IUNI OS' "channelName"
+	  	, count(distinct GAA.IMEI) "userNum"
+		from GN_APP_ACCESSLOG GAA
+		<include refid="iunios_queryParams_userStat_1"/>
+		<isNotNull property="appNames">
+			group by GAA.APP_NAME
+			order by GAA.APP_NAME
+		</isNotNull>
+  	)
+  </select>
+  
+  <select id="selectIuniOSAppNames" resultClass="hashmap" parameterClass="map">
+  	select distinct GAA.APP_NAME "appName"
+	from GN_APP_ACCESSLOG GAA
+	<include refid="iunios_queryParams_userStat_1"/>
+  </select>
+  
+  <select id="selectIuniOSApkVersions" resultClass="hashmap" parameterClass="map">
+  	select distinct GAA.APK_VERSION "apkVersion"
+	from GN_APP_ACCESSLOG GAA
+	<include refid="iunios_queryParams_userStat_1"/>
+  </select>
+  
+  <select id="selectIuniOSUserStatByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select T0."statDate", T0."userNum",
+	  	case when T1."newUserNum" is null then 0 else T1."newUserNum" end "newUserNum"
+		from 
+		(
+		    select 
+		    to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd') "statDate", count(distinct GAA.IMEI) "userNum"
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_queryParams_userStat_1"/>
+		    group by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd')
+		    order by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd')
+		) T0 left join
+		(
+		    select
+		    to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd') "statDate", count(distinct GAI.IMEI) "newUserNum"
+		    from GN_APP_IMEILOG GAI
+		    <include refid="iunios_queryParams_userStat_2"/>
+		    group by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd')
+		    order by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd')
+		) T1 on (T1."statDate" = T0."statDate")
+		order by T0."statDate"
+	) T
+  </select>
+  
+  <select id="selectIuniOSUserStatByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T0."statDate", T0."userNum", 
+		  	case when T1."newUserNum" is null then 0 else T1."newUserNum" end "newUserNum"
+			from 
+			(
+			    select 
+			    to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd') "statDate", count(distinct GAA.IMEI) "userNum"
+			    from GN_APP_ACCESSLOG GAA
+			    <include refid="iunios_queryParams_userStat_1"/>
+			    group by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd')
+			    order by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd')
+			) T0 left join
+			(
+			    select
+			    to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd') "statDate", count(distinct GAI.IMEI) "newUserNum"
+			    from GN_APP_IMEILOG GAI
+			    <include refid="iunios_queryParams_userStat_2"/>
+			    group by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd')
+			    order by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd')
+			) T1 on (T1."statDate" = T0."statDate")
+			order by T0."statDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniOSUserStatCount" resultClass="int" parameterClass="map">
+  	select count(*) from
+  	(
+  		select T0."statDate", T0."userNum",
+  		case when T1."newUserNum" is null then 0 else T1."newUserNum" end "newUserNum"
+		from 
+		(
+		    select 
+		    to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd') "statDate", count(distinct GAA.IMEI) "userNum"
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_queryParams_userStat_1"/>
+		    group by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd')
+		    order by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd')
+		) T0 left join
+		(
+		    select
+		    to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd') "statDate", count(distinct GAI.IMEI) "newUserNum"
+		    from GN_APP_IMEILOG GAI
+		    <include refid="iunios_queryParams_userStat_2"/>
+		    group by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd')
+		    order by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd')
+		) T1 on (T1."statDate" = T0."statDate")
+		order by T0."statDate"
+  	)
+  </select>
+  
+  <select id="selectIuniOSUserStatOnPeriodByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select IT.* from 
+		(
+	  	<iterate property="periodItems" conjunction="union">
+	  		select 
+			#periodItems[].beginDate#||'~'||#periodItems[].endDate# "statDate", 
+			to_date(#periodItems[].beginDate#, 'yyyy-mm-dd') "orderDate", 
+			T1."userNum", T2."newUserNum"
+			from 
+			(
+			    select count(T0."imei") "userNum"
+			    from 
+			    (
+			        select 
+			        to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd') "statDate", GAA.IMEI "imei"
+			        from GN_APP_ACCESSLOG GAA
+			        <include refid="iunios_queryParams_userStat_3"/>
+			        group by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd'), GAA.IMEI
+			        order by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd'), GAA.IMEI
+			    ) T0
+			    group by T0."imei"
+			    having count(T0."imei") = #periodItems[].days#
+			) T1
+			cross join 
+			(
+			    select count(distinct GAI.IMEI) "newUserNum"
+			    from GN_APP_IMEILOG GAI
+			    <include refid="iunios_queryParams_userStat_4"/>
+			) T2
+	  	</iterate>
+		) IT order by IT."orderDate"
+	) T 
+  </select>
+  
+  <select id="selectIuniOSUserStatOnPeriodByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+  			select IT.* from 
+			(
+		  	<iterate property="periodItems" conjunction="union">
+		  		select 
+				#periodItems[].beginDate#||'~'||#periodItems[].endDate# "statDate", 
+				to_date(#periodItems[].beginDate#, 'yyyy-mm-dd') "orderDate", 
+				T1."userNum", T2."newUserNum"
+				from 
+				(
+				    select count(T0."imei") "userNum"
+				    from 
+				    (
+				        select 
+				        to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd') "statDate", GAA.IMEI "imei"
+				        from GN_APP_ACCESSLOG GAA
+				        <include refid="iunios_queryParams_userStat_3"/>
+				        group by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd'), GAA.IMEI
+				        order by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd'), GAA.IMEI
+				    ) T0
+				    group by T0."imei"
+				    having count(T0."imei") = #periodItems[].days#
+				) T1
+				cross join 
+				(
+				    select count(distinct GAI.IMEI) "newUserNum"
+				    from GN_APP_IMEILOG GAI
+				    <include refid="iunios_queryParams_userStat_4"/>
+				) T2
+		  	</iterate>
+			) IT order by IT."orderDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniOSUserStatOnPeriodCount" resultClass="int" parameterClass="map">
+  	select count(*) from 
+  	(
+  		<iterate property="periodItems" conjunction="union">
+	  		select 
+			#periodItems[].beginDate#||'~'||#periodItems[].endDate# "statDate", 
+			to_date(#periodItems[].beginDate#, 'yyyy-mm-dd') "orderDate", 
+			T1."userNum", T2."newUserNum"
+			from 
+			(
+			    select count(T0."imei") "userNum"
+			    from 
+			    (
+			        select 
+			        to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd') "statDate", GAA.IMEI "imei"
+			        from GN_APP_ACCESSLOG GAA
+			        <include refid="iunios_queryParams_userStat_3"/>
+			        group by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd'), GAA.IMEI
+			        order by to_char(GAA.STARTUP_TIME, 'yyyy-mm-dd'), GAA.IMEI
+			    ) T0
+			    group by T0."imei"
+			    having count(T0."imei") = #periodItems[].days#
+			) T1
+			cross join 
+			(
+			    select count(distinct GAI.IMEI) "newUserNum"
+			    from GN_APP_IMEILOG GAI
+			    <include refid="iunios_queryParams_userStat_4"/>
+			) T2
+	  	</iterate>
+  	)
+  </select>
+  
+  <select id="selectIuniOSVersionDistributeByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select 
+		#beginDate#||'~'||#endDate# "statDate", T0.*, 
+		case when T1."totalNum"=0 then 0 else ROUND(T0."userNum"/T1."totalNum", 3) end "versionRate" 
+		from
+		(
+		    select GAA.APK_VERSION "apkVersion", count(distinct GAA.IMEI) "userNum"
+		    from 
+		    GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_queryParams_userStat_1"/>
+		    group by GAA.APK_VERSION
+		    order by GAA.APK_VERSION
+		) T0
+		cross join
+		(
+		   select sum(T."userNum") "totalNum" from 
+		    (
+		        select GAA.APK_VERSION, count(distinct GAA.IMEI) "userNum"
+		        from 
+		        GN_APP_ACCESSLOG GAA
+		        <include refid="iunios_queryParams_userStat_1"/>
+		        group by GAA.APK_VERSION
+		        order by GAA.APK_VERSION  
+		    ) T 
+		) T1
+		order by T0."userNum" desc
+	) T 
+  </select>
+  
+  <select id="selectIuniOSVersionDistributeByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(	
+  			select 
+			#beginDate#||'~'||#endDate# "statDate", T0.*, 
+			case when T1."totalNum"=0 then 0 else ROUND(T0."userNum"/T1."totalNum", 3) end "versionRate" 
+			from
+			(
+			    select GAA.APK_VERSION "apkVersion", count(distinct GAA.IMEI) "userNum"
+			    from 
+			    GN_APP_ACCESSLOG GAA
+			    <include refid="iunios_queryParams_userStat_1"/>
+			    group by GAA.APK_VERSION
+			    order by GAA.APK_VERSION
+			) T0
+			cross join
+			(
+			   select sum(T."userNum") "totalNum" from 
+			    (
+			        select GAA.APK_VERSION, count(distinct GAA.IMEI) "userNum"
+			        from 
+			        GN_APP_ACCESSLOG GAA
+			        <include refid="iunios_queryParams_userStat_1"/>
+			        group by GAA.APK_VERSION
+			        order by GAA.APK_VERSION  
+			    ) T 
+			) T1
+			order by T0."userNum" desc
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniOSVersionDistributeCount" resultClass="int" parameterClass="map">
+  	select count(*) from 
+  	(
+  		select 
+		#beginDate#||'~'||#endDate# "statDate", T0.*, 
+		case when T1."totalNum"=0 then 0 else ROUND(T0."userNum"/T1."totalNum", 3) end "versionRate" 
+		from
+		(
+		    select GAA.APK_VERSION "apkVersion", count(distinct GAA.IMEI) "userNum"
+		    from 
+		    GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_queryParams_userStat_1"/>
+		    group by GAA.APK_VERSION
+		    order by GAA.APK_VERSION
+		) T0
+		cross join
+		(
+		   select sum(T."userNum") "totalNum" from 
+		    (
+		        select GAA.APK_VERSION, count(distinct GAA.IMEI) "userNum"
+		        from 
+		        GN_APP_ACCESSLOG GAA
+		        <include refid="iunios_queryParams_userStat_1"/>
+		        group by GAA.APK_VERSION
+		        order by GAA.APK_VERSION  
+		    ) T 
+		) T1
+		order by T0."userNum" desc
+  	)
+  </select>
+  
+  <sql id="iunios_areaDistribute_columns">
+  	<dynamic prepend="select">
+  		<isNotNull property="country" prepend=",">
+  			#country# "country"
+  		</isNotNull>
+  		<isNull property="country" prepend=",">
+  			case when GAA.LOCATION_COUNTRY is null then '未知国家' else GAA.LOCATION_COUNTRY end "country"
+  		</isNull>
+  		<isNotNull property="province" prepend=",">
+  			#province# "province"
+  		</isNotNull>
+  		<isNull property="province" prepend=",">
+  			case when GAA.LOCATION_PROVINCE is null then '未知省区' else GAA.LOCATION_PROVINCE end "province"
+  		</isNull>
+  		<isNotNull property="city" prepend=",">
+  			#city# "city"
+  		</isNotNull>
+  		<isNull property="city" prepend=",">
+  			case when GAA.LOCATION_CITY is null then '未知市县' else GAA.LOCATION_CITY end "city"
+  		</isNull>
+  		<isParameterPresent prepend=",">
+  			count(distinct GAA.IMEI) "userNum"
+  		</isParameterPresent>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iunios_areaDistribute_queryParams">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			GAA.CHANNEL_NAME = 'IUNI OS'
+  		</isParameterPresent>
+  		<isNotNull prepend="and" property="appNames">
+  			GAA.APP_NAME in
+  			<iterate open="(" close=")" conjunction="," property="appNames">
+  				#appNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+  			GAA.APK_VERSION in
+  			<iterate open="(" close=")" conjunction="," property="apkVersions">
+  				#apkVersions[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="country">
+  			GAA.LOCATION_COUNTRY like '%'||#country#||'%'
+  		</isNotNull>
+  		<isNotNull prepend="and" property="province">
+  			GAA.LOCATION_PROVINCE like '%'||#province#||'%'
+  		</isNotNull>
+  		<isNotNull prepend="and" property="city">
+  			GAA.LOCATION_CITY like '%'||#city#||'%'
+  		</isNotNull>
+		<isNotNull prepend="and" property="beginDate">
+			GAA.STARTUP_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+		</isNotNull>
+		<isNotNull prepend="and" property="endDate">
+  			GAA.STARTUP_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iunios_areaDistribute_groupCondition">
+  	<dynamic prepend="group by">
+  		<isNull property="country" prepend=",">
+  			GAA.LOCATION_COUNTRY
+  		</isNull>
+  		<isNull property="province" prepend=",">
+  			GAA.LOCATION_PROVINCE
+  		</isNull>
+  		<isNull property="city" prepend=",">
+  			GAA.LOCATION_CITY
+  		</isNull>
+  	</dynamic>
+  	<dynamic prepend="order by">
+  		<isParameterPresent prepend=",">
+  			count(distinct GAA.IMEI) desc
+  		</isParameterPresent>
+  		<isNull property="country" prepend=",">
+  			GAA.LOCATION_COUNTRY
+  		</isNull>
+  		<isNull property="province" prepend=",">
+  			GAA.LOCATION_PROVINCE
+  		</isNull>
+  		<isNull property="city" prepend=",">
+  			GAA.LOCATION_CITY
+  		</isNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectIuniOSAreaDistributeByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+		select
+		#beginDate#||'~'||#endDate# "statDate", T1.*,
+		case when T2."totalNum"=0 then 0 else ROUND(T1."userNum"/T2."totalNum", 3) end "areaRate"
+		from 
+		(
+		    <include refid="iunios_areaDistribute_columns"/>
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_areaDistribute_queryParams"/>
+			<include refid="iunios_areaDistribute_groupCondition"/>
+		) T1
+		cross join 
+		(
+		    select sum(T0."userNum") "totalNum" from 
+		    (
+		        <include refid="iunios_areaDistribute_columns"/>
+			    from GN_APP_ACCESSLOG GAA
+			    <include refid="iunios_areaDistribute_queryParams"/>
+		    ) T0
+		) T2
+	) T 
+  </select>
+  
+  <select id="selectIuniOSAreaDistributeByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(	
+  			select
+			#beginDate#||'~'||#endDate# "statDate", T1.*,
+			case when T2."totalNum"=0 then 0 else ROUND(T1."userNum"/T2."totalNum", 3) end "areaRate"
+			from 
+			(
+			    <include refid="iunios_areaDistribute_columns"/>
+			    from GN_APP_ACCESSLOG GAA
+			    <include refid="iunios_areaDistribute_queryParams"/>
+				<include refid="iunios_areaDistribute_groupCondition"/>
+			) T1
+			cross join 
+			(
+			    select sum(T0."userNum") "totalNum" from 
+			    (
+			        <include refid="iunios_areaDistribute_columns"/>
+				    from GN_APP_ACCESSLOG GAA
+				    <include refid="iunios_areaDistribute_queryParams"/>
+			    ) T0
+			) T2
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniOSAreaDistributeCount" resultClass="int" parameterClass="map">
+  	select count(*)
+	from 
+	(
+	    <include refid="iunios_areaDistribute_columns"/>
+	    from GN_APP_ACCESSLOG GAA
+	    <include refid="iunios_areaDistribute_queryParams"/>
+		<include refid="iunios_areaDistribute_groupCondition"/>
+	) T1
+	cross join 
+	(
+	    select sum(T0."userNum") "totalNum" from 
+	    (
+	        <include refid="iunios_areaDistribute_columns"/>
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_areaDistribute_queryParams"/>
+	    ) T0
+	) T2
+  </select>
+  
+  <insert id="insertGnAppAccessLog4Stat" parameterClass="GnAppAccessLog4Stat" >
+    insert into GN_APP_ACCESSLOG 
+    ( ID, APP_NAME, CHANNEL_NAME, APK_VERSION, IMEI, REGISTER_USER_ID, STARTUP_TIME, SHUTDOWN_TIME, STATUS
+      , REPORT_TIME, CREATE_TIME, MOBILE_MODEL, MOBILE_NUMBER )
+    values 
+    ( #id#, #appName#, #channelName#, #apkVersion#, #imei#, #registerUserId#, #startupTime#, #shutdownTime#, #status#
+      , #reportTime#, SysTimestamp, #mobileModel#, #mobileNumber# )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_GN_APP_ACCESSLOG.NEXTVAL as id FROM dual
+    </selectKey>
+  </insert>
+  
+  <delete id="deleteGnAppAccessLog4StatById" parameterClass="long">
+  	DELETE FROM GN_APP_ACCESSLOG GAA
+  	WHERE GAA.ID = #id#
+  </delete>
+
+</sqlMap>

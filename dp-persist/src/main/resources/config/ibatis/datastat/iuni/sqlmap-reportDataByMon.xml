@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="ReportDataByMon">
+
+  <typeAlias alias="ReportDataByMon4Stat" type="com.iuni.dp.persist.datareport.model.ReportDataByMon" />
+
+  <resultMap id="ReportDataByMonMap" class="ReportDataByMon">
+		<result property="id" column="id"/>
+		<result property="urlDomain" column="url_domain"/>
+		<result property="sourceId" column="source_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="sessionId" column="session_id"/>
+		<result property="sourceIp" column="source_ip"/>
+		<result property="reportType" column="report_type"/>
+		<result property="reportContent" column="report_content"/>
+		<result property="browserInfo" column="browser_info"/>
+		<result property="cookieInfo" column="cookie_info"/>
+		<result property="ipArea" column="ip_area"/>
+		<result property="ipLocation" column="ip_location"/>
+		<result property="appName" column="APP_NAME"/>
+		<result property="appChannel" column="APP_CHANNEL"/>
+		<result property="appVersion" column="APP_VERSION"/>
+		<result property="appImei" column="APP_IMEI"/>
+		<result property="appModel" column="APP_MODEL"/>
+		<result property="appIp" column="APP_IP"/>
+		<result property="createTime" column="create_time"/>
+		<result property="storageTime" column="storage_time"/>
+	</resultMap>
+  
+  <sql id="base_columns_1">
+  	#statDate# "statDate", count(RPTDATA.ID) "pv", count(distinct RPTDATA.COOKIE_INFO) "uv", 
+	count(distinct RPTDATA.SESSION_ID) "vv", count(distinct RPTDATA.SOURCE_IP) "ip"
+  </sql>
+  
+  <sql id="base_queryParams_1">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="urlDomain">
+    		RPTDATA.URL_DOMAIN = #urlDomain#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="reportType">
+    		RPTDATA.REPORT_TYPE = #reportType#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="statDate">
+  			RPTDATA.CREATE_TIME <![CDATA[ >= ]]> to_date(#statDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="statDate">
+  			RPTDATA.CREATE_TIME <![CDATA[ < ]]> to_date(#statDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectNetflowSumToday" resultClass="hashmap" parameterClass="map">
+  	select 
+  	T1.*, case when T1."uv" = 0 then 0 else round(T1."pv"/T1."uv",3) end "pvPC",
+	case when T1."vv" = 0 then 0 else round(T1."pv"/T1."vv",3) end "avgVD" 
+  	from 
+  	(
+  		select 
+	  	<include refid="base_columns_1"/>
+		from $rptdata_tbl$ RPTDATA
+		<include refid="base_queryParams_1"/>
+  	) T1
+  	
+  </select>
+
+</sqlMap>

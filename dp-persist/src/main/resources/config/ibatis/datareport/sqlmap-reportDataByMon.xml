@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="ReportDataByMon">
+
+	<typeAlias alias="ReportDataByMon" type="com.iuni.dp.persist.datareport.model.ReportDataByMon" />
+	
+	<resultMap id="ReportDataByMonMap" class="ReportDataByMon">
+		<result property="id" column="id"/>
+		<result property="urlDomain" column="url_domain"/>
+		<result property="sourceId" column="source_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="sessionId" column="session_id"/>
+		<result property="sourceIp" column="source_ip"/>
+		<result property="reportType" column="report_type"/>
+		<result property="reportContent" column="report_content"/>
+		<result property="browserInfo" column="browser_info"/>
+		<result property="cookieInfo" column="cookie_info"/>
+		<result property="ipArea" column="ip_area"/>
+		<result property="ipLocation" column="ip_location"/>
+		<result property="appName" column="APP_NAME"/>
+		<result property="appChannel" column="APP_CHANNEL"/>
+		<result property="appVersion" column="APP_VERSION"/>
+		<result property="appImei" column="APP_IMEI"/>
+		<result property="appModel" column="APP_MODEL"/>
+		<result property="appIp" column="APP_IP"/>
+		<result property="createTime" column="create_time"/>
+		<result property="storageTime" column="storage_time"/>
+	</resultMap>
+	
+	<!--  
+	<sql id="insertReportDataByMon_selectKey" >
+		SELECT
+		<isEqual property="month" compareValue="1">
+			S_t_report_data_1.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="2">
+			S_t_report_data_2.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="3">
+			S_t_report_data_3.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="4">
+			S_t_report_data_4.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="5">
+			S_t_report_data_5.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="6">
+			S_t_report_data_6.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="7">
+			S_t_report_data_7.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="8">
+			S_t_report_data_8.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="9">
+			S_t_report_data_9.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="10">
+			S_t_report_data_10.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="11">
+			S_t_report_data_11.NEXTVAL
+		</isEqual>
+		<isEqual property="month" compareValue="12">
+			S_t_report_data_12.NEXTVAL
+		</isEqual>
+		  as id FROM dual
+	</sql>
+	-->
+	
+	<insert id="insertReportDataByMon" parameterClass="ReportDataByMon">
+		INSERT INTO
+		<isEqual property="month" compareValue="1">
+			t_report_data_1
+		</isEqual>
+		<isEqual property="month" compareValue="2">
+			t_report_data_2
+		</isEqual>
+		<isEqual property="month" compareValue="3">
+			t_report_data_3
+		</isEqual>
+		<isEqual property="month" compareValue="4">
+			t_report_data_4
+		</isEqual>
+		<isEqual property="month" compareValue="5">
+			t_report_data_5
+		</isEqual>
+		<isEqual property="month" compareValue="6">
+			t_report_data_6
+		</isEqual>
+		<isEqual property="month" compareValue="7">
+			t_report_data_7
+		</isEqual>
+		<isEqual property="month" compareValue="8">
+			t_report_data_8
+		</isEqual>
+		<isEqual property="month" compareValue="9">
+			t_report_data_9
+		</isEqual>
+		<isEqual property="month" compareValue="10">
+			t_report_data_10
+		</isEqual>
+		<isEqual property="month" compareValue="11">
+			t_report_data_11
+		</isEqual>
+		<isEqual property="month" compareValue="12">
+			t_report_data_12
+		</isEqual>
+		(
+			id, url_domain, source_id, user_id , session_id, source_ip, report_type, report_content, browser_info
+			, cookie_info, ip_area, ip_location, app_name, app_channel, app_version, app_imei, app_model, app_ip
+			, create_time, storage_time
+		) VALUES 
+		(
+			#id#, #urlDomain#, #sourceId#, #userId#, #sessionId#, #sourceIp#, #reportType#, #reportContent#, #browserInfo#
+			, #cookieInfo#, #ipArea#, #ipLocation#, #appName#, #appChannel#, #appVersion#, #appImei#, #appModel#, #appIp#
+			, #createTime#, SysDate
+		)
+		<selectKey type="pre" resultClass="long" keyProperty="id">
+			SELECT S_T_REPORT_DATA_MONTH.NEXTVAL AS id FROM dual
+		</selectKey>
+	</insert>
+	
+	<insert id="insertReportDataEx" parameterClass="ReportDataByMon">
+		INSERT INTO t_report_data_ex 
+		(
+			id, url_domain, source_id, user_id , session_id, source_ip, report_type, report_content, browser_info
+			, cookie_info, ip_area, ip_location, app_name, app_channel, app_version, app_imei, app_model, app_ip
+			, create_time, storage_time
+		) VALUES 
+		(
+			#id#, #urlDomain#, #sourceId#, #userId#, #sessionId#, #sourceIp#, #reportType#, #reportContent#, #browserInfo#
+			, #cookieInfo#, #ipArea#, #ipLocation#, #appName#, #appChannel#, #appVersion#, #appImei#, #appModel#, #appIp#
+			, #createTime#, SysDate
+		)
+		<selectKey type="pre" resultClass="long"  keyProperty="id">
+			SELECT S_t_report_data_ex.NEXTVAL as id FROM dual		
+		</selectKey>
+	</insert>
+
+</sqlMap>

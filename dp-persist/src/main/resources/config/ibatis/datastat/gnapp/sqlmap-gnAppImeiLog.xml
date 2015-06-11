@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="GnAppImeiLog" >
+
+  <typeAlias alias="GnAppImeiLog4Stat" type="com.iuni.dp.persist.datastat.model.GnAppImeiLog" />
+
+  <resultMap id="GnAppImeiLog4StatMap" class="GnAppImeiLog4Stat">
+    <result property="id" column="ID"/> 
+    <result property="appName" column="APP_NAME"/> 
+    <result property="channelName" column="CHANNEL_NAME"/>  
+    <result property="apkVersion" column="APK_VERSION"/>  
+    <result property="imei" column="IMEI"/> 
+    <result property="firstLaunchTime" column="FIRST_LAUNCH_TIME"/>
+    <result property="mobileModel" column="MOBILE_MODEL"/>
+    <result property="mobileNumber" column="MOBILE_NUMBER"/>
+    <result property="reportTime" column="REPORT_TIME"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+
+  <sql id="GnAppImeiLog4Stat_queryParams_1">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="appName">
+    		GAI.APP_NAME = #appName#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="channelNames">
+  			GAI.CHANNEL_NAME in 
+  			<iterate open="(" close=")" conjunction="," property="channelNames">
+  				#channelNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			GAI.REPORT_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			GAI.REPORT_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iunios_queryParams_remainUser_1">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			GAI.CHANNEL_NAME = 'IUNI OS'
+  		</isParameterPresent>
+  		<isNotNull prepend="and" property="appNames">
+  			GAI.APP_NAME in
+  			<iterate open="(" close=")" conjunction="," property="appNames">
+  				#appNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+  			GAI.APK_VERSION in
+  			<iterate open="(" close=")" conjunction="," property="apkVersions">
+  				#apkVersions[]#
+  			</iterate>
+  		</isNotNull>
+		<isNotNull prepend="and" property="beginDate">
+			GAI.FIRST_LAUNCH_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+		</isNotNull>
+		<isNotNull prepend="and" property="endDate">
+  			GAI.FIRST_LAUNCH_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <sql id="iunios_queryParams_remainUser_2">
+  	<dynamic prepend="where">
+  		<isParameterPresent prepend="and">
+  			GAA.CHANNEL_NAME = 'IUNI OS'
+  		</isParameterPresent>
+  		<isNotNull prepend="and" property="appNames">
+  			GAA.APP_NAME in
+  			<iterate open="(" close=")" conjunction="," property="appNames">
+  				#appNames[]#
+  			</iterate>
+  		</isNotNull>
+  		<isNotNull prepend="and" property="apkVersions">
+  			GAA.APK_VERSION in
+  			<iterate open="(" close=")" conjunction="," property="apkVersions">
+  				#apkVersions[]#
+  			</iterate>
+  		</isNotNull>
+		<isNotNull prepend="and" property="beginDate">
+			GAA.STARTUP_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')+#remainDays#
+		</isNotNull>
+		<isNotNull prepend="and" property="endDate">
+  			GAA.STARTUP_TIME <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+#remainDays#+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectNewUserOfChannelByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "newUserNum" from 
+		(
+		    select GAI.IMEI, GAI.CHANNEL_NAME, to_char(GAI.REPORT_TIME, 'yyyy-mm-dd') "bizDate" 
+		    from GN_APP_IMEILOG GAI
+			<include refid="GnAppImeiLog4Stat_queryParams_1"/>
+		) T0
+		group by T0.channel_name, T0."bizDate"
+		order by T0.channel_name, T0."bizDate"
+	) T
+  </select>
+  
+  <select id="selectNewUserOfChannelByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "newUserNum" from 
+			(
+			    select GAI.IMEI, GAI.CHANNEL_NAME, to_char(GAI.REPORT_TIME, 'yyyy-mm-dd') "bizDate" 
+			    from GN_APP_IMEILOG GAI
+				<include refid="GnAppImeiLog4Stat_queryParams_1"/>
+			) T0
+			group by T0.channel_name, T0."bizDate"
+			order by T0.channel_name, T0."bizDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectNewUserOfChannelCount" resultClass="int" parameterClass="map">
+  	select count(*) from 
+  	(
+  		select T0.CHANNEL_NAME "channelName", T0."bizDate", count(distinct T0.IMEI) "newUserNum" from 
+		(
+		    select GAI.IMEI, GAI.CHANNEL_NAME, to_char(GAI.REPORT_TIME, 'yyyy-mm-dd') "bizDate" 
+		    from GN_APP_IMEILOG GAI
+			<include refid="GnAppImeiLog4Stat_queryParams_1"/>
+		) T0
+		group by T0.channel_name, T0."bizDate"
+  	)
+  </select>
+  
+  <select id="selectIuniOSRemainUserOnDayByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+	(
+	  	select 
+		T0."statDate", count(T0.IMEI) "newUserNum", count(T1.IMEI) "remainUserNum"
+		, case when count(T0.IMEI)=0 then 0 else ROUND(count(T1.IMEI)/count(T0.IMEI),3) end "remainUserRate"
+		from
+		(
+		    select distinct to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd') "statDate", GAI.IMEI
+		    from GN_APP_IMEILOG GAI
+		    <include refid="iunios_queryParams_remainUser_1"/>
+		    order by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd'), GAI.IMEI
+		) T0 left join 
+		(
+		    select distinct to_char(GAA.STARTUP_TIME-#remainDays#, 'yyyy-mm-dd') "statDate", GAA.IMEI
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_queryParams_remainUser_2"/>
+		    order by to_char(GAA.STARTUP_TIME-#remainDays#, 'yyyy-mm-dd'), GAA.IMEI
+		) T1 on (T1."statDate" = T0."statDate" and T1.IMEI = T0.IMEI)
+		group by T0."statDate"
+		order by T0."statDate"
+	) T
+  </select>
+  
+  <select id="selectIuniOSRemainUserOnDayByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+			T0."statDate", count(T0.IMEI) "newUserNum", count(T1.IMEI) "remainUserNum"
+			, case when count(T0.IMEI)=0 then 0 else ROUND(count(T1.IMEI)/count(T0.IMEI),3) end "remainUserRate"
+			from
+			(
+			    select distinct to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd') "statDate", GAI.IMEI
+			    from GN_APP_IMEILOG GAI
+			    <include refid="iunios_queryParams_remainUser_1"/>
+			    order by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd'), GAI.IMEI
+			) T0 left join 
+			(
+			    select distinct to_char(GAA.STARTUP_TIME-#remainDays#, 'yyyy-mm-dd') "statDate", GAA.IMEI
+			    from GN_APP_ACCESSLOG GAA
+			    <include refid="iunios_queryParams_remainUser_2"/>
+			    order by to_char(GAA.STARTUP_TIME-#remainDays#, 'yyyy-mm-dd'), GAA.IMEI
+			) T1 on (T1."statDate" = T0."statDate" and T1.IMEI = T0.IMEI)
+			group by T0."statDate"
+			order by T0."statDate"
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIuniOSRemainUserOnDayCount" resultClass="int" parameterClass="map">
+  	select count(*) from 
+  	(
+  		select 
+		T0."statDate", count(T0.IMEI) "newUserNum", count(T1.IMEI) "remainUserNum"
+		, case when count(T0.IMEI)=0 then 0 else ROUND(count(T1.IMEI)/count(T0.IMEI),3) end "remainUserRate"
+		from
+		(
+		    select distinct to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd') "statDate", GAI.IMEI
+		    from GN_APP_IMEILOG GAI
+		    <include refid="iunios_queryParams_remainUser_1"/>
+		    order by to_char(GAI.FIRST_LAUNCH_TIME, 'yyyy-mm-dd'), GAI.IMEI
+		) T0 left join 
+		(
+		    select distinct to_char(GAA.STARTUP_TIME-#remainDays#, 'yyyy-mm-dd') "statDate", GAA.IMEI
+		    from GN_APP_ACCESSLOG GAA
+		    <include refid="iunios_queryParams_remainUser_2"/>
+		    order by to_char(GAA.STARTUP_TIME-#remainDays#, 'yyyy-mm-dd'), GAA.IMEI
+		) T1 on (T1."statDate" = T0."statDate" and T1.IMEI = T0.IMEI)
+		group by T0."statDate"
+		order by T0."statDate"
+  	)
+  </select>
+  
+  <insert id="insertGnAppImeiLog4Stat" parameterClass="GnAppImeiLog4Stat" >
+    insert into GN_APP_IMEILOG 
+    ( ID, APP_NAME, CHANNEL_NAME, APK_VERSION, IMEI, FIRST_LAUNCH_TIME
+      , MOBILE_MODEL, MOBILE_NUMBER, REPORT_TIME, CREATE_TIME )
+    values 
+    ( #id#, #appName#, #channelName#, #apkVersion#, #imei#, #firstLaunchTime#
+      , #mobileModel#, #mobileNumber#, #reportTime#, SysTimestamp )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_GN_APP_IMEILOG.NEXTVAL as id FROM dual
+    </selectKey>
+  </insert>
+  
+  <delete id="deleteGnAppImeiLog4StatById" parameterClass="long">
+  	DELETE FROM GN_APP_IMEILOG GAI
+  	WHERE GAI.ID = #id#
+  </delete>
+
+</sqlMap>

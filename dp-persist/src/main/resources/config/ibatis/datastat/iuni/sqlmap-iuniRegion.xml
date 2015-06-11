@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniRegion">
+
+  <typeAlias alias="IuniRegion" type="com.iuni.dp.persist.datastat.model.IuniRegion" />
+
+  <resultMap id="IuniRegionMap" class="IuniRegion">
+    <result property="regionId" column="REGION_ID"/> 
+    <result property="parentId" column="PARENT_ID"/> 
+    <result property="regionName" column="REGION_NAME"/>  
+    <result property="regionType" column="REGION_TYPE"/>  
+  </resultMap>
+  
+  <sql id="base_columns_1">
+  	IR.REGION_ID, IR.PARENT_ID, IR.REGION_NAME, IR.REGION_TYPE
+  </sql>
+  
+  <sql id="queryParams_1">
+  	<dynamic prepend="where">
+  		<isNotNull property="parentId" prepend="and">
+  			IR.PARENT_ID = #parentId#
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectIuniRegionMapByParent" resultMap="IuniRegionMap" parameterClass="map">
+  	select
+  	<include refid="base_columns_1"/>
+  	from IUNI_REGION IR
+  	<include refid="queryParams_1"/>
+  </select>
+  
+</sqlMap>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniPageNetflowDailyStat" >
+
+  <typeAlias alias="IuniPageNetflowDailyStat" type="com.iuni.dp.persist.datastat.model.IuniPageNetflowDailyStat" />
+
+  <resultMap id="IuniPageNetflowDailyStatMap" class="IuniPageNetflowDailyStat">
+    <result property="id" column="ID"/> 
+    <result property="urlDomain" column="URL_DOMAIN"/> 
+    <result property="pageUrl" column="PAGE_URL"/>
+    <result property="pv" column="PV"/>  
+    <result property="uv" column="UV"/>  
+    <result property="vv" column="VV"/> 
+    <result property="ip" column="IP"/>
+    <result property="statDate" column="STAT_DATE"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+  
+  <sql id="base_columns_1">
+  	IPNDS.ID, IPNDS.URL_DOMAIN, IPNDS.PAGE_URL, IPNDS.PV, IPNDS.UV, IPNDS.VV, IPNDS.IP, IPNDS.STAT_DATE, IPNDS.CREATE_TIME
+  </sql>
+  
+  <sql id="base_columns_2">
+  	IPNDS.ID "id", IPNDS.URL_DOMAIN "urlDomain", IPNDS.PAGE_URL "pageUrl",
+  	IPNDS.PV "pv", IPNDS.UV "uv", IPNDS.VV "vv", IPNDS.IP "ip", 
+	IPNDS.STAT_DATE "statDate", IPNDS.CREATE_TIME "createTime",
+	case when IPNDS.UV = 0 then 0 else round(IPNDS.PV/IPNDS.UV,3) end "pvPC",
+	case when IPNDS.VV = 0 then 0 else round(IPNDS.PV/IPNDS.VV,3) end "avgVD"
+  </sql>
+  
+  <sql id="base_queryParams_1">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="id">
+    		IPNDS.ID = #id#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="urlDomain">
+    		IPNDS.URL_DOMAIN = #urlDomain#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			to_date(IPNDS.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			to_date(IPNDS.STAT_DATE, 'yyyy-mm-dd') <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectIpndsByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		select 
+  		<include refid="base_columns_2"/>
+  		from IUNI_PAGENETFLOW_DAILYSTAT IPNDS
+  		<include refid="base_queryParams_1"/>
+  		order by IPNDS.STAT_DATE, IPNDS.URL_DOMAIN, IPNDS.PV DESC, IPNDS.PAGE_URL
+  	) T
+  </select>
+  
+  <select id="selectIpndsByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+	  		<include refid="base_columns_2"/>
+	  		from IUNI_PAGENETFLOW_DAILYSTAT IPNDS
+	  		<include refid="base_queryParams_1"/>
+	  		order by IPNDS.STAT_DATE, IPNDS.URL_DOMAIN, IPNDS.PV DESC, IPNDS.PAGE_URL
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIpndsCount" resultClass="int" parameterClass="map">
+	select count(IPNDS.ID)
+	from IUNI_PAGENETFLOW_DAILYSTAT IPNDS
+	<include refid="base_queryParams_1"/>
+  </select>
+  
+  <select id="selectIpndsSumOnDateByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		select IPNDS.URL_DOMAIN "urlDomain", IPNDS.PAGE_URL "pageUrl", 
+	  	#beginDate# || '~' || #endDate# "statDate", 
+	  	sum(IPNDS.PV) "pv", sum(IPNDS.UV) "uv", 
+		sum(IPNDS.VV) "vv", sum(IPNDS.IP) "ip", 
+		case when sum(IPNDS.UV) = 0 then 0 else round(sum(IPNDS.PV)/sum(IPNDS.UV),3) end "pvPC",
+		case when sum(IPNDS.VV) = 0 then 0 else round(sum(IPNDS.PV)/sum(IPNDS.VV),3) end "avgVD"
+		from IUNI_PAGENETFLOW_DAILYSTAT IPNDS
+		<include refid="base_queryParams_1"/>
+		group by IPNDS.URL_DOMAIN, IPNDS.PAGE_URL
+		order by IPNDS.URL_DOMAIN, sum(IPNDS.PV) DESC, IPNDS.PAGE_URL
+  	) T
+  </select>
+  
+  <select id="selectIpndsSumOnDateByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select IPNDS.URL_DOMAIN "urlDomain", IPNDS.PAGE_URL "pageUrl", 
+		  	#beginDate# || '~' || #endDate# "statDate", 
+		  	sum(IPNDS.PV) "pv", sum(IPNDS.UV) "uv", 
+			sum(IPNDS.VV) "vv", sum(IPNDS.IP) "ip", 
+			case when sum(IPNDS.UV) = 0 then 0 else round(sum(IPNDS.PV)/sum(IPNDS.UV),3) end "pvPC",
+			case when sum(IPNDS.VV) = 0 then 0 else round(sum(IPNDS.PV)/sum(IPNDS.VV),3) end "avgVD"
+			from IUNI_PAGENETFLOW_DAILYSTAT IPNDS
+			<include refid="base_queryParams_1"/>
+			group by IPNDS.URL_DOMAIN, IPNDS.PAGE_URL
+			order by IPNDS.URL_DOMAIN, sum(IPNDS.PV) DESC, IPNDS.PAGE_URL
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectIpndsSumOnDateCount" resultClass="int" parameterClass="map">
+  	SELECT count(T."urlDomain") FROM
+  	(
+  		select IPNDS.URL_DOMAIN "urlDomain", IPNDS.PAGE_URL "pageUrl", 
+	  	#beginDate# || '~' || #endDate# "statDate", 
+	  	sum(IPNDS.PV) "pv", sum(IPNDS.UV) "uv", 
+		sum(IPNDS.VV) "vv", sum(IPNDS.IP) "ip", 
+		case when sum(IPNDS.UV) = 0 then 0 else round(sum(IPNDS.PV)/sum(IPNDS.UV),3) end "pvPC",
+		case when sum(IPNDS.VV) = 0 then 0 else round(sum(IPNDS.PV)/sum(IPNDS.VV),3) end "avgVD"
+		from IUNI_PAGENETFLOW_DAILYSTAT IPNDS
+		<include refid="base_queryParams_1"/>
+		group by IPNDS.URL_DOMAIN, IPNDS.PAGE_URL
+		order by IPNDS.URL_DOMAIN, sum(IPNDS.PV) DESC, IPNDS.PAGE_URL
+  	) T
+  </select>
+
+</sqlMap>

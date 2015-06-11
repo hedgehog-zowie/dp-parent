@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="StatSnapshotResult">
+
+    <typeAlias alias="StatSnapshotResult" type="com.iuni.dp.persist.datastat.model.StatSnapshotResult"/>
+
+    <resultMap id="StatSnapshotResultMap" class="StatSnapshotResult">
+        <result property="id" column="ID"/>
+        <result property="sourceId" column="SOURCEID"/>
+        <result property="statSchemeId" column="STAT_SCHEME_ID"/>
+        <result property="snapshotTime" column="SNAPSHOT_TIME"/>
+        <result property="statAvgTime" column="STAT_AVG_TIME"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="statScheme" column="STAT_SCHEME_ID" select="StatScheme.selectStatSchemeById"/>
+    </resultMap>
+
+    <select id="selectStatSnapshotResultById" resultMap="StatSnapshotResultMap" parameterClass="int">
+  	SELECT SNR.*	
+  	FROM T_STAT_SNAPSHOT_RESULT SNR
+  	WHERE SNR.ID = #id#
+  </select>
+
+    <select id="selectAllStatSnapshotResult" resultMap="StatSnapshotResultMap" parameterClass="java.util.Map">
+        SELECT SNR.*
+        FROM T_STAT_SNAPSHOT_RESULT SNR
+        <dynamic prepend="WHERE">
+            <isNotNull prepend="AND" property="sourceId">
+                SNR.SOURCEID = #sourceId#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statSchemeId">
+                SNR.STAT_SCHEME_ID = #statSchemeId#
+            </isNotNull>
+            <isNotNull prepend="AND" property="snapshotTime">
+                <![CDATA[ SNR.SNAPSHOT_TIME >= to_date(#snapshotTime#, 'yyyy-mm-dd')]]>
+            </isNotNull>
+            <isNotNull prepend="AND" property="snapshotTime">
+                <![CDATA[ SNR.SNAPSHOT_TIME < to_date(#snapshotTime#, 'yyyy-mm-dd')+1]]>
+            </isNotNull>
+        </dynamic>
+        ORDER BY SNR.SNAPSHOT_TIME
+    </select>
+
+    <select id="selectStatSnapshotResultByPage" resultMap="StatSnapshotResultMap" parameterClass="java.util.Map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM RN FROM
+        (
+        SELECT SNR.*
+        FROM T_STAT_SNAPSHOT_RESULT SNR
+        <dynamic prepend="WHERE">
+            <isNotNull prepend="AND" property="sourceId">
+                SNR.SOURCEID = #sourceId#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statSchemeId">
+                SNR.STAT_SCHEME_ID = #statSchemeId#
+            </isNotNull>
+            <isNotNull prepend="AND" property="snapshotTime">
+                <![CDATA[ SNR.SNAPSHOT_TIME >= to_date(#snapshotTime#, 'yyyy-mm-dd')]]>
+            </isNotNull>
+            <isNotNull prepend="AND" property="snapshotTime">
+                <![CDATA[ SNR.SNAPSHOT_TIME < to_date(#snapshotTime#, 'yyyy-mm-dd')+1]]>
+            </isNotNull>
+        </dynamic>
+        ORDER BY SNR.SNAPSHOT_TIME DESC
+        ) T
+        WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )
+        WHERE RN <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectTotalCount" resultClass="int" parameterClass="java.util.Map">
+        SELECT COUNT(SNR.ID)
+        FROM T_STAT_SNAPSHOT_RESULT SNR
+        <dynamic prepend="WHERE">
+            <isNotNull prepend="AND" property="sourceId">
+                SNR.SOURCEID = #sourceId#
+            </isNotNull>
+            <isNotNull prepend="AND" property="statSchemeId">
+                SNR.STAT_SCHEME_ID = #statSchemeId#
+            </isNotNull>
+            <isNotNull prepend="AND" property="beginDate">
+                <![CDATA[ SNR.SNAPSHOT_TIME >= to_date(#beginDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+            <isNotNull prepend="AND" property="endDate">
+                <![CDATA[ SNR.SNAPSHOT_TIME <= to_date(#endDate#, 'yyyy-mm-dd hh24:mi:ss')]]>
+            </isNotNull>
+        </dynamic>
+    </select>
+
+    <insert id="insertStatSnapshotResult" parameterClass="StatSnapshotResult">
+        INSERT INTO T_STAT_SNAPSHOT_RESULT (
+        ID,
+        SOURCEID,
+        STAT_SCHEME_ID,
+        SNAPSHOT_TIME,
+        STAT_AVG_TIME,
+        CREATE_TIME
+        )
+        VALUES (
+        #id#,
+        #sourceId#,
+        #statSchemeId#,
+        #snapshotTime#,
+        #statAvgTime#,
+        SysDate
+        )
+        <selectKey resultClass="int" type="pre" keyProperty="id">
+            SELECT S_T_STAT_SNAPSHOT_RESULT.NEXTVAL as id FROM dual
+        </selectKey>
+    </insert>
+
+    <delete id="deleteStatSnapshotResultById" parameterClass="int">
+  	DELETE FROM T_STAT_SNAPSHOT_RESULT SNR
+  	WHERE SNR.ID = #id#
+  </delete>
+
+</sqlMap>

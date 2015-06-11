@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="IuniOrderInfo">
+
+    <typeAlias alias="IuniOrderInfo" type="com.iuni.dp.persist.datastat.model.IuniOrderInfo"/>
+
+    <resultMap id="IuniOrderInfoMap" class="IuniOrderInfo">
+        <result property="orderSn" column="ORDER_SN"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="orderStatus" column="ORDER_STATUS"/>
+        <result property="shippingStatus" column="SHIPPING_STATUS"/>
+        <result property="payStatus" column="PAY_STATUS"/>
+        <result property="country" column="COUNTRY"/>
+        <result property="province" column="PROVINCE"/>
+        <result property="city" column="CITY"/>
+        <result property="district" column="DISTRICT"/>
+        <result property="addTime" column="ADD_TIME"/>
+        <result property="payTime" column="PAY_TIME"/>
+        <result property="shippingTime" column="SHIPPING_TIME"/>
+        <result property="orderType" column="ORDER_TYPE"/>
+        <result property="oLevel" column="OLEVEL"/>
+    </resultMap>
+
+    <sql id="base_columns_1">
+  	IOI.ORDER_SN, IOI.USER_ID, IOI.ORDER_STATUS, vSHIPPING_STATUS, IOI.PAY_STATUS, 
+  	IOI.COUNTRY, IOI.PROVINCE, IOI.CITY, IOI.DISTRICT,
+	IOI.ADD_TIME, IOI.PAY_TIME, IOI.SHIPPING_TIME, IOI.ORDER_TYPE, IOI.OLEVEL
+  </sql>
+
+    <sql id="select_columns_1">
+        <dynamic prepend="select">
+            <isParameterPresent prepend=",">
+                to_char(millisec_to_date2(IOI.PAY_TIME), 'yyyy-mm-dd') "statDate"
+            </isParameterPresent>
+            <isNull property="country" prepend=",">
+                IOI.COUNTRY "country"
+            </isNull>
+            <isNotNull property="country" prepend=",">
+                #country# "country"
+            </isNotNull>
+            <isNull property="province" prepend=",">
+                IOI.PROVINCE "province"
+            </isNull>
+            <isNotNull property="province" prepend=",">
+                #province# "province"
+            </isNotNull>
+            <isNull property="city" prepend=",">
+                IOI.CITY "city"
+            </isNull>
+            <isNotNull property="city" prepend=",">
+                #city# "city"
+            </isNotNull>
+            <isNull property="district" prepend=",">
+                IOI.DISTRICT "district"
+            </isNull>
+            <isNotNull property="district" prepend=",">
+                #district# "district"
+            </isNotNull>
+            <isParameterPresent prepend=",">
+                count(IOI.ORDER_SN) "salesNum"
+            </isParameterPresent>
+        </dynamic>
+    </sql>
+
+    <sql id="select_columns_2">
+        <dynamic prepend="select">
+            <isParameterPresent prepend=",">
+                #beginDate#||'~'||#endDate# "statDate"
+            </isParameterPresent>
+            <isNull property="country" prepend=",">
+                IOI.COUNTRY "country"
+            </isNull>
+            <isNotNull property="country" prepend=",">
+                #country# "country"
+            </isNotNull>
+            <isNull property="province" prepend=",">
+                IOI.PROVINCE "province"
+            </isNull>
+            <isNotNull property="province" prepend=",">
+                #province# "province"
+            </isNotNull>
+            <isNull property="city" prepend=",">
+                IOI.CITY "city"
+            </isNull>
+            <isNotNull property="city" prepend=",">
+                #city# "city"
+            </isNotNull>
+            <isNull property="district" prepend=",">
+                IOI.DISTRICT "district"
+            </isNull>
+            <isNotNull property="district" prepend=",">
+                #district# "district"
+            </isNotNull>
+            <isParameterPresent prepend=",">
+                count(IOI.ORDER_SN) "salesNum"
+            </isParameterPresent>
+        </dynamic>
+    </sql>
+
+    <sql id="iuniOrderAreaStat_queryParams_1">
+        <dynamic prepend="where">
+            <isParameterPresent prepend="and">
+                IOI.PAY_STATUS = 'paid'
+            </isParameterPresent>
+            <isParameterPresent prepend="and">
+                (IOI.ORDER_TYPE = 'normal' or (IOI.ORDER_TYPE = 'ys' and IOI.OLEVEL = 'child'))
+            </isParameterPresent>
+            <isNotNull property="country" prepend="and">
+                IOI.COUNTRY = #country#
+            </isNotNull>
+            <isNotNull property="province" prepend="and">
+                IOI.PROVINCE = #province#
+            </isNotNull>
+            <isNotNull property="city" prepend="and">
+                IOI.CITY = #city#
+            </isNotNull>
+            <isNotNull property="district" prepend="and">
+                IOI.DISTRICT = #district#
+            </isNotNull>
+            <isNotNull property="orderSource" prepend="and">
+                IOI.REFERER = #orderSource#
+            </isNotNull>
+            <isNotNull prepend="and" property="beginDate">
+                millisec_to_date2(IOI.PAY_TIME) <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+            </isNotNull>
+            <isNotNull prepend="and" property="endDate">
+                millisec_to_date2(IOI.PAY_TIME) <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+            </isNotNull>
+        </dynamic>
+    </sql>
+
+    <sql id="group_condition_1">
+        <dynamic prepend="group by">
+            <isParameterPresent prepend=",">
+                to_char(millisec_to_date2(IOI.PAY_TIME), 'yyyy-mm-dd')
+            </isParameterPresent>
+            <isNull property="country" prepend=",">
+                IOI.COUNTRY
+            </isNull>
+            <isNull property="province" prepend=",">
+                IOI.PROVINCE
+            </isNull>
+            <isNull property="city" prepend=",">
+                IOI.CITY
+            </isNull>
+            <isNull property="district" prepend=",">
+                IOI.DISTRICT
+            </isNull>
+        </dynamic>
+        <dynamic prepend="order by">
+            <isParameterPresent prepend=",">
+                to_char(millisec_to_date2(IOI.PAY_TIME), 'yyyy-mm-dd')
+            </isParameterPresent>
+            <isNull property="country" prepend=",">
+                IOI.COUNTRY
+            </isNull>
+            <isNull property="province" prepend=",">
+                IOI.PROVINCE
+            </isNull>
+            <isNull property="city" prepend=",">
+                IOI.CITY
+            </isNull>
+            <isNull property="district" prepend=",">
+                IOI.DISTRICT
+            </isNull>
+        </dynamic>
+    </sql>
+
+    <sql id="group_condition_2">
+        <dynamic prepend="group by">
+            <isNull property="country" prepend=",">
+                IOI.COUNTRY
+            </isNull>
+            <isNull property="province" prepend=",">
+                IOI.PROVINCE
+            </isNull>
+            <isNull property="city" prepend=",">
+                IOI.CITY
+            </isNull>
+            <isNull property="district" prepend=",">
+                IOI.DISTRICT
+            </isNull>
+        </dynamic>
+        <dynamic prepend="order by">
+            <isNull property="country" prepend=",">
+                IOI.COUNTRY
+            </isNull>
+            <isNull property="province" prepend=",">
+                IOI.PROVINCE
+            </isNull>
+            <isNull property="city" prepend=",">
+                IOI.CITY
+            </isNull>
+            <isNull property="district" prepend=",">
+                IOI.DISTRICT
+            </isNull>
+        </dynamic>
+    </sql>
+
+    <select id="selectIuniOrderAreaStatByExample" resultClass="hashmap" parameterClass="map">
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="select_columns_1"/>
+        from IUNI_ORDER_INFO IOI
+        <include refid="iuniOrderAreaStat_queryParams_1"/>
+        <include refid="group_condition_1"/>
+        ) T
+    </select>
+
+    <select id="selectIuniOrderAreaStatByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="select_columns_1"/>
+        from IUNI_ORDER_INFO IOI
+        <include refid="iuniOrderAreaStat_queryParams_1"/>
+        <include refid="group_condition_1"/>
+        ) T
+        WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )
+        WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniOrderAreaStatCount" resultClass="int" parameterClass="map">
+        select count(*) "totalNum"
+        from
+        (
+        <include refid="select_columns_1"/>
+        from IUNI_ORDER_INFO IOI
+        <include refid="iuniOrderAreaStat_queryParams_1"/>
+        <include refid="group_condition_1"/>
+        )
+    </select>
+
+    <select id="selectIuniOrderAreaSumByExample" resultClass="hashmap" parameterClass="map">
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="select_columns_2"/>
+        from IUNI_ORDER_INFO IOI
+        <include refid="iuniOrderAreaStat_queryParams_1"/>
+        <include refid="group_condition_2"/>
+        ) T
+    </select>
+
+    <select id="selectIuniOrderAreaSumByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="select_columns_2"/>
+        from IUNI_ORDER_INFO IOI
+        <include refid="iuniOrderAreaStat_queryParams_1"/>
+        <include refid="group_condition_2"/>
+        ) T
+        WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )
+        WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+    </select>
+
+    <select id="selectIuniOrderAreaSumCount" resultClass="int" parameterClass="map">
+        select count(*) "totalNum"
+        from
+        (
+        <include refid="select_columns_2"/>
+        from IUNI_ORDER_INFO IOI
+        <include refid="iuniOrderAreaStat_queryParams_1"/>
+        <include refid="group_condition_2"/>
+        )
+    </select>
+
+    <sql id="csDataStat_queryParams_1">
+        <isNotNull prepend="and" property="beginDate">
+            to_date(INDS.STAT_DATE,'yyyy-mm-dd') <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            to_date(INDS.STAT_DATE,'yyyy-mm-dd') <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+        </isNotNull>
+    </sql>
+
+    <sql id="csDataStat_queryParams_2">
+        <isNotNull prepend="and" property="beginDate">
+            MILLISEC_TO_DATE2(IOI.ADD_TIME) <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+        </isNotNull>
+        <isNotNull prepend="and" property="beginDate">
+            MILLISEC_TO_DATE2(IOI.ADD_TIME) <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+        </isNotNull>
+    </sql>
+
+    <sql id="csDataStat_queryParams_3">
+        <isNotNull prepend="and" property="beginDate">
+            IWSO.ORDER_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-mm-dd')
+        </isNotNull>
+        <isNotNull prepend="and" property="beginDate">
+            IWSO.ORDER_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
+        </isNotNull>
+    </sql>
+
+    <select id="selectOrderStat4Cs" resultClass="hashmap" parameterClass="map">
+        select
+        T0."statDate", T0."uv"
+        , case when T1."orderNum" is null then 0 else T1."orderNum" end "orderNum"
+        , case when T2."consultOrderNum" is null then 0 else T2."consultOrderNum" end "consultOrderNum"
+        , case when T3."payNum" is null then 0 else T3."payNum" end "payNum"
+        , case when T3."payPersonNum" is null then 0 else T3."payPersonNum" end "payPersonNum"
+        , case when T3."tradeAmount" is null then 0 else T3."tradeAmount" end "tradeAmount"
+        , case when T4."consultPayNum" is null then 0 else T4."consultPayNum" end "consultPayNum"
+        , case when T4."consultPayPersonNum" is null then 0 else T4."consultPayPersonNum" end "consultPayPersonNum"
+        , case when T4."consultTradeAmount" is null then 0 else T4."consultTradeAmount" end "consultTradeAmount"
+        , case when T5."refundNum" is null then 0 else T5."refundNum" end "refundNum"
+        , case when T5."refundAmount" is null then 0 else T5."refundAmount" end "refundAmount"
+        , case when T6."refundedNum" is null then 0 else T6."refundedNum" end "refundedNum"
+        , case when T6."refundedAmount" is null then 0 else T6."refundedAmount" end "refundedAmount"
+        , case when T7."deliverOrderNum" is null then 0 else T7."deliverOrderNum" end "deliverOrderNum"
+        , case when T7."deliverTime" is null then 0 else T7."deliverTime" end "deliverTime"
+        , case when T8."expDeliverOrderNum" is null then 0 else T8."expDeliverOrderNum" end "expDeliverOrderNum"
+        , case when T8."expDeliverTime" is null then 0 else T8."expDeliverTime" end "expDeliverTime"
+        , case when T9."sendOrderNum" is null then 0 else T9."sendOrderNum" end "sendOrderNum"
+        , case when T9."sendTime" is null then 0 else T9."sendTime" end "sendTime"
+        , case when T10."expSendOrderNum" is null then 0 else T10."expSendOrderNum" end "expSendOrderNum"
+        , case when T10."expSendTime" is null then 0 else T10."expSendTime" end "expSendTime"
+        from
+        (
+        select
+        INDS.STAT_DATE "statDate", INDS.UV "uv"
+        from IUNI_NETFLOW_DAILYSTAT INDS
+        where INDS.URL_DOMAIN = 'rd.iuni.com'
+        <include refid="csDataStat_queryParams_1"/>
+        ) T0
+        left join
+        (
+        select
+        to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd') "statDate"
+        , count(IOI.ORDER_SN) "orderNum"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal','parent')
+        <include refid="csDataStat_queryParams_2"/>
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        ) T1 on (T1."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd') "statDate"
+        , count(IOI.ORDER_SN) "consultOrderNum"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal','parent')
+        <include refid="csDataStat_queryParams_2"/>
+        and IOI.C_SIGN is not null
+        and IOI.C_SIGN <![CDATA[ <> ]]> 'false'
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        ) T2 on (T2."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd') "statDate"
+        , count(IOI.ORDER_SN)-count(IOI.PARENTORDERID)+count(distinct IOI.PARENTORDERID) "payNum"
+        , count(distinct IOI.USER_ID) "payPersonNum"
+        , case when sum(IOI.MONEY_PAID) is null then 0 else sum(IOI.MONEY_PAID) end "tradeAmount"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal','child')
+        and IOI.PAY_STATUS in ('paid','refund','refunded')
+        <include refid="csDataStat_queryParams_2"/>
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        ) T3 on (T3."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd') "statDate"
+        , count(IOI.ORDER_SN)-count(IOI.PARENTORDERID)+count(distinct IOI.PARENTORDERID) "consultPayNum"
+        , count(distinct IOI.USER_ID) "consultPayPersonNum"
+        , case when sum(IOI.MONEY_PAID) is null then 0 else sum(IOI.MONEY_PAID) end "consultTradeAmount"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal','child')
+        and IOI.PAY_STATUS in ('paid','refund','refunded')
+        and IOI.C_SIGN is not null
+        and IOI.C_SIGN <![CDATA[ <> ]]> 'false'
+        <include refid="csDataStat_queryParams_2"/>
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        ) T4 on (T4."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd') "statDate"
+        , count(IOI.ORDER_SN)-count(IOI.PARENTORDERID)+count(distinct IOI.PARENTORDERID) "refundNum"
+        , case when sum(IOI.MONEY_PAID) is null then 0 else sum(IOI.MONEY_PAID) end "refundAmount"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal','child')
+        and IOI.PAY_STATUS in ('refund','refunded')
+        <include refid="csDataStat_queryParams_2"/>
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        ) T5 on (T5."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd') "statDate"
+        , count(IOI.ORDER_SN)-count(IOI.PARENTORDERID)+count(distinct IOI.PARENTORDERID) "refundedNum"
+        , case when sum(IOI.MONEY_PAID) is null then 0 else sum(IOI.MONEY_PAID) end "refundedAmount"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal','child')
+        and IOI.PAY_STATUS in ('refunded')
+        <include refid="csDataStat_queryParams_2"/>
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME),'yyyy-mm-dd')
+        ) T6 on (T6."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(IWSO.ORDER_TIME,'yyyy-mm-dd') "statDate"
+        , count(distinct IWSO.ORDER_CODE) "deliverOrderNum"
+        , ROUND(avg((IWSO.SHIPPING_TIME-IWSO.PAYMENT_TIME)*24), 3) "deliverTime"
+        from IUNI_WMS_SALES_ORDER IWSO
+        where IWSO.ORDER_STATUS = '1'
+        <include refid="csDataStat_queryParams_3"/>
+        group by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        order by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        )T7 on (T7."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(IWSO.ORDER_TIME,'yyyy-mm-dd') "statDate"
+        , count(distinct IWSO.ORDER_CODE) "expDeliverOrderNum"
+        , ROUND(avg((IWSO.SHIPPING_TIME-IWSO.PAYMENT_TIME)*24),3) "expDeliverTime"
+        from IUNI_WMS_SALES_ORDER IWSO
+        where IWSO.ORDER_STATUS = '1'
+        and (IWSO.SHIPPING_TIME-IWSO.PAYMENT_TIME)*24 <![CDATA[ <= ]]> 24
+        <include refid="csDataStat_queryParams_3"/>
+        group by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        order by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        )T8 on (T8."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(IWSO.ORDER_TIME,'yyyy-mm-dd') "statDate"
+        , count(distinct IWSO.ORDER_CODE) "sendOrderNum"
+        , ROUND(avg((IWSI.LAST_PUSH_TIME-IWSO.SHIPPING_TIME)*24),3) "sendTime"
+        from IUNI_WMS_SALES_ORDER IWSO
+        left join IUNI_WMS_SHIPPING_INFO IWSI on (IWSI.ORDER_CODE = IWSO.ORDER_CODE)
+        where IWSO.ORDER_STATUS = '5'
+        and IWSI.STATE = '3'
+        <include refid="csDataStat_queryParams_3"/>
+        group by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        order by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        ) T9 on (T9."statDate" = T0."statDate")
+        left join
+        (
+        select
+        to_char(IWSO.ORDER_TIME,'yyyy-mm-dd') "statDate"
+        , count(distinct IWSO.ORDER_CODE) "expSendOrderNum"
+        , ROUND(avg((IWSI.LAST_PUSH_TIME-IWSO.SHIPPING_TIME)*24),3) "expSendTime"
+        from IUNI_WMS_SALES_ORDER IWSO
+        left join IUNI_WMS_SHIPPING_INFO IWSI on (IWSI.ORDER_CODE = IWSO.ORDER_CODE)
+        where IWSO.ORDER_STATUS = '5'
+        and IWSI.STATE = '3'
+        and (IWSI.LAST_PUSH_TIME-IWSO.SHIPPING_TIME)*24 <![CDATA[ <= ]]> 72
+        <include refid="csDataStat_queryParams_3"/>
+        group by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        order by to_char(IWSO.ORDER_TIME,'yyyy-mm-dd')
+        ) T10 on (T10."statDate" = T0."statDate")
+    </select>
+
+    <select id="selectOrderStat4CsByUser" resultClass="hashmap" parameterClass="map">
+        SELECT T0."statDate",
+        case
+        when T0."consultPersonNum" is null then
+        0
+        else
+        T0."consultPersonNum"
+        end "consultPersonNum",
+        case
+        when T1."consultPayPersonNum" is null then
+        0
+        else
+        T1."consultPayPersonNum"
+        end "consultPayPersonNum",
+        case
+        when T0."consultOrderNum" is null then
+        0
+        else
+        T0."consultOrderNum"
+        end "consultOrderNum",
+        case
+        when T1."consultPayOrderNum" is null then
+        0
+        else
+        T1."consultPayOrderNum"
+        end "consultPayOrderNum",
+        case
+        when T0."consultTradeAmount" is null then
+        0
+        else
+        T0."consultTradeAmount"
+        end "consultTradeAmount",
+        case
+        when T1."consultPayTradeAmount" is null then
+        0
+        else
+        T1."consultPayTradeAmount"
+        end "consultPayTradeAmount"
+        FROM (select to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd') "statDate",
+        count(distinct IOI.USER_ID) "consultPersonNum",
+        count(IOI.ORDER_SN) - count(IOI.PARENTORDERID) +
+        count(distinct IOI.PARENTORDERID) "consultOrderNum",
+        case
+        when sum(IOI.ORDER_AMOUNT) is null then
+        0
+        else
+        sum(IOI.ORDER_AMOUNT)
+        end "consultTradeAmount"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal', 'parent')
+        and IOI.C_SIGN is not null
+        and IOI.C_SIGN <![CDATA[ <> ]]> 'false'
+        <include refid="csDataStat_queryParams_2"/>
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')) T0
+        LEFT JOIN (select to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd') "statDate",
+        count(distinct IOI.USER_ID) "consultPayPersonNum",
+        count(IOI.ORDER_SN) - count(IOI.PARENTORDERID) +
+        count(distinct IOI.PARENTORDERID) "consultPayOrderNum",
+        case
+        when sum(IOI.MONEY_PAID) is null then
+        0
+        else
+        sum(IOI.MONEY_PAID)
+        end "consultPayTradeAmount"
+        from IUNI_ORDER_INFO IOI
+        where IOI.OLEVEL in ('normal', 'child')
+        and IOI.PAY_STATUS in ('paid', 'refund', 'refunded')
+        and IOI.C_SIGN is not null
+        and IOI.C_SIGN <![CDATA[ <> ]]> 'false'
+        <include refid="csDataStat_queryParams_2"/>
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')) T1
+        ON T0."statDate" = T1."statDate"
+    </select>
+
+    <sql id="iuniSalesOfGoods_where_1">
+        <dynamic prepend="where">
+            <isNotNull prepend="and" property="beginDate">
+                unix_to_oracle(IOI.PAY_TIME) <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
+            </isNotNull>
+            <isNotNull prepend="and" property="endDate">
+                unix_to_oracle(IOI.PAY_TIME) <![CDATA[ < ]]> to_date(#endDate#, 'YYYY-MM-DD')+1
+            </isNotNull>
+            <isNotNull property="orderSource" prepend="and">
+                IOI.REFERER IN
+                <iterate property="orderSource" open="(" close=")" conjunction=",">
+                    #orderSource[]#
+                </iterate>
+            </isNotNull>
+            <isNotNull property="goodsTypeList" prepend="and">
+                SWWC.ID IN
+                <iterate property="goodsTypeList" open="(" close=")" conjunction=",">
+                    #goodsTypeList[]#
+                </iterate>
+            </isNotNull>
+            <isNotNull property="phoneList" prepend="and">
+                SWW.ID IN
+                <iterate property="phoneList" open="(" close=")" conjunction=",">
+                    #phoneList[]#
+                </iterate>
+            </isNotNull>
+            <isNotNull prepend="and" property="skuId">
+                SWS.ID = #skuId#
+            </isNotNull>
+        </dynamic>
+    </sql>
+    <sql id="iuniSalesOfGoods_grouBy_byDay">
+		TO_CHAR(T."paytime", 'YYYY-MM-DD'),T."orderSource",T."goodsName",T."wareName",T."sku"
+	</sql>
+    <sql id="iuniSalesOfGoods_grouBy_byWeek">
+		T."paytime",T."orderSource",T."goodsName",T."wareName",T."sku"
+	</sql>
+    <sql id="iuniSalesOfGoods_grouBy_byMonth">
+		TO_CHAR(T."paytime", 'YYYY-MM'),T."orderSource",T."goodsName",T."wareName",T."sku"
+	</sql>
+
+    <sql id="iuniSalesOfGoods_orderBy_byDay">
+		TO_CHAR(T."paytime", 'YYYY-MM-DD'),T."orderSource",T."goodsName"
+	</sql>
+    <sql id="iuniSalesOfGoods_orderBy_byWeek">
+		 T."paytime",T."orderSource",T."goodsName"
+	</sql>
+    <sql id="iuniSalesOfGoods_orderBy_byMonth">
+		TO_CHAR(T."paytime", 'YYYY-MM'),T."orderSource",T."goodsName"
+	</sql>
+
+    <sql id="iuniSalesOfGoods_select_byDay">
+		TO_CHAR(T."paytime", 'YYYY-MM-DD') "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num"
+	</sql>
+    <sql id="iuniSalesOfGoods_select_ByWeek">
+		T."paytime" "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num"
+	</sql>
+    <sql id="iuniSalesOfGoods_select_byMonth">
+		TO_CHAR(T."paytime", 'YYYY-MM') "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num"
+	</sql>
+
+    <sql id="iuniSalesOfGoods_query_detail">
+        SELECT TMP."paytime",TMP."orderSource",TMP."goodsName",TMP."wareName",TMP."sku",TMP."GOODSNUMBER" FROM(
+        SELECT unix_to_oracle(IOI.PAY_TIME) "paytime",
+        IOS.SOURCE_NAME "orderSource",
+        SWS.SKU_NAME "goodsName",SWW.WARES_NAME "wareName",
+        IOG.SKU "sku",IOG.GOODS_NUMBER "GOODSNUMBER" ,
+        IOI.PAY_STATUS "payStatus",IOI.ORDER_STATUS "ordrStatus",IOI.SHIPPING_STATUS "shippingStatus"
+        FROM IUNI_ORDER_INFO IOI
+        LEFT JOIN IUNI_ORDER_GOODS IOG ON IOG.ORDER_ID=IOI.ORDER_SN
+        LEFT JOIN SYN_WMS_SKU SWS ON SWS.SKU_CODE=IOG.SKU
+        LEFT JOIN SYN_WMS_WARES SWW ON SWS.WARES_ID = SWW.ID
+        LEFT JOIN SYN_WMS_WARES_CATEGORY SWWC ON SWW.CAT_ID=SWWC.ID
+        LEFT JOIN (SELECT DISTINCT (ORDER_SOURCE_CODE) SOURCE_CODE,
+        ORDER_SOURCE_NAME SOURCE_NAME
+        FROM IUNI_ORDER_SOURCE
+        WHERE ORDER_SOURCE_CODE IS NOT NULL) IOS
+        ON IOS.SOURCE_CODE = IOI.REFERER
+        <include refid="iuniSalesOfGoods_where_1"/>
+        AND (IOI.SHIPPING_STATUS <![CDATA[ <> ]]> 'unshipped' AND IOI.SHIPPING_STATUS <![CDATA[ <> ]]> 'preparing'
+        OR (IOI.SHIPPING_STATUS = 'unshipped' AND IOI.PAY_STATUS = 'paid' AND IOI.ORDER_STATUS = 'processed')
+        OR (IOI.SHIPPING_STATUS = 'preparing' AND IOI.PAY_STATUS <![CDATA[ <> ]]> 'refunded' AND IOI.PAY_STATUS
+        <![CDATA[ <> ]]> 'refund'))
+        AND IOG.GOODSTYPE IN('0', '101')
+        AND (SUBSTR(IOI.TAG,2,1) <![CDATA[ <> ]]> 1 OR IOI.TAG = 0 OR IOI.TAG IS NULL)
+        AND IOI.REFERER <![CDATA[ <> ]]> 'IUNI_INSIDE'
+        )TMP
+    </sql>
+
+    <sql id="iuniSalesOfGoods_query_detail_2">
+        SELECT
+        CASE WHEN TMP.STARTDATE<![CDATA[ < ]]>TO_DATE(#beginDate#, 'YYYY-MM-DD') THEN #beginDate#
+        ELSE TO_CHAR(TMP.STARTDATE,'YYYY-MM-DD') END
+        ||'~'||
+        CASE WHEN TMP.ENDDATE <![CDATA[ > ]]> TO_DATE(#endDate#, 'YYYY-MM-DD') THEN #endDate#
+        ELSE TO_CHAR(TMP.ENDDATE,'YYYY-MM-DD') END
+        "paytime",
+        TMP."orderSource",TMP."goodsName",TMP."wareName",TMP."sku",TMP."GOODSNUMBER" FROM(
+        SELECT TRUNC(unix_to_oracle(IOI.PAY_TIME),'IW') AS STARTDATE,
+        TRUNC(unix_to_oracle(IOI.PAY_TIME),'IW') + 6 AS ENDDATE,
+        CASE IOI.REFERER
+        WHEN 'IUNI' THEN 'IUNI官网'
+        WHEN 'IUNIDXD' THEN '代客下单'
+        WHEN 'TAOBAO' THEN '天猫订单'
+        WHEN 'TAOBAO_PAID' THEN '免支付订单'
+        WHEN 'IUNI_INSIDE' THEN '内部购机'
+        WHEN 'PAIPAI' THEN '拍拍'
+        WHEN 'PAIPAI_PAID' THEN '拍拍-免支付订单'
+        ELSE IOI.REFERER
+        END "orderSource",
+        SWS.SKU_NAME "goodsName",SWW.WARES_NAME "wareName",
+        IOG.SKU "sku",IOG.GOODS_NUMBER "GOODSNUMBER" ,
+        IOI.PAY_STATUS "payStatus",IOI.ORDER_STATUS "ordrStatus",IOI.SHIPPING_STATUS "shippingStatus"
+        FROM IUNI_ORDER_INFO IOI
+        LEFT JOIN IUNI_ORDER_GOODS IOG ON IOG.ORDER_ID=IOI.ORDER_SN
+        LEFT JOIN SYN_WMS_SKU SWS ON SWS.SKU_CODE=IOG.SKU
+        LEFT JOIN SYN_WMS_WARES SWW ON SWS.WARES_ID = SWW.ID
+        LEFT JOIN SYN_WMS_WARES_CATEGORY SWWC ON SWW.CAT_ID=SWWC.ID
+        <include refid="iuniSalesOfGoods_where_1"/>
+        AND (IOI.SHIPPING_STATUS <![CDATA[ <> ]]> 'unshipped' AND IOI.SHIPPING_STATUS <![CDATA[ <> ]]> 'preparing'
+        OR (IOI.SHIPPING_STATUS = 'unshipped' AND IOI.PAY_STATUS = 'paid' AND IOI.ORDER_STATUS = 'processed')
+        OR (IOI.SHIPPING_STATUS = 'preparing' AND IOI.PAY_STATUS <![CDATA[ <> ]]> 'refunded' AND IOI.PAY_STATUS
+        <![CDATA[ <> ]]> 'refund'))
+        AND IOG.GOODSTYPE IN('0', '101')
+        AND (SUBSTR(IOI.TAG,2,1) <![CDATA[ <> ]]> 1 OR IOI.TAG = 0 OR IOI.TAG IS NULL)
+        AND IOI.REFERER <![CDATA[ <> ]]> 'IUNI_INSIDE'
+        )TMP
+    </sql>
+
+    <sql id="iuniSalesOfGoodsSQL">
+        <isEqual property="dateStyle" compareValue="YYYY-MM-DD">
+            SELECT
+            <include refid="iuniSalesOfGoods_select_byDay"/>
+            FROM(
+            <include refid="iuniSalesOfGoods_query_detail"/>
+            )T
+            GROUP BY
+            <include refid="iuniSalesOfGoods_grouBy_byDay"/>
+            ORDER BY
+            <include refid="iuniSalesOfGoods_orderBy_byDay"/>
+        </isEqual>
+        <isEqual property="dateStyle" compareValue="YYYY-IW">
+            SELECT
+            <include refid="iuniSalesOfGoods_select_ByWeek"/>
+            FROM(
+            <include refid="iuniSalesOfGoods_query_detail_2"/>
+            )T
+            GROUP BY
+            <include refid="iuniSalesOfGoods_grouBy_byWeek"/>
+            ORDER BY
+            <include refid="iuniSalesOfGoods_orderBy_byWeek"/>
+        </isEqual>
+        <isEqual property="dateStyle" compareValue="YYYY-MM">
+            SELECT
+            <include refid="iuniSalesOfGoods_select_byMonth"/>
+            FROM(
+            <include refid="iuniSalesOfGoods_query_detail"/>
+            )T
+            GROUP BY
+            <include refid="iuniSalesOfGoods_grouBy_byMonth"/>
+            ORDER BY
+            <include refid="iuniSalesOfGoods_orderBy_byMonth"/>
+        </isEqual>
+    </sql>
+
+    <select id="iuniSalesOfGoodsByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM(
+        SELECT T.*,ROWNUM RN FROM(
+        SELECT * FROM (
+        <include refid="iuniSalesOfGoodsSQL"/>
+        )
+        )T WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        )WHERE RN <![CDATA[ >= ]]> #startRec#
+
+    </select>
+
+    <select id="iuniSalesOfGoodslCount" resultClass="int" parameterClass="map">
+        SELECT COUNT(*) FROM (
+        <include refid="iuniSalesOfGoodsSQL"/>
+        )
+    </select>
+
+    <select id="iuniSalesOfGoods2Excel" resultClass="hashmap" parameterClass="map">
+        SELECT T.*,ROWNUM RN FROM(
+        SELECT * FROM (
+        <include refid="iuniSalesOfGoodsSQL"/>
+        )
+        )T
+    </select>
+</sqlMap>

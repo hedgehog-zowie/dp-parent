@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="GnAppImeiLog">
+  
+  <typeAlias alias="GnAppImeiLog" type="com.iuni.dp.persist.datareport.model.GnAppImeiLog"/>
+
+  <resultMap id="GnAppImeiLogMap" class="GnAppImeiLog">
+    <result property="id" column="ID"/> 
+    <result property="appName" column="APP_NAME"/> 
+    <result property="channelName" column="CHANNEL_NAME"/>  
+    <result property="apkVersion" column="APK_VERSION"/>  
+    <result property="imei" column="IMEI"/> 
+    <result property="firstLaunchTime" column="FIRST_LAUNCH_TIME"/>
+    <result property="mobileModel" column="MOBILE_MODEL"/>
+    <result property="mobileNumber" column="MOBILE_NUMBER"/>
+    <result property="modelHeight" column="MODEL_HEIGHT"/>
+    <result property="modelWidth" column="MODEL_WIDTH"/>
+    <result property="networkMode" column="NETWORK_MODE"/>
+    <result property="networkIp" column="NETWORK_IP"/>
+    <result property="locationCountry" column="LOCATION_COUNTRY"/>
+    <result property="locationProvince" column="LOCATION_PROVINCE"/>
+    <result property="locationCity" column="LOCATION_CITY"/>
+    <result property="locationTime" column="LOCATION_TIME"/>
+    <result property="reportTime" column="REPORT_TIME"/>
+    <result property="createTime" column="CREATE_TIME"/>
+  </resultMap>
+
+  <sql id="GnAppImeiLog_queryParams">
+  	<dynamic prepend="where">
+  		<isNotEmpty prepend="and" property="appName">
+  			GAI.APP_NAME = #appName#
+  		</isNotEmpty>
+  		<isNotEmpty prepend="and" property="channelName">
+  			GAI.CHANNEL_NAME = #channelName#
+  		</isNotEmpty>
+  		<isNotEmpty prepend="and" property="apkVersion">
+  			GAI.APK_VERSION = #apkVersion#
+  		</isNotEmpty>
+  		<isNotEmpty prepend="and" property="imei">
+  			GAI.IMEI = #imei#
+  		</isNotEmpty>
+  		<isNotEmpty prepend="and" property="locationCountry">
+  			GAI.LOCATION_COUNTRY = #locationCountry#
+  		</isNotEmpty>
+  		<isNotEmpty prepend="and" property="locationProvince">
+  			GAI.LOCATION_PROVINCE = #locationProvince#
+  		</isNotEmpty>
+  		<isNotEmpty prepend="and" property="locationCity">
+  			GAI.LOCATION_CITY = #locationCity#
+  		</isNotEmpty>
+  	</dynamic>
+  </sql>
+
+  <select id="selectGnAppImeiLogByMap" resultMap="GnAppImeiLogMap" parameterClass="map">
+  	select GAI.ID, GAI.APP_NAME, GAI.CHANNEL_NAME, GAI.APK_VERSION, GAI.IMEI
+  		, GAI.FIRST_LAUNCH_TIME, GAI.MOBILE_MODEL, GAI.MOBILE_NUMBER
+  		, GAI.MODEL_HEIGHT, GAI.MODEL_WIDTH, GAI.NETWORK_MODE, GAI.NETWORK_IP
+  		, GAI.LOCATION_COUNTRY, GAI.LOCATION_PROVINCE, GAI.LOCATION_CITY, GAI.LOCATION_TIME
+  		, GAI.REPORT_TIME, GAI.CREATE_TIME 
+	from GN_APP_IMEILOG GAI
+	<include refid="GnAppImeiLog_queryParams"/>
+  </select>
+  
+  <select id="selectGnAppImeiLogCount" resultClass="int" parameterClass="map">
+  	select count(GAI.ID) from GN_APP_IMEILOG GAI
+  	<include refid="GnAppImeiLog_queryParams"/>
+  </select>
+
+  <insert id="insertGnAppImeiLog" parameterClass="GnAppImeiLog">
+    insert into GN_APP_IMEILOG 
+    ( ID, APP_NAME, CHANNEL_NAME, APK_VERSION, IMEI, FIRST_LAUNCH_TIME
+      , MOBILE_MODEL, MOBILE_NUMBER, MODEL_HEIGHT, MODEL_WIDTH, NETWORK_MODE, NETWORK_IP
+      , LOCATION_COUNTRY, LOCATION_PROVINCE, LOCATION_CITY, LOCATION_TIME
+      , REPORT_TIME, CREATE_TIME )
+    values 
+    ( #id#, #appName#, #channelName#, #apkVersion#, #imei#, #firstLaunchTime#
+      , #mobileModel#, #mobileNumber#, #modelHeight#, #modelWidth#, #networkMode#, #networkIp#
+      , #locationCountry#, #locationProvince#, #locationCity#, #locationTime#
+      , #reportTime#, SysTimestamp )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_GN_APP_IMEILOG.NEXTVAL as id FROM dual
+    </selectKey>  
+  </insert>
+ 
+</sqlMap>

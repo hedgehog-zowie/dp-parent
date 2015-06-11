@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+    <package name="iuniReports" extends="dp-admin" namespace="/dp/stat">
+        <!-- IUNI商城流量数据日统计  -->
+        <action name="iuniNetflowDailyStatView" class="iuniNetflowDailyStatAction" method="iuniNetflowDailyStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniNetflowDailyStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniNetflowDailyStat.jsp</result>
+        </action>
+
+        <action name="iuniNetflowDailyStat2Excel" class="iuniNetflowDailyStatAction"
+                method="iuniNetflowDailyStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniNetflowDailyStatView</result>
+        </action>
+
+        <!-- IUNI商城页面流量数据日统计 -->
+        <action name="iuniPageNetflowDailyStatView" class="iuniPageNetflowDailyStatAction"
+                method="iuniPageNetflowDailyStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniPageNetflowDailyStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniPageNetflowDailyStat.jsp</result>
+        </action>
+
+        <action name="iuniPageNetflowDailyStat2Excel" class="iuniPageNetflowDailyStatAction"
+                method="iuniPageNetflowDailyStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniPageNetflowDailyStatView</result>
+        </action>
+
+        <!-- IUNI商城流量数据当天实时汇总统计 -->
+        <action name="iuniNetflowSumTodayStatView" class="iuniReportDataByMonAction"
+                method="iuniNetflowSumTodayStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniNetflowSumTodayStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniNetflowSumTodayStat.jsp</result>
+        </action>
+
+        <action name="iuniNetflowSumTodayStat2Excel" class="iuniReportDataByMonAction"
+                method="iuniNetflowSumTodayStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniNetflowSumTodayStatView</result>
+        </action>
+
+        <!-- IUNI商城前端埋点位置 -->
+        <action name="iuniBuriedPointListView" class="iuniBuriedPointSiteAction" method="iuniBuriedPointListView">
+            <result name="success">/WEB-INF/views/stat/form/iuniBuriedPointSite_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/form/iuniBuriedPointSite_list.jsp</result>
+        </action>
+
+        <action name="iuniBuriedPointEditView" class="iuniBuriedPointSiteAction" method="iuniBuriedPointEditView">
+            <result name="success">/WEB-INF/views/stat/form/iuniBuriedPointSite_add.jsp</result>
+            <result name="input">/WEB-INF/views/stat/form/iuniBuriedPointSite_add.jsp</result>
+            <result name="error">/WEB-INF/views/stat/form/iuniBuriedPointSite_add.jsp</result>
+        </action>
+
+        <action name="addIuniBuriedPoint" class="iuniBuriedPointSiteAction" method="addIuniBuriedPoint">
+            <result name="success" type="chain">iuniBuriedPointListView</result>
+            <result name="error">/WEB-INF/views/stat/form/iuniBuriedPointSite_list.jsp</result>
+        </action>
+
+        <action name="updateIuniBuriedPoint" class="iuniBuriedPointSiteAction" method="updateIuniBuriedPoint">
+            <result name="success" type="chain">iuniBuriedPointListView</result>
+            <result name="error">/WEB-INF/views/stat/form/iuniBuriedPointSite_list.jsp</result>
+        </action>
+
+        <action name="removeIuniBuriedPoint" class="iuniBuriedPointSiteAction" method="removeIuniBuriedPoint">
+            <result name="success" type="chain">iuniBuriedPointListView</result>
+            <result name="error">/WEB-INF/views/stat/form/iuniBuriedPointSite_list.jsp</result>
+        </action>
+
+        <!-- IUNI商城前端埋点点击率每日统计 -->
+        <action name="ibpdClickRateStatView" class="iuniBuriedPointStatAction" method="ibpdClickRateStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniBpClickRateDailyStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniBpClickRateDailyStat.jsp</result>
+        </action>
+
+        <action name="ibpdClickRateStat2Excel" class="iuniBuriedPointStatAction" method="ibpdClickRateStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">ibpdClickRateStatView</result>
+        </action>
+
+        <!-- IUNI商城前端埋点当天实时点击率统计 -->
+        <action name="ibpsClickRateStatView" class="iuniBuriedPointStatAction" method="ibpsClickRateStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniBpClickRateTodayStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniBpClickRateTodayStat.jsp</result>
+        </action>
+
+        <action name="ibpsClickRateStat2Excel" class="iuniBuriedPointStatAction" method="ibpsClickRateStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">ibpsClickRateStatView</result>
+        </action>
+
+        <!-- IUNI SMS发送量统计报表 -->
+        <action name="iuniSmsSendNumStatView" class="iuniSmsSendlogHisAction" method="iuniSmsSendNumStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniSmsSendNumStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniSmsSendNumStat.jsp</result>
+        </action>
+
+        <action name="iuniSmsSendNumStat2Excel" class="iuniSmsSendlogHisAction" method="iuniSmsSendNumStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniSmsSendNumStatView</result>
+        </action>
+
+        <!-- IUNI商城订单区域分布统计 -->
+        <action name="iuniOrderAreaStatView" class="iuniOrderInfoAction" method="iuniOrderAreaStatView">
+            <result name="success">/WEB-INF/views/stat/report/iuniOrderAreaStat.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniOrderAreaStat.jsp</result>
+        </action>
+
+        <action name="iuniOrderAreaStat2Excel" class="iuniOrderInfoAction" method="iuniOrderAreaStat2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniOrderAreaStatView</result>
+        </action>
+
+        <!-- IUNI按父节点获取位置信息JSON接口  -->
+        <action name="getIuniRegionByParent" class="iuniRegionAction" method="getIuniRegionByParent">
+        </action>
+
+        <!-- 查询IUNI商城销售数据-->
+        <action name="queryIuniSaleDailyStats" class="iuniSaleDailyStatAction" method="queryIuniSaleDailyStats">
+            <result name="success">/WEB-INF/views/stat/report/iuniSaleDaily_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniSaleDaily_list.jsp</result>
+        </action>
+
+        <!-- 导出Excel金立商城销售数据-->
+        <action name="iuniSaleDailyStats2Excel" class="iuniSaleDailyStatAction" method="iuniSaleDailyStats2Excel">
+        </action>
+
+        <!-- 查询IUNI商城订单转化率-->
+        <action name="queryIuniDayOrderConvertRates" class="iuniSaleDailyStatAction"
+                method="queryIuniDayOrderConvertRates">
+            <result name="success">/WEB-INF/views/stat/report/iuniDayOrderConvertRate_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniDayOrderConvertRate_list.jsp</result>
+        </action>
+
+        <!-- 导出Excel金立商城订单转化率-->
+        <action name="queryIuniDayOrderConvertRates2Excel" class="iuniSaleDailyStatAction"
+                method="queryIuniDayOrderConvertRates2Excel">
+        </action>
+
+        <!-- 查询IUNI用户注册-->
+        <action name="queryIuniUserRegDailyStats" class="iuniSaleDailyStatAction" method="queryIuniUserRegDailyStats">
+            <result name="success">/WEB-INF/views/stat/report/iuniUserRegDaily_list.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniUserRegDaily_list.jsp</result>
+        </action>
+
+        <!-- 导出Excel IUNI用户注册-->
+        <action name="iuniUserRegDailyStats2Excel" class="iuniSaleDailyStatAction" method="iuniUserRegDailyStats2Excel">
+        </action>
+
+        <!-- IUNI用户登陆频次统计 -->
+        <action name="iuniUserLoginFreqView" class="iuniUcLoginLogAction" method="iuniUserLoginFreqView">
+            <result name="success">/WEB-INF/views/stat/report/iuniUserLoginFreq.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniUserLoginFreq.jsp</result>
+        </action>
+
+        <action name="iuniUserLoginFreq2Excel" class="iuniUcLoginLogAction" method="iuniUserLoginFreq2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniUserLoginFreqView</result>
+        </action>
+
+        <!-- IUNI用户登陆次数统计 -->
+        <action name="iuniUserLoginNumView" class="iuniUcLoginLogAction" method="iuniUserLoginNumView">
+            <result name="success">/WEB-INF/views/stat/report/iuniUserLoginNum.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniUserLoginNum.jsp</result>
+        </action>
+
+        <action name="iuniUserLoginNum2Excel" class="iuniUcLoginLogAction" method="iuniUserLoginNum2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniUserLoginNumView</result>
+        </action>
+
+        <!-- IUNI用户注册留存数统计 -->
+        <action name="iuniUserRegRetainView" class="iuniUcLoginLogAction" method="iuniUserRegRetainView">
+            <result name="success">/WEB-INF/views/stat/report/iuniUserRegRetain.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniUserRegRetain.jsp</result>
+        </action>
+
+        <action name="iuniUserRegRetain2Excel" class="iuniUcLoginLogAction" method="iuniUserRegRetain2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniUserRegRetainView</result>
+        </action>
+
+        <!-- IUNI订单退款明细报表 -->
+        <action name="iuniOrderRefundDetailsView" class="iuniReturnGoodsInfoAction" method="iuniOrderRefundDetailsView">
+            <result name="success">/WEB-INF/views/stat/report/iuniOrderRefundDetails.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniOrderRefundDetails.jsp</result>
+        </action>
+
+        <action name="iuniOrderRefundDetails2Excel" class="iuniReturnGoodsInfoAction"
+                method="iuniOrderRefundDetails2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniOrderRefundDetailsView</result>
+        </action>
+
+        <action name="iuniSalesOfGoods" class="iuniSalesOfGoodsAction" method="iuniSalesOfGoods">
+            <result name="success">/WEB-INF/views/stat/report/iuniSalesOfGoods.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniSalesOfGoods.jsp</result>
+        </action>
+        <action name="iuniSalesOfGoods2Excel" class="iuniSalesOfGoodsAction" method="iuniSalesOfGoods2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniSalesOfGoods</result>
+        </action>
+        <action name="iuniSalesOfGoodsSelect" class="iuniSalesOfGoodsAction" method="iuniSalesOfGoodsSelect">
+            <result name="success">/WEB-INF/views/stat/report/iuniSalesOfGoods.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/iuniSalesOfGoods.jsp</result>
+        </action>
+    </package>
+
+</struts>

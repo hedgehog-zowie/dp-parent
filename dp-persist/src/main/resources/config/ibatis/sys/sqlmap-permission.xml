@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Permission">
+  
+  <typeAlias alias="Permission" type="com.iuni.dp.persist.sys.model.Permission"/>
+ 
+  <resultMap id="PermissionMap" class="Permission">
+    <result property="id" column="u_id"/>  
+  </resultMap>
+ 
+ <select id="getPermissionByUId" parameterClass="long"   resultClass="Permission">
+    select *  
+    from t_permission    
+    where u_id = #u_id#  
+    order by m_id
+  </select>
+  
+  <select id="checkPermission" parameterClass="Permission"   resultClass="Permission">
+    select *  
+    from t_permission    
+    where u_id = #u_id# 
+      and m_id = #m_id#  
+    order by m_id
+  </select>
+  
+  <insert id="insertPermission" parameterClass="Permission">
+    insert into t_permission (
+				  u_id,
+				  m_id ,
+				  create_time,
+				  creator,
+				  modify_time,
+				  modifier
+	)
+    values (  
+			  #u_id#, 
+			  #m_id#,
+			  sysdate,
+			  #creator#,
+			  sysdate,
+			  #modifier#  
+    )
+  </insert>  
+ 
+   
+  <delete id="deletePermissionById" parameterClass="long">
+    delete 
+    from t_permission  
+    where u_id = #u_id#
+  </delete>
+ 
+</sqlMap>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="MallBuriedPointSite" >
+
+  <typeAlias alias="MallBuriedPointSite" type="com.iuni.dp.persist.datastat.model.MallBuriedPointSite" />
+
+  <resultMap id="MallBuriedPointSiteMap" class="MallBuriedPointSite">
+    <result property="id" column="ID"/> 
+    <result property="website" column="WEBSITE"/> 
+    <result property="pageName" column="PAGE_NAME"/>  
+    <result property="pagePosition" column="PAGE_POSITION"/>  
+    <result property="pointFlag" column="POINT_FLAG"/> 
+    <result property="remark" column="REMARK"/>
+    <result property="bizDate" column="BIZ_DATE"/>
+    <result property="pointType" column="POINT_TYPE"/>
+    <result property="createTime" column="CREATE_TIME"/>
+    <result property="rowNum" />
+  </resultMap>
+  
+  <sql id="base_columns">
+  	MBPS.ID, MBPS.WEBSITE, MBPS.PAGE_NAME, MBPS.PAGE_POSITION, 
+  	MBPS.POINT_FLAG, MBPS.REMARK, MBPS.BIZ_DATE, MBPS.POINT_TYPE, MBPS.CREATE_TIME
+  </sql>
+
+  <sql id="base_queryParams_1">
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="id">
+    		MBPS.ID = #id#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="website">
+    		MBPS.WEBSITE LIKE '%' || #website# || '%'
+    	</isNotNull>
+  		<isNotNull prepend="and" property="pageName">
+    		MBPS.PAGE_NAME LIKE '%' || #pageName# || '%'
+    	</isNotNull>
+    	<isNotNull prepend="and" property="pagePosition">
+    		MBPS.PAGE_POSITION LIKE '%' || #pagePosition# || '%'
+    	</isNotNull>
+    	<isNotNull prepend="and" property="pointFlag">
+    		MBPS.POINT_FLAG = #pointFlag#
+    	</isNotNull>
+    	<isNotNull prepend="and" property="pointType">
+    		MBPS.POINT_TYPE = #pointType#
+    	</isNotNull>
+  		<isNotNull prepend="and" property="beginDate">
+  			to_date(MBPS.BIZ_DATE, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_date(#beginDate#, 'yyyy-mm-dd')
+  		</isNotNull>
+  		<isNotNull prepend="and" property="endDate">
+  			to_date(MBPS.BIZ_DATE, 'yyyy-mm-dd') <![CDATA[ < ]]> to_date(#endDate#, 'yyyy-mm-dd')+1
+  		</isNotNull>
+  	</dynamic>
+  </sql>
+  
+  <select id="selectMbpsByExample" resultMap="MallBuriedPointSiteMap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+  		select 
+  		<include refid="base_columns"/>
+  		from MALL_BURIEDPOINT_SITE MBPS
+  		<include refid="base_queryParams_1"/>
+  		order by MBPS.POINT_FLAG
+  	) T
+  </select>
+  
+  <select id="selectMbpsByPage" resultMap="MallBuriedPointSiteMap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select 
+	  		<include refid="base_columns"/>
+	  		from MALL_BURIEDPOINT_SITE MBPS
+	  		<include refid="base_queryParams_1"/>
+	  		order by MBPS.POINT_FLAG
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectMbpsCount" resultClass="int" parameterClass="map">
+	select count(MBPS.ID)
+	from MALL_BURIEDPOINT_SITE MBPS
+	<include refid="base_queryParams_1"/>
+  </select>
+  
+  <select id="selectClickRateByExample" resultClass="hashmap" parameterClass="map">
+  	SELECT T.*, ROWNUM "rowNum" FROM
+  	(
+	  	select t0."statDate", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName", BP.PAGE_POSITION "pagePosition"
+	  	, T0.PV "pv", T0.UV "uv", T0.IP "ip" 
+		from 
+		(
+		    select to_char(T1.CREATE_TIME, 'yyyy-MM-dd') "statDate", T1.REPORT_CONTENT
+		    , count(T1.ID) PV, count(distinct T1.COOKIE_INFO) UV, count(distinct T1.SOURCE_IP) IP
+		    from
+		    (
+		    	<iterate conjunction="union" property="rdList" >
+		    		select RD.ID, RD.REPORT_CONTENT, RD.COOKIE_INFO, RD.SOURCE_IP, RD.CREATE_TIME
+		        	from T_REPORT_DATA_$rdList[]$ RD
+		        	where RD.REPORT_TYPE = 'rtag'
+		        	and RD.REPORT_CONTENT in 
+		        	(
+		        		select POINT_FLAG from MALL_BURIEDPOINT_SITE T2 where T2.POINT_TYPE = #pointType# 
+		        	)
+			        and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-MM-dd hh24:mi:ss')
+			        and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-MM-dd hh24:mi:ss')+1/86400
+		    	</iterate>
+		    ) T1
+		    group by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		    order by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		) T0
+		left join MALL_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT
+  	) T
+  </select>
+  
+  <select id="selectClickRateByPage" resultClass="hashmap" parameterClass="map">
+  	SELECT * FROM 
+  	(
+  		SELECT T.*, ROWNUM "rowNum" FROM 
+  		(
+		  	select t0."statDate", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName", BP.PAGE_POSITION "pagePosition"
+		  	, T0.PV "pv", T0.UV "uv", T0.IP "ip" 
+			from 
+			(
+			    select to_char(T1.CREATE_TIME, 'yyyy-MM-dd') "statDate", T1.REPORT_CONTENT
+			    , count(T1.ID) PV, count(distinct T1.COOKIE_INFO) UV, count(distinct T1.SOURCE_IP) IP
+			    from
+			    (
+			    	<iterate conjunction="union" property="rdList" >
+			    		select RD.ID, RD.REPORT_CONTENT, RD.COOKIE_INFO, RD.SOURCE_IP, RD.CREATE_TIME
+			        	from T_REPORT_DATA_$rdList[]$ RD
+			        	where RD.REPORT_TYPE = 'rtag'
+			        	and RD.REPORT_CONTENT in 
+			        	(
+			        		select POINT_FLAG from MALL_BURIEDPOINT_SITE T2 where T2.POINT_TYPE = #pointType# 
+			        	)
+				        and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-MM-dd hh24:mi:ss')
+				        and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-MM-dd hh24:mi:ss')+1/86400
+			    	</iterate>
+			    ) T1
+			    group by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+			    order by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+			) T0
+			left join MALL_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT
+  		) T
+  		WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+  	)
+  	WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+  </select>
+  
+  <select id="selectClickRateCount" resultClass="int" parameterClass="map">
+  	select count(*) 
+	from 
+	(
+	    select t0."statDate", BP.WEBSITE "webSite", BP.PAGE_NAME "pageName", BP.PAGE_POSITION "pagePosition"
+	  	, T0.PV "pv", T0.UV "uv", T0.IP "ip" 
+		from 
+		(
+		    select to_char(T1.CREATE_TIME, 'yyyy-MM-dd') "statDate", T1.REPORT_CONTENT
+		    , count(T1.ID) PV, count(distinct T1.COOKIE_INFO) UV, count(distinct T1.SOURCE_IP) IP
+		    from
+		    (
+		    	<iterate conjunction="union" property="rdList" >
+		    		select RD.ID, RD.REPORT_CONTENT, RD.COOKIE_INFO, RD.SOURCE_IP, RD.CREATE_TIME
+		        	from T_REPORT_DATA_$rdList[]$ RD
+		        	where RD.REPORT_TYPE = 'rtag'
+		        	and RD.REPORT_CONTENT in 
+		        	(
+		        		select POINT_FLAG from MALL_BURIEDPOINT_SITE T2 where T2.POINT_TYPE = #pointType# 
+		        	)
+			        and RD.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#,'yyyy-MM-dd hh24:mi:ss')
+			        and RD.CREATE_TIME <![CDATA[ < ]]> to_date(#endDate#,'yyyy-MM-dd hh24:mi:ss')+1/86400
+		    	</iterate>
+		    ) T1
+		    group by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		    order by to_char(T1.CREATE_TIME, 'yyyy-MM-dd'), T1.REPORT_CONTENT
+		) T0
+		left join MALL_BURIEDPOINT_SITE BP on BP.POINT_FLAG = T0.REPORT_CONTENT
+	) T0
+  </select>
+  
+  <insert id="insertMbps" parameterClass="MallBuriedPointSite">
+    insert into MALL_BURIEDPOINT_SITE 
+    ( ID, WEBSITE, PAGE_NAME, PAGE_POSITION, POINT_FLAG, REMARK, BIZ_DATE, POINT_TYPE, CREATE_TIME )
+    values 
+    ( #id#, #website#, #pageName#, #pagePosition#, #pointFlag#, #remark#, #bizDate#, #pointType#,SysTimestamp )
+    <selectKey resultClass="long" type="pre" keyProperty="id" >
+        SELECT S_MALL_BURIEDPOINT_SITE.NEXTVAL as id FROM dual
+    </selectKey>
+  </insert>
+  
+  <update id="updateMbps" parameterClass="MallBuriedPointSite">
+  	UPDATE MALL_BURIEDPOINT_SITE MBPS 
+  	<dynamic prepend="SET">
+  		<isNotNull prepend="," property="website">
+  			MBPS.WEBSITE = #website#
+  		</isNotNull>
+  		<isNotNull prepend="," property="pageName">
+  			MBPS.PAGE_NAME = #pageName#
+  		</isNotNull>
+  		<isNotNull prepend="," property="pagePosition">
+  			MBPS.PAGE_POSITION = #pagePosition#
+  		</isNotNull>
+  		<isNotNull prepend="," property="pointFlag">
+  			MBPS.POINT_FLAG = #pointFlag#
+  		</isNotNull>
+  		<isNotNull prepend="," property="remark">
+  			MBPS.REMARK = #remark#
+  		</isNotNull>
+  		<isNotNull prepend="," property="bizDate">
+  			MBPS.BIZ_DATE = #bizDate#
+  		</isNotNull>
+  		<isNotNull prepend="," property="pointType">
+  			MBPS.POINT_TYPE = #pointType#
+  		</isNotNull>
+  	</dynamic>
+  	WHERE MBPS.ID = #id#
+  </update>
+  
+  <delete id="deleteMbpsById" parameterClass="long">
+  	DELETE FROM MALL_BURIEDPOINT_SITE MBPS
+  	WHERE MBPS.ID = #id#
+  </delete>
+
+</sqlMap>
