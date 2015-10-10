@@ -92,8 +92,15 @@
                             <dd class="ddl3">
                                 <input class="btn6" type="button" id="btn_exportExcel" value="导出EXCEL"/>
                             </dd>
-
                             <dd class="ddl1" style="width: 30%"></dd>
+
+                            <dd class="ddl1" style="width:8%">
+                                <label for="selectAll">订单类型</label>
+                            </dd>
+                            <dd class="ddr1">
+                                <s:select name="orderType" listKey="code" listValue="name"
+                                          list="orderTypeList" headerKey="" headerValue="全部"></s:select>
+                            </dd>
 
                             <dd class="ddl1" style="width:8%">
                                 <label for="selectAll">销售渠道/类型</label>
@@ -113,6 +120,7 @@
                                             listValue="sourceName"
                                             list="orderSourceList">
                             </s:checkboxlist>
+
                         </dl>
 
                         <div style="display: none;">
@@ -134,6 +142,7 @@
                         <th>序号</th>
                         <th>日期</th>
                         <th>销售渠道/类型</th>
+                        <th>订单类型</th>
                         <th>SKU</th>
                         <th>商品类型</th>
                         <th>名称规格</th>
@@ -152,6 +161,7 @@
                             <td class="mytd"><s:property value="RN"/></td>
                             <td class="mytd"><s:property value="time"/></td>
                             <td class="mytd"><s:property value="orderSource"/></td>
+                            <td class="mytd"><s:property value="orderType"/></td>
                             <td class="mytd"><s:property value="sku"/></td>
                             <td class="mytd"><s:property value="waresName"/></td>
                             <td class="mytd"><s:property value="skuName"/></td>

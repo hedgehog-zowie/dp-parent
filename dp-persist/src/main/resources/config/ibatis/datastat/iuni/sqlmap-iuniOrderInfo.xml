@@ -466,6 +466,7 @@
 
     <select id="selectOrderStat4CsByUser" resultClass="hashmap" parameterClass="map">
         SELECT T0."statDate",
+        T0."user",
         case
         when T0."consultPersonNum" is null then
         0
@@ -503,6 +504,7 @@
         T1."consultPayTradeAmount"
         end "consultPayTradeAmount"
         FROM (select to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd') "statDate",
+        IOI.C_SIGN "user",
         count(distinct IOI.USER_ID) "consultPersonNum",
         count(IOI.ORDER_SN) - count(IOI.PARENTORDERID) +
         count(distinct IOI.PARENTORDERID) "consultOrderNum",
@@ -517,9 +519,10 @@
         and IOI.C_SIGN is not null
         and IOI.C_SIGN <![CDATA[ <> ]]> 'false'
         <include refid="csDataStat_queryParams_2"/>
-        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')
-        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')) T0
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd'), IOI.C_SIGN
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd'), IOI.C_SIGN) T0
         LEFT JOIN (select to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd') "statDate",
+        IOI.C_SIGN "user",
         count(distinct IOI.USER_ID) "consultPayPersonNum",
         count(IOI.ORDER_SN) - count(IOI.PARENTORDERID) +
         count(distinct IOI.PARENTORDERID) "consultPayOrderNum",
@@ -535,9 +538,9 @@
         and IOI.C_SIGN is not null
         and IOI.C_SIGN <![CDATA[ <> ]]> 'false'
         <include refid="csDataStat_queryParams_2"/>
-        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')
-        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd')) T1
-        ON T0."statDate" = T1."statDate"
+        group by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd'), IOI.C_SIGN
+        order by to_char(MILLISEC_TO_DATE2(IOI.ADD_TIME), 'yyyy-mm-dd'), IOI.C_SIGN) T1
+        ON T0."statDate" = T1."statDate" AND T0."user" = T1."user"
     </select>
 
     <sql id="iuniSalesOfGoods_where_1">
@@ -555,13 +558,13 @@
                 </iterate>
             </isNotNull>
             <isNotNull property="goodsTypeList" prepend="and">
-                SWWC.ID IN
+                SWWC.CAT_NAME IN
                 <iterate property="goodsTypeList" open="(" close=")" conjunction=",">
                     #goodsTypeList[]#
                 </iterate>
             </isNotNull>
             <isNotNull property="phoneList" prepend="and">
-                SWW.ID IN
+                SWW.WARES_CODE IN
                 <iterate property="phoneList" open="(" close=")" conjunction=",">
                     #phoneList[]#
                 </iterate>
@@ -592,21 +595,23 @@
 	</sql>
 
     <sql id="iuniSalesOfGoods_select_byDay">
-		TO_CHAR(T."paytime", 'YYYY-MM-DD') "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num"
+		TO_CHAR(T."paytime", 'YYYY-MM-DD') "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num", SUM(SALEPRICE) "salePrice"
 	</sql>
     <sql id="iuniSalesOfGoods_select_ByWeek">
-		T."paytime" "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num"
+		T."paytime" "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num", SUM(SALEPRICE) "salePrice"
 	</sql>
     <sql id="iuniSalesOfGoods_select_byMonth">
-		TO_CHAR(T."paytime", 'YYYY-MM') "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num"
+		TO_CHAR(T."paytime", 'YYYY-MM') "paytime",T."orderSource",T."goodsName",T."wareName",T."sku",SUM(T.GOODSNUMBER) "num", SUM(SALEPRICE) "salePrice"
 	</sql>
 
     <sql id="iuniSalesOfGoods_query_detail">
-        SELECT TMP."paytime",TMP."orderSource",TMP."goodsName",TMP."wareName",TMP."sku",TMP."GOODSNUMBER" FROM(
+        SELECT TMP."paytime",TMP."orderSource",TMP."goodsName",TMP."wareName",TMP."sku",TMP."GOODSNUMBER",
+        TMP."SALEPRICE" FROM(
         SELECT unix_to_oracle(IOI.PAY_TIME) "paytime",
         IOS.SOURCE_NAME "orderSource",
         SWS.SKU_NAME "goodsName",SWW.WARES_NAME "wareName",
-        IOG.SKU "sku",IOG.GOODS_NUMBER "GOODSNUMBER" ,
+        IOG.SKU "sku",IOG.GOODS_NUMBER "GOODSNUMBER" , IOG.GOODS_PRICE * IOG.GOODS_NUMBER - DECODE(IOG.DISCOUNT, NULL,
+        0, IOG.DISCOUNT) "SALEPRICE",
         IOI.PAY_STATUS "payStatus",IOI.ORDER_STATUS "ordrStatus",IOI.SHIPPING_STATUS "shippingStatus"
         FROM IUNI_ORDER_INFO IOI
         LEFT JOIN IUNI_ORDER_GOODS IOG ON IOG.ORDER_ID=IOI.ORDER_SN

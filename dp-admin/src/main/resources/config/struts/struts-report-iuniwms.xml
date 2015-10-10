@@ -162,6 +162,51 @@
             <result name="error" type="chain">iuniAlipayView</result>
         </action>
 
+        <!--  返利明细报表 -->
+        <action name="iuniRebatesView" class="iuniRebatesAction" method="iuniRebates">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniRebates.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniRebates.jsp</result>
+        </action>
+        <action name="iuniRebates2Excel" class="iuniRebatesAction" method="iuniRebates2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniRebatesView</result>
+        </action>
+
+        <!--  订单售后次数统计报表 -->
+        <action name="iuniAfterSalesNumView" class="iuniAfterSalesAction" method="iuniAfterSalesNum">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniAfterSales.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniAfterSales.jsp</result>
+        </action>
+        <action name="iuniAfterSalesNum2Excel" class="iuniAfterSalesAction" method="iuniAfterSalesNum2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniAfterSalesNumView</result>
+        </action>
+
+        <!-- 微信支付对账报表 -->
+        <action name="iuniWeixinPayView" class="iuniWeixinPayAction" method="iuniWeixinPay">
+            <result name="success">/WEB-INF/views/stat/report/wms/iuniWeixinPay.jsp</result>
+            <result name="error">/WEB-INF/views/stat/report/wms/iuniWeixinPay.jsp</result>
+        </action>
+        <action name="iuniWeixinPay2Excel" class="iuniWeixinPayAction" method="iuniWeixinPay2Excel">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel;charset=UTF-8</param>
+                <param name="inputName">excelStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}.xlsx"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="chain">iuniWeixinPayView</result>
+        </action>
+
     </package>
 
 </struts>

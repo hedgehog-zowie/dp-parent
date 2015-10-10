@@ -141,7 +141,8 @@
         SELECT * FROM (
         SELECT
         IWT.SHIPPING_TIME "shippingTime",
-        IWT. ID "transferCode",
+        IWT.ID "transferCode",
+        IWWH.WAREHOUSE_CODE "outWarehouseCode",
         IWWH.WAREHOUSE_NAME "warehouseName",
         CASE
         WHEN IWT.ORDER_CODE IS NOT NULL THEN
@@ -179,6 +180,9 @@
         </isNotNull>
         <isNotNull property="materialCode" prepend="and">
             TMP."materialCode" LIKE '%' || #materialCode# || '%'
+        </isNotNull>
+        <isNotNull property="outWarehouseCode" prepend="and">
+            TMP."outWarehouseCode" = #outWarehouseCode#
         </isNotNull>
         order by TMP."shippingTime", TMP."transferCode"
     </sql>

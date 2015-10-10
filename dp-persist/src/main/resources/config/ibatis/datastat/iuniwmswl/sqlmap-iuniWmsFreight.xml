@@ -6,7 +6,7 @@
     <!-- 运费报表-正向 -->
     <sql id="iuniWmsFreightForward">
         SELECT SWSO.SHIPPING_TIME "shippingTime",
-        SWSO.DELIVERY_CODE "deliveryCode",
+        SWSO.SHIPPING_NO "deliveryCode",
         SWSO.ORDER_CODE "orderCode",
         CASE SWSO.ORDER_STATUS WHEN '5' THEN '已签收' ELSE '未签收' END "status",
         SWSO.CONSIGNEE "userName",
@@ -17,7 +17,7 @@
         SWSO.DELIVERY_FEE "deliveryFee",
         '零售发货' "type"
         FROM SYN_WMS_SALES_ORDER SWSO
-        WHERE 1 = 1
+        WHERE SWSO.SHIPPING_NO IS NOT NULL
         <isNotNull prepend="and" property="beginDate">
             SWSO.SHIPPING_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
         </isNotNull>
@@ -46,7 +46,7 @@
         FROM SYN_WMS_EXCHANGE_GOODS SWEG
         GROUP BY SWEG.EXCHANGE_CODE) SWEG2
         ON SWEI.EXCHANGE_CODE = SWEG2.EXCHANGE_CODE
-        WHERE 1 = 1
+        WHERE SWEI.F_SHIPPING_NO IS NOT NULL
         <isNotNull prepend="and" property="beginDate">
             SWEI.SHIPPING_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
         </isNotNull>
@@ -72,7 +72,7 @@
         FROM SYN_WMS_REPAIR_GOODS SWRG
         GROUP BY SWRG.REPAIR_CODE) SWRG2
         ON SWR.REPAIR_CODE = SWRG2.REPAIR_CODE
-        WHERE 1 = 1
+        WHERE SWR.F_SHIPPING_NO IS NOT NULL
         <isNotNull prepend="and" property="beginDate">
             SWR.CREATE_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
         </isNotNull>

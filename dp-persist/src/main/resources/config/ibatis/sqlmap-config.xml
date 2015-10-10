@@ -117,5 +117,9 @@
 
     <!-- 支付宝 -->
     <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniAlipay.xml"/>
+    <!-- 售后 -->
+    <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniAfterSales.xml"/>
+    <!-- 微信支付 -->
+    <sqlMap resource="config/ibatis/datastat/iuniwms/sqlmap-iuniWeixinPay.xml"/>
 
 </sqlMapConfig>

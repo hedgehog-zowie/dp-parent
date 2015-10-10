@@ -15,14 +15,17 @@ import com.iuni.dp.service.datastat.service.common.IuniWmsSkuService;
 @Service("iuniWmsSkuService")
 public class IuniWmsSkuServiceImpl implements IuniWmsSkuService {
 
-    private static final String[] goodsTypeOfU3 = new String[]{"1083694"};
-    private static final String[] goodsTypeOfU2 = new String[]{"1083694"};
-    private static final String[] goodsTypeOfPJ = new String[]{"1083696", "4910371", "4910373"};
-    private static final String[] goodsTypeOfI1 = new String[]{"1083694"};
+    private static final String[] goodsTypeOfU3 = new String[]{"手机"};
+    private static final String[] goodsTypeOfU2 = new String[]{"手机"};
+    private static final String[] goodsTypeOfPJ = new String[]{"配件", "玩偶", "配饰", "服装"};
+    private static final String[] goodsTypeOfI1 = new String[]{"手机"};
+    private static final String[] goodsTypeOfN1 = new String[]{"手机"};
+    private static final String[] goodsTypeOfFW = new String[]{"碎屏险", "延长保"};
 
-    private static final String[] waresOfU3 = new String[]{"5059485"};
-    private static final String[] waresOfU2 = new String[]{"1083755"};
-    private static final String[] waresOfi1 = new String[]{"5874069"};
+    private static final String[] waresOfU3 = new String[]{"000000017"};
+    private static final String[] waresOfU2 = new String[]{"000000001"};
+    private static final String[] waresOfi1 = new String[]{"000000021"};
+    private static final String[] waresOfN1 = new String[]{"000000028"};
 
     @Autowired
     private IuniWmsSkuDao iuniWmsSkuDao;
@@ -41,6 +44,11 @@ public class IuniWmsSkuServiceImpl implements IuniWmsSkuService {
             phoneList = waresOfU2;
         } else if ("PJ".equals(goodsType)) {
             goodsTypeList = goodsTypeOfPJ;
+        } else if ("FW".equals(goodsType)) {
+            goodsTypeList = goodsTypeOfFW;
+        } else if ("N1".equals(goodsType)) {
+            goodsTypeList = goodsTypeOfN1;
+            phoneList = waresOfN1;
         }
         params.put("goodsTypeList", goodsTypeList);
         params.put("phoneList", phoneList);

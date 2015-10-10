@@ -91,8 +91,13 @@
                                 <s:select id="supplierId" name="supplierId" list="suppliers" headerKey="0"
                                           headerValue="全部"></s:select>
                             </dd>
-                            <dd class="ddl1"/>
-                            <dd class="ddr1"/>
+                            <%--<dd class="ddl1">--%>
+                                <%--<label for="warehouseCode">仓库</label>--%>
+                            <%--</dd>--%>
+                            <%--<dd class="ddr1">--%>
+                                <%--<s:select name="warehouseCode" listKey="warehouseCode" listValue="warehouseName"--%>
+                                          <%--list="warehouseList" headerKey="" headerValue="全部"></s:select>--%>
+                            <%--</dd>--%>
                             <dd class="ddl1">
                                 <label for="originalCode">采购单号</label>
                             </dd>
@@ -145,7 +150,7 @@
                         <th>入库单号</th>
                         <th>SKU</th>
                         <th>物料编码</th>
-                        <th>商品名称</th>
+                        <%--<th>商品名称</th>--%>
                         <th>名称规格</th>
                         <th>数量</th>
                         <th>备注</th>
@@ -162,8 +167,8 @@
                             <td class="mytd"><s:property value="receiveCode"/></td>
                             <td class="mytd"><s:property value="sku"/></td>
                             <td class="mytd"><s:property value="materialCode"/></td>
+                            <%--<td class="mytd"><s:property value="waresName"/></td>--%>
                             <td class="mytd"><s:property value="skuName"/></td>
-                            <td class="mytd"><s:property value="waresName"/></td>
                             <td class="mytd"><s:property value="quantity"/></td>
                             <td class="mytd"><s:property value="remark"/></td>
                         </tr>

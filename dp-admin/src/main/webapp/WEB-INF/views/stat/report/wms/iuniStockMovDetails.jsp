@@ -81,8 +81,13 @@
                                 <input class="Wdate1" name="statParams['endDate']" id="endDate" type="text" size="10"
                                        readonly="readonly" value="${statParams['endDate']}"/>
                             </dd>
-                            <dd class="ddl1"/>
-                            <dd class="ddr1"/>
+                            <dd class="ddl1">
+                                <label for="warehouseCode">仓库</label>
+                            </dd>
+                            <dd class="ddr1">
+                                <s:select name="warehouseCode" listKey="warehouseCode" listValue="warehouseName"
+                                          list="warehouseList" headerKey="" headerValue="全部"></s:select>
+                            </dd>
                             <dd class="ddl1"/>
                             <dd class="ddr1"/>
                             <dd class="ddl1">
@@ -133,13 +138,15 @@
                     <tr>
                         <th>序号</th>
                         <th>销售渠道/类型</th>
+                        <th>收款类型</th>
+                        <th>仓库</th>
                         <th>日期</th>
                         <th>订单号</th>
                         <th>外部订单号</th>
-                        <th>出库单号</th>
+                        <%--<th>出库单号</th>--%>
                         <th>SKU</th>
                         <th>物料编码</th>
-                        <th>商品名称</th>
+                        <%--<th>商品名称</th>--%>
                         <th>规格型号</th>
                         <th>数量</th>
                         <th>发票代码</th>
@@ -154,13 +161,15 @@
                         <tr>
                             <td class="mytd"><s:property value="rowNum"/></td>
                             <td class="mytd"><s:property value="orderSource"/></td>
+                            <td class="mytd"><s:property value="payName"/></td>
+                            <td class="mytd"><s:property value="warehouseName"/></td>
                             <td class="mytd"><s:date name="stockChangeTime" format="yyyy-MM-dd"/></td>
                             <td class="mytd"><s:property value="orderCode"/></td>
                             <td class="mytd"><s:property value="outerOrderCode"/></td>
-                            <td class="mytd"><s:property value="deliveryCode"/></td>
+                            <%--<td class="mytd"><s:property value="deliveryCode"/></td>--%>
                             <td class="mytd"><s:property value="skuCode"/></td>
                             <td class="mytd"><s:property value="materialCode"/></td>
-                            <td class="mytd"><s:property value="goodsName"/></td>
+                            <%--<td class="mytd"><s:property value="goodsName"/></td>--%>
                             <td class="mytd"><s:property value="skuName"/></td>
                             <td class="mytd"><s:property value="quantity"/></td>
                             <td class="mytd"><s:property value="invoiceTcode"/></td>

@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.iuni.dp.persist.datastat.common.model.IuniWmsWarehouse;
+import com.iuni.dp.service.datastat.service.common.IuniWarehouseService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -57,6 +59,28 @@ public class IuniWmsTransferAction extends BaseAction {
 	private String transferSale;
 	// 物料编码
 	private String materialCode;
+
+	@Autowired
+	private IuniWarehouseService warehouseService;
+	/**
+	 * 调出仓库
+	 */
+	private static String outWarehouseCode;
+	/**
+	 * 调入仓库
+	 */
+	private static String inWarehouseCode;
+	/**
+	 * 仓库列表
+	 */
+	private List<IuniWmsWarehouse> warehouseList;
+
+	/**
+	 * 初始化仓库列表
+	 */
+	private void initWarehouse() {
+		warehouseList = warehouseService.queryAllWarehouse();
+	}
 
 	/**
 	 * IUNI WMS调拨单明细按条件统计 
@@ -164,7 +188,9 @@ public class IuniWmsTransferAction extends BaseAction {
 	 * @return String
 	 */
 	public String iuniInTransferDetailsView() {
-		List<Map<String, Object>> iuniInTransferDetailsList = null;
+		initWarehouse();
+
+		List<Map<String, Object>> iuniInTransferDetailsList;
 		
 		try {
 			//生成查询参数Map
@@ -321,7 +347,7 @@ public class IuniWmsTransferAction extends BaseAction {
 		cols.add("transferSale");
 		cols.add("skuCode");
 		cols.add("materialCode");
-		cols.add("goodsName");
+//		cols.add("goodsName");
 		cols.add("skuName");
 		cols.add("quantity");
 		return cols;
@@ -340,7 +366,7 @@ public class IuniWmsTransferAction extends BaseAction {
 		colNames.add("调入仓位");
 		colNames.add("SKU");
 		colNames.add("物料编码");
-		colNames.add("商品名称");
+//		colNames.add("商品名称");
 		colNames.add("规格型号");
 		colNames.add("数量");
 		
@@ -378,8 +404,8 @@ public class IuniWmsTransferAction extends BaseAction {
 		}
 
 		// 调出仓位
-		if (StringUtils.isNotBlank(warehouseName))
-			params.put("warehouseName", warehouseName.trim());
+		if (StringUtils.isNotBlank(outWarehouseCode))
+			params.put("outWarehouseCode", outWarehouseCode.trim());
 		// 调入仓位
 		if (StringUtils.isNotBlank(transferSale))
 			params.put("transferSale", transferSale.trim());
@@ -453,5 +479,29 @@ public class IuniWmsTransferAction extends BaseAction {
 
 	public void setMaterialCode(String materialCode) {
 		this.materialCode = materialCode;
+	}
+
+	public static String getOutWarehouseCode() {
+		return outWarehouseCode;
+	}
+
+	public static void setOutWarehouseCode(String outWarehouseCode) {
+		IuniWmsTransferAction.outWarehouseCode = outWarehouseCode;
+	}
+
+	public static String getInWarehouseCode() {
+		return inWarehouseCode;
+	}
+
+	public static void setInWarehouseCode(String inWarehouseCode) {
+		IuniWmsTransferAction.inWarehouseCode = inWarehouseCode;
+	}
+
+	public List<IuniWmsWarehouse> getWarehouseList() {
+		return warehouseList;
+	}
+
+	public void setWarehouseList(List<IuniWmsWarehouse> warehouseList) {
+		this.warehouseList = warehouseList;
 	}
 }

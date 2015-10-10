@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="iuniWeixinPay">
+
+    <sql id="selectIuniWeixinPay">
+        SELECT T.TRADE_DATE "tradeDate",
+        T.WX_ORDER_NO "wxOrderSn",
+        T.MCH_ORDER_SN "mchOrderSn",
+        T.MERCHANDISE "merchandise",
+        T.USER_SIGN "userSign",
+        CASE T.TRADE_STATUS
+        WHEN 'SUCCESS' THEN
+        '买家已支付'
+        WHEN 'REFUND' THEN
+        '转入退款'
+        ELSE
+        T.TRADE_STATUS
+        END "status",
+        CASE T.WX_REFUND_SN
+        WHEN '0' THEN
+        T.AMOUNT
+        ELSE
+        T.REFUND
+        END "amount",
+        CASE T.CURRENCY
+        WHEN 'CNY' THEN '人民币'
+        ELSE T.CURRENCY END "currency",
+        CASE T.WX_REFUND_SN
+        WHEN '0' THEN
+        T.DISCOUNT
+        ELSE
+        REFUND_DISCOUNT
+        END "discount"
+        FROM IUNI_DA_WEIXIN_PAY_BILL_DETAIL T
+        where 1 = 1
+        <isNotNull property="orderCode" prepend="and">
+            T.MERCHANDISE LIKE '%' || #orderCode# || '%'
+        </isNotNull>
+        <isNotNull prepend="and" property="beginDate">
+            TO_DATE(T.TRADE_DATE, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[ >= ]]> TO_DATE(#beginDate#, 'YYYY-MM-DD')
+        </isNotNull>
+        <isNotNull prepend="and" property="endDate">
+            TO_DATE(T.TRADE_DATE, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[ < ]]> TO_DATE(#endDate#, 'YYYY-MM-DD') + 1
+        </isNotNull>
+        ORDER BY T.TRADE_DATE
+    </sql>
+
+    <select id="selectIuniWeixinPayByPage" resultClass="hashmap" parameterClass="map">
+        SELECT * FROM
+        (
+        SELECT T.*, ROWNUM "rowNum" FROM
+        (
+        <include refid="selectIuniWeixinPay"/>
+        ) T
+        <isNotNull property="endRec">
+            WHERE ROWNUM <![CDATA[ <= ]]> #endRec#
+        </isNotNull>
+        )
+        <isNotNull property="startRec">
+            WHERE "rowNum" <![CDATA[ >= ]]> #startRec#
+        </isNotNull>
+    </select>
+
+    <select id="selectIuniWeixinPayCount" resultClass="int" parameterClass="map">
+        select count(*) from
+        (
+        <include refid="selectIuniWeixinPay"/>
+        )
+    </select>
+
+</sqlMap>

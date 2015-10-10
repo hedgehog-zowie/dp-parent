@@ -88,13 +88,20 @@
                             <dd class="ddr1"/>
                             <dd class="ddl1"/>
                             <dd class="ddr1"/>
+                            <%--<dd class="ddl1">--%>
+                            <%--<label for="warehouseName">调出仓位</label>--%>
+                            <%--</dd>--%>
+                            <%--<dd class="ddr1">--%>
+                            <%--<input id="warehouseName" name="warehouseName" value="${warehouseName}"--%>
+                            <%--placeholder="输入调出仓位"--%>
+                            <%--type="text"/>--%>
+                            <%--</dd>--%>
                             <dd class="ddl1">
-                                <label for="warehouseName">调出仓位</label>
+                                <label for="outWarehouseCode">调出仓位</label>
                             </dd>
                             <dd class="ddr1">
-                                <input id="warehouseName" name="warehouseName" value="${warehouseName}"
-                                       placeholder="输入调出仓位"
-                                       type="text"/>
+                                <s:select name="outWarehouseCode" listKey="warehouseCode" listValue="warehouseName"
+                                          list="warehouseList" headerKey="" headerValue="全部"></s:select>
                             </dd>
                             <dd class="ddl1">
                                 <label for="transferSale">调入仓位</label>
@@ -104,6 +111,13 @@
                                        placeholder="输入调入仓位"
                                        type="text"/>
                             </dd>
+                            <%--<dd class="ddl1">--%>
+                            <%--<label for="inWarehouseCode">调入仓位</label>--%>
+                            <%--</dd>--%>
+                            <%--<dd class="ddr1">--%>
+                            <%--<s:select name="inWarehouseCode" listKey="warehouseCode" listValue="warehouseName"--%>
+                            <%--list="warehouseList" headerKey="" headerValue="全部"></s:select>--%>
+                            <%--</dd>--%>
                             <dd class="ddl1">
                                 <label for="materialCode">物料编码</label>
                             </dd>
@@ -142,7 +156,7 @@
                         <th>调入仓位</th>
                         <th>SKU</th>
                         <th>物料编码</th>
-                        <th>商品名称</th>
+                        <%--<th>商品名称</th>--%>
                         <th>规格型号</th>
                         <th>数量</th>
                     </tr>
@@ -158,7 +172,7 @@
                             <td class="mytd"><s:property value="transferSale"/></td>
                             <td class="mytd"><s:property value="skuCode"/></td>
                             <td class="mytd"><s:property value="materialCode"/></td>
-                            <td class="mytd"><s:property value="goodsName"/></td>
+                                <%--<td class="mytd"><s:property value="goodsName"/></td>--%>
                             <td class="mytd"><s:property value="skuName"/></td>
                             <td class="mytd"><s:property value="quantity"/></td>
                         </tr>

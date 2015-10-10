@@ -51,7 +51,7 @@ public final class HttpUtil {
 
 	/**
 	 * @Description: 获取请求上下文中的ip地址（127.0.0.1等内部IP未过滤）
-	 * @param HttpServletRequest request
+	 * @param request
 	 * @return String 
 	 */
 	public static String getIp(HttpServletRequest request) {

@@ -14,6 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.iuni.dp.persist.datastat.common.model.IuniWmsWarehouse;
+import com.iuni.dp.service.datastat.service.common.IuniWarehouseService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -65,13 +67,33 @@ public class IuniWmsProcurementDetailAction extends BaseAction{
 	private Map<String,String> suppliers = new LinkedHashMap<String, String>();
 	private String receiveCode;
 
+	@Autowired
+	private IuniWarehouseService warehouseService;
+	/**
+	 * 仓库代码
+	 */
+	private static String warehouseCode;
+	/**
+	 * 仓库列表
+	 */
+	private List<IuniWmsWarehouse> warehouseList;
+
 	public void findAllSuppliers(){
 		suppliers.clear();
 		suppliers = iuniWmsSupplierService.findAllSuppliers();
 	}
-	
+
+	/**
+	 * 初始化仓库列表
+	 */
+	private void initWarehouse() {
+		warehouseList = warehouseService.queryAllWarehouse();
+	}
+
 	public String iuniWmsProcurementDetail(){
 		findAllSuppliers();
+
+		initWarehouse();
 		
 		List<Map<String, Object>> iuniWmsProcurementDetailList = new ArrayList<Map<String, Object>>();
 		try {
@@ -150,7 +172,7 @@ public class IuniWmsProcurementDetailAction extends BaseAction{
 		columnNames.add("入库单号");
 		columnNames.add("SKU");
 		columnNames.add("物料编码");
-		columnNames.add("商品名称");
+//		columnNames.add("商品名称");
 		columnNames.add("名称规格");
 		columnNames.add("数量");
 		columnNames.add("备注");
@@ -166,8 +188,8 @@ public class IuniWmsProcurementDetailAction extends BaseAction{
 		columns.add("receiveCode");
 		columns.add("sku");
 		columns.add("materialCode");
+//		columns.add("waresName");
 		columns.add("skuName");
-		columns.add("waresName");
 		columns.add("quantity");
 		columns.add("remark");
 		return columns;
@@ -214,6 +236,9 @@ public class IuniWmsProcurementDetailAction extends BaseAction{
 		if(StringUtils.isNotBlank(supplierId) && !"0".equals(supplierId.trim())){
 			params.put("supplierId", supplierId.trim());
 		}
+		// 仓库
+		if (StringUtils.isNotBlank(warehouseCode))
+			params.put("warehouseCode", warehouseCode.trim());
 
 		return params;
 	}
@@ -293,5 +318,21 @@ public class IuniWmsProcurementDetailAction extends BaseAction{
 
 	public void setReceiveCode(String receiveCode) {
 		this.receiveCode = receiveCode;
+	}
+
+	public static String getWarehouseCode() {
+		return warehouseCode;
+	}
+
+	public static void setWarehouseCode(String warehouseCode) {
+		IuniWmsProcurementDetailAction.warehouseCode = warehouseCode;
+	}
+
+	public List<IuniWmsWarehouse> getWarehouseList() {
+		return warehouseList;
+	}
+
+	public void setWarehouseList(List<IuniWmsWarehouse> warehouseList) {
+		this.warehouseList = warehouseList;
 	}
 }

@@ -84,6 +84,7 @@
     <!-- 逆向签收表 - 换货 -->
     <sql id="IuniWmsReverseSignOfExchange">
         SELECT IOI.ORDER_SN            "orderSn",
+        IOI.REFERER "referer",
         IEI.EXCHANGE_SN         "exchangeSn",
         CASE IEI.SSTATUS
         WHEN 'cancle' THEN '已取消'

@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.iuni.dp.persist.datastat.common.model.OrderSource;
+import com.iuni.dp.persist.datastat.common.model.OrderType;
 import com.iuni.dp.service.datastat.service.common.OrderSourceService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +64,16 @@ public class IuniWmsStockMoveViewForWlAction extends BaseAction {
 
     @Autowired
     private OrderSourceService orderSourceService;
+
     private List<OrderSource> orderSourceList;
     private List<OrderSource> transferSourceList;
 
+    private String orderType;
+    private List<OrderType> orderTypeList;
+
     private void initChannel() {
+        orderTypeList = OrderType.getAllOrderType();
+
         transferSourceList = orderSourceService.getAllWmsTransferSource();
         orderSourceList = orderSourceService.getAllWmsOrderSource();
 
@@ -154,6 +162,7 @@ public class IuniWmsStockMoveViewForWlAction extends BaseAction {
         columns.add("RN");
         columns.add("time");
         columns.add("orderSource");
+        columns.add("orderType");
         columns.add("sku");
         columns.add("waresName");
         columns.add("skuName");
@@ -173,6 +182,7 @@ public class IuniWmsStockMoveViewForWlAction extends BaseAction {
         columnNames.add("序号");
         columnNames.add("日期");
         columnNames.add("销售渠道/类型");
+        columnNames.add("订单类型");
         columnNames.add("SKU");
         columnNames.add("商品类型");
         columnNames.add("名称规格");
@@ -208,6 +218,10 @@ public class IuniWmsStockMoveViewForWlAction extends BaseAction {
 
         map.put("beginDate", statParams.get("beginDate"));
         map.put("endDate", statParams.get("endDate"));
+
+        if (StringUtils.isNotBlank(orderType)) {
+            map.put("orderType", orderType);
+        }
 
         map.put("transferList", channelOfTransferCodes != null && channelOfTransferCodes.length == 0 ? new String[]{""} : channelOfTransferCodes);
         map.put("orderList", channelOfOrderCodes != null && channelOfOrderCodes.length == 0 ? new String[]{""} : channelOfOrderCodes);
@@ -292,5 +306,21 @@ public class IuniWmsStockMoveViewForWlAction extends BaseAction {
 
     public void setTransferSourceList(List<OrderSource> transferSourceList) {
         this.transferSourceList = transferSourceList;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public List<OrderType> getOrderTypeList() {
+        return orderTypeList;
+    }
+
+    public void setOrderTypeList(List<OrderType> orderTypeList) {
+        this.orderTypeList = orderTypeList;
     }
 }

@@ -64,7 +64,7 @@
                 <div>
                     <input type="hidden" id="msg" value="<s:property value="msg"/>"/>
                 </div>
-                <div class="frame4" style="height:100px;">
+                <div class="frame4" style="height:120px;">
                     <form action="" method="post" id="queryFrm">
                         <dl>
                             <dd class="ddl1">
@@ -84,7 +84,7 @@
                             </dd>
                             <dd class="ddr1" style="width:51%"></dd>
                         </dl>
-                        <div style="height:45px">
+                        <div style="height:60px">
                             <span class="ddl1" style="float:left; margin-left:1%; margin-bottom:10px;">
                                 <label for="selectAll">订单来源</label>
                             </span>
@@ -93,7 +93,7 @@
                                 <label>全选</label>
                             </span>
                             <span class="ddr1" style="margin-left:1%; margin-bottom:10px;">
-                                <s:checkboxlist id="orderSourceId" name="orderSourceId"
+                                <s:checkboxlist name="orderSourceId"
                                                 listKey="sourceCode" listValue="sourceName" list="orderSourceList"></s:checkboxlist>
                             </span>
                         </div>
@@ -149,6 +149,7 @@
                         <th>商品</th>
                         <th>SKU</th>
                         <th>数量</th>
+                        <th>支付金额</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -162,12 +163,12 @@
                             <td class="mytd"><s:property value="wareName"/></td>
                             <td class="mytd"><s:property value="sku"/></td>
                             <td class="mytd"><s:property value="num"/></td>
+                            <td class="mytd"><s:property value="salePrice"/></td>
                         </tr>
                     </s:iterator>
                     </tbody>
                 </table>
                 <c:import url="/WEB-INF/views/common/pagelink.jsp"></c:import>
-
 
             </div>
         </td>

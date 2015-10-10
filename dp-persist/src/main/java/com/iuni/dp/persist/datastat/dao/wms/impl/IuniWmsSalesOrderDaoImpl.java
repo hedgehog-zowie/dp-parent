@@ -178,11 +178,37 @@ public class IuniWmsSalesOrderDaoImpl extends
 	public Integer selectIuniWmsPayAmountCheckCount(Map<String, Object> params) {
 		logger.debug("IuniWmsSalesOrderDaoImpl.selectIuniWmsPayAmountCheckCount(Map<String, Object>) invoke");
 		Long stime = System.currentTimeMillis();
-		
-		Integer count = (Integer) getObjectByProperty(IuniWmsSalesOrder.class.getSimpleName() 
+
+		Integer count = (Integer) getObjectByProperty(IuniWmsSalesOrder.class.getSimpleName()
 				+ ".selectIuniWmsPayAmountCheckCount", params);
-		
+
 		logger.debug("IuniWmsSalesOrderDaoImpl.selectIuniWmsPayAmountCheckCount(Map<String, Object>) success: costTime={}ms",
+				new Object[] { System.currentTimeMillis() - stime });
+		return count;
+	}
+
+	@Override
+	public List<Map<String, Object>> selectIuniRebatesDetailByPage(Map<String, Object> params) {
+		logger.debug("IuniWmsSalesOrderDaoImpl.selectIuniRebatesDetailByPage(Map<String, Object>) invoke");
+		Long stime = System.currentTimeMillis();
+
+		List<Map<String, Object>> list = findAllObjectsByPage2(IuniWmsSalesOrder.class.getSimpleName()
+				+ ".selectIuniRebatesDetailByPage", params);
+
+		logger.debug("IuniWmsSalesOrderDaoImpl.selectIuniRebatesDetailByPage(Map<String, Object>) success: costTime={}ms",
+				new Object[] { System.currentTimeMillis() - stime });
+		return list;
+	}
+
+	@Override
+	public Integer selectIuniRebatesDetailCount(Map<String, Object> params) {
+		logger.debug("IuniWmsSalesOrderDaoImpl.selectIuniRebatesDetailCount(Map<String, Object>) invoke");
+		Long stime = System.currentTimeMillis();
+
+		Integer count = (Integer) getObjectByProperty(IuniWmsSalesOrder.class.getSimpleName()
+				+ ".selectIuniRebatesDetailCount", params);
+
+		logger.debug("IuniWmsSalesOrderDaoImpl.selectIuniRebatesDetailCount(Map<String, Object>) success: costTime={}ms",
 				new Object[] { System.currentTimeMillis() - stime });
 		return count;
 	}

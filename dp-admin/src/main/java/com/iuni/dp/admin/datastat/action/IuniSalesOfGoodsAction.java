@@ -106,6 +106,7 @@ public class IuniSalesOfGoodsAction extends BaseAction {
     }
 
     public String iuniSalesOfGoodsSelect() {
+        initOrderSource();
         try {
             skuNameList = iuniWmsSkuService.queryIuniWmsSku(goodsType);
             String json = JSON.toJSONString(skuNameList);
@@ -219,6 +220,7 @@ public class IuniSalesOfGoodsAction extends BaseAction {
         columns.add("wareName");
         columns.add("sku");
         columns.add("num");
+        columns.add("salePrice");
         return columns;
     }
 
@@ -231,6 +233,7 @@ public class IuniSalesOfGoodsAction extends BaseAction {
         columnNames.add("商品");
         columnNames.add("SKU");
         columnNames.add("数量");
+        columnNames.add("支付金额");
         return columnNames;
     }
 

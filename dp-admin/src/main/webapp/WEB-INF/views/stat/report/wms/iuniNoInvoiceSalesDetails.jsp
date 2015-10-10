@@ -139,10 +139,10 @@
                         <th>日期</th>
                         <th>订单号</th>
                         <th>外部订单号</th>
-                        <th>出库单号</th>
+                        <%--<th>出库单号</th>--%>
                         <th>SKU</th>
                         <th>物料编码</th>
-                        <th>商品名称</th>
+                        <%--<th>商品名称</th>--%>
                         <th>规格型号</th>
                         <th>数量</th>
                         <th>发票金额</th>
@@ -157,10 +157,10 @@
                             <td class="mytd"><s:date name="stockChangeTime" format="yyyy-MM-dd"/></td>
                             <td class="mytd"><s:property value="orderCode"/></td>
                             <td class="mytd"><s:property value="outerOrderCode"/></td>
-                            <td class="mytd"><s:property value="deliveryCode"/></td>
+                            <%--<td class="mytd"><s:property value="deliveryCode"/></td>--%>
                             <td class="mytd"><s:property value="skuCode"/></td>
                             <td class="mytd"><s:property value="materialCode"/></td>
-                            <td class="mytd"><s:property value="goodsName"/></td>
+                            <%--<td class="mytd"><s:property value="goodsName"/></td>--%>
                             <td class="mytd"><s:property value="skuName"/></td>
                             <td class="mytd"><s:property value="quantity"/></td>
                             <td class="mytd"><s:property value="invoiceAmount"/></td>

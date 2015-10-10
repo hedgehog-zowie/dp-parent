@@ -1,9 +1,11 @@
 package com.iuni.dp.admin.datastat.action.iuniwms;
 
 import com.iuni.dp.admin.common.action.BaseAction;
+import com.iuni.dp.persist.datastat.common.model.IuniWmsWarehouse;
 import com.iuni.dp.service.common.bean.Page;
 import com.iuni.dp.service.common.exception.DBException;
 import com.iuni.dp.service.common.utils.ExcelUtil;
+import com.iuni.dp.service.datastat.service.common.IuniWarehouseService;
 import com.iuni.dp.service.datastat.service.wms.IuniWmsStockService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -54,11 +56,31 @@ public class IuniWmsStockAction extends BaseAction {
 
 	private String materialCode;
 
+	@Autowired
+	private IuniWarehouseService warehouseService;
+	/**
+	 * 仓库代码
+	 */
+	private static String warehouseCode;
+	/**
+	 * 仓库列表
+	 */
+	private List<IuniWmsWarehouse> warehouseList;
+
+	/**
+	 * 初始化仓库列表
+	 */
+	private void initWarehouse() {
+		warehouseList = warehouseService.queryAllWarehouse();
+	}
+
     /**
 	 * IUNI WMS库存明细按条件统计
 	 * @return String
 	 */
 	public String iuniWmsStockDetailsView() {
+		initWarehouse();
+
 		List<Map<String, Object>> iuniWmsStockDetailsList = null;
 		
 		try {
@@ -167,7 +189,7 @@ public class IuniWmsStockAction extends BaseAction {
         cols.add("wareHouse");
 		cols.add("skuCode");
 		cols.add("materialCode");
-		cols.add("goodsName");
+//		cols.add("goodsName");
 		cols.add("skuName");
 		cols.add("measureUnit");
 		cols.add("acceptedGoods");
@@ -188,7 +210,7 @@ public class IuniWmsStockAction extends BaseAction {
         colNames.add("仓库");
 		colNames.add("SKU");
 		colNames.add("物料编码");
-		colNames.add("商品名称");
+//		colNames.add("商品名称");
 		colNames.add("规格型号");
 		colNames.add("单位");
 		colNames.add("良品");
@@ -229,8 +251,8 @@ public class IuniWmsStockAction extends BaseAction {
 		}
 
 		// 仓库
-		if (StringUtils.isNotBlank(wareHouse))
-			params.put("wareHouse", wareHouse.trim());
+		if (StringUtils.isNotBlank(warehouseCode))
+			params.put("warehouseCode", warehouseCode.trim());
 		// 物料编码
 		if (StringUtils.isNotBlank(materialCode))
 			params.put("materialCode", materialCode.trim());
@@ -293,5 +315,21 @@ public class IuniWmsStockAction extends BaseAction {
 
 	public void setMaterialCode(String materialCode) {
 		this.materialCode = materialCode;
+	}
+
+	public static String getWarehouseCode() {
+		return warehouseCode;
+	}
+
+	public static void setWarehouseCode(String warehouseCode) {
+		IuniWmsStockAction.warehouseCode = warehouseCode;
+	}
+
+	public List<IuniWmsWarehouse> getWarehouseList() {
+		return warehouseList;
+	}
+
+	public void setWarehouseList(List<IuniWmsWarehouse> warehouseList) {
+		this.warehouseList = warehouseList;
 	}
 }

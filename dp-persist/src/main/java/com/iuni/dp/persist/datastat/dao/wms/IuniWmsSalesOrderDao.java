@@ -100,4 +100,18 @@ public interface IuniWmsSalesOrderDao extends
 	 * @return Integer
 	 */
 	public Integer selectIuniWmsPayAmountCheckCount(Map<String, Object> params);
+
+	/**
+	 * 返利明细分页查询
+	 * @param params
+	 * @return
+	 */
+	List<Map<String,Object>> selectIuniRebatesDetailByPage(Map<String, Object> params);
+
+	/**
+	 * 返利明细记录数
+	 * @param params
+	 * @return
+	 */
+	Integer selectIuniRebatesDetailCount(Map<String, Object> params);
 }

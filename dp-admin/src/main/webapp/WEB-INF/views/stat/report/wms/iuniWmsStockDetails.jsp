@@ -88,12 +88,19 @@
                             <dd class="ddr1"/>
                             <dd class="ddl1"/>
                             <dd class="ddr1"/>
+                            <%--<dd class="ddl1">--%>
+                                <%--<label for="wareHouse">仓库</label>--%>
+                            <%--</dd>--%>
+                            <%--<dd class="ddr1">--%>
+                                <%--<input id="wareHouse" name="wareHouse" value="${wareHouse}" placeholder="输入仓库"--%>
+                                       <%--type="text"/>--%>
+                            <%--</dd>--%>
                             <dd class="ddl1">
-                                <label for="wareHouse">仓库</label>
+                                <label for="warehouseCode">仓库</label>
                             </dd>
                             <dd class="ddr1">
-                                <input id="wareHouse" name="wareHouse" value="${wareHouse}" placeholder="输入仓库"
-                                       type="text"/>
+                                <s:select name="warehouseCode" listKey="warehouseCode" listValue="warehouseName"
+                                          list="warehouseList" headerKey="" headerValue="全部"></s:select>
                             </dd>
                             <dd class="ddl1">
                                 <label for="materialCode">物料编码</label>
@@ -131,7 +138,7 @@
                         <th>仓库</th>
                         <th>SKU</th>
                         <th>物料编码</th>
-                        <th>商品名称</th>
+                        <%--<th>商品名称</th>--%>
                         <th>规格型号</th>
                         <th>单位</th>
                         <th>良品</th>
@@ -147,7 +154,7 @@
                             <td class="mytd"><s:property value="wareHouse"/></td>
                             <td class="mytd"><s:property value="skuCode"/></td>
                             <td class="mytd"><s:property value="materialCode"/></td>
-                            <td class="mytd"><s:property value="goodsName"/></td>
+                            <%--<td class="mytd"><s:property value="goodsName"/></td>--%>
                             <td class="mytd"><s:property value="skuName"/></td>
                             <td class="mytd"><s:property value="measureUnit"/></td>
                             <td class="mytd"><s:property value="acceptedGoods"/></td>

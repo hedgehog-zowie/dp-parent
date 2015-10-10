@@ -95,5 +95,20 @@ public interface IuniWmsSalesOrderService {
 	 * @return Integer
 	 */
 	public Integer queryIuniWmsPayAmountCheckCount(Map<String, Object> params) throws ServiceException;
-	
+
+	/**
+	 * 返利报表分页查询
+	 * @param params
+	 * @return
+	 * @throws ServiceException
+	 */
+	public List<Map<String, Object>> 	queryIuniRebatesDetailByPage(Map<String, Object> params) throws ServiceException;
+
+	/**
+	 * 返利报表查询记录数
+	 * @param params
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Integer queryIuniRebatesDetailCount(Map<String, Object> params) throws ServiceException;
 }

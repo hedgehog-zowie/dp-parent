@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * IuniWmsTransfer DAO
- * @author Kenneth.Cai@iuni.com
- * @version dp-service-1.1.5
+ * @author Nicholas
+ *         Email:   nicholas.chen@iuni.com
  */
 public interface IuniAlipayDao extends BaseDao<Object, Serializable> {
 

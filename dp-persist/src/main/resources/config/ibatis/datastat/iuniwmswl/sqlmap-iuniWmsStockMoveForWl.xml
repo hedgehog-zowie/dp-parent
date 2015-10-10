@@ -8,6 +8,7 @@
         FROM (SELECT IWSO.SHIPPING_TIME    "time",
         IOS.SOURCE_NAME       "orderSource",
         IWSO.ORDER_CODE       "orderCode",
+        CASE IWSO.ORDER_TYPE WHEN '1' THEN '刷单' WHEN '2' THEN '以旧换新' ELSE '普通订单' END "orderType",
         IWSO.OUTER_ORDER_CODE "outerOrderCode",
         IWSO.PAY_NO           "payNo",
         IWSO.DELIVERY_CODE    "deliveryCode",
@@ -32,6 +33,9 @@
         ON IOS.SOURCE_CODE = IWSO.ORDER_SOURCE
         WHERE 1 = 1
         AND (IWSO.ORDER_MERGER_TYPE IS NULL OR IWSO.ORDER_MERGER_TYPE = 2)
+        <isNotNull prepend="and" property="orderType">
+            IWSO.ORDER_TYPE = #orderType#
+        </isNotNull>
         <isNotNull prepend="and" property="beginDate">
             IWSO.SHIPPING_TIME <![CDATA[ >= ]]> to_date(#beginDate#, 'YYYY-MM-DD')
         </isNotNull>
@@ -51,6 +55,7 @@
         FROM (SELECT SWT.SHIPPING_TIME "time",
         IOS.SOURCE_NAME   "orderSource",
         null              "orderCode",
+        null              "orderType",
         null              "outerOrderCode",
         null              "payNo",
         null              "deliveryCode",

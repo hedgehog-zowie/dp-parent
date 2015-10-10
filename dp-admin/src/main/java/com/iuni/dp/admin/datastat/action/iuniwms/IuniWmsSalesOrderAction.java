@@ -1,9 +1,11 @@
 package com.iuni.dp.admin.datastat.action.iuniwms;
 
 import com.iuni.dp.admin.common.action.BaseAction;
+import com.iuni.dp.persist.datastat.common.model.IuniWmsWarehouse;
 import com.iuni.dp.service.common.bean.Page;
 import com.iuni.dp.service.common.exception.DBException;
 import com.iuni.dp.service.common.utils.ExcelUtil;
+import com.iuni.dp.service.datastat.service.common.IuniWarehouseService;
 import com.iuni.dp.service.datastat.service.wms.IuniWmsSalesOrderService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -57,13 +59,31 @@ public class IuniWmsSalesOrderAction extends BaseAction {
     private String materialCode;
     private String parentOrderId;
 
+    @Autowired
+    private IuniWarehouseService warehouseService;
+    /**
+     * 仓库代码
+     */
+    private static String warehouseCode;
+    /**
+     * 仓库列表
+     */
+    private List<IuniWmsWarehouse> warehouseList;
+
+    /**
+     * 初始化仓库列表
+     */
+    private void initWarehouse() {
+        warehouseList = warehouseService.queryAllWarehouse();
+    }
+
     /**
      * IUNI WMS销售明细按条件统计
      *
      * @return String
      */
     public String iuniWmsSalesOrderStatView() {
-        List<Map<String, Object>> iuniWmsSalesOrderStatList = null;
+        List<Map<String, Object>> iuniWmsSalesOrderStatList;
 
         try {
             //生成查询参数Map
@@ -166,6 +186,8 @@ public class IuniWmsSalesOrderAction extends BaseAction {
      * @return String
      */
     public String iuniStockMovDetailsView() {
+        initWarehouse();
+
         List<Map<String, Object>> iuniStockMovDetailsList = null;
 
         try {
@@ -553,19 +575,22 @@ public class IuniWmsSalesOrderAction extends BaseAction {
         List<String> cols = new ArrayList<String>();
         cols.add("rowNum");
         cols.add("orderSource");
+        cols.add("payName");
+        cols.add("warehouseName");
         cols.add("stockChangeTime");
         cols.add("orderCode");
         cols.add("outerOrderCode");
-        cols.add("deliveryCode");
+//        cols.add("deliveryCode");
         cols.add("skuCode");
         cols.add("materialCode");
-        cols.add("goodsName");
+//        cols.add("goodsName");
         cols.add("skuName");
         cols.add("quantity");
         cols.add("invoiceTcode");
         cols.add("invoiceCode");
         cols.add("invoiceAmount");
         cols.add("logisticsCost");
+        cols.add("isScalper");
         return cols;
     }
 
@@ -578,19 +603,22 @@ public class IuniWmsSalesOrderAction extends BaseAction {
         List<String> colNames = new ArrayList<String>();
         colNames.add("序号");
         colNames.add("销售渠道/类型");
+        colNames.add("收款类型");
+        colNames.add("仓库");
         colNames.add("日期");
         colNames.add("订单号");
         colNames.add("外部订单号");
-        colNames.add("出库单号");
+//        colNames.add("出库单号");
         colNames.add("SKU");
         colNames.add("物料编码");
-        colNames.add("商品名称");
+//        colNames.add("商品名称");
         colNames.add("规格型号");
         colNames.add("数量");
         colNames.add("发票代码");
         colNames.add("发票号码");
         colNames.add("发票金额");
         colNames.add("价外费");
+        colNames.add("是否刷单");
         return colNames;
     }
 
@@ -606,10 +634,10 @@ public class IuniWmsSalesOrderAction extends BaseAction {
         cols.add("stockChangeTime");
         cols.add("orderCode");
         cols.add("outerOrderCode");
-        cols.add("deliveryCode");
+//        cols.add("deliveryCode");
         cols.add("skuCode");
         cols.add("materialCode");
-        cols.add("goodsName");
+//        cols.add("goodsName");
         cols.add("skuName");
         cols.add("quantity");
         cols.add("invoiceAmount");
@@ -629,10 +657,10 @@ public class IuniWmsSalesOrderAction extends BaseAction {
         colNames.add("日期");
         colNames.add("订单号");
         colNames.add("外部订单号");
-        colNames.add("出库单号");
+//        colNames.add("出库单号");
         colNames.add("SKU");
         colNames.add("物料编码");
-        colNames.add("商品名称");
+//        colNames.add("商品名称");
         colNames.add("规格型号");
         colNames.add("数量");
         colNames.add("发票金额");
@@ -737,6 +765,9 @@ public class IuniWmsSalesOrderAction extends BaseAction {
         // 主订单号（收款发货发票金额核对明细报表 的条件）
         if (StringUtils.isNotBlank(parentOrderId))
             params.put("parentOrderId", parentOrderId.trim());
+        // 仓库
+        if (StringUtils.isNotBlank(warehouseCode))
+            params.put("warehouseCode", warehouseCode.trim());
 
         return params;
     }
@@ -814,5 +845,21 @@ public class IuniWmsSalesOrderAction extends BaseAction {
 
     public void setParentOrderId(String parentOrderId) {
         this.parentOrderId = parentOrderId;
+    }
+
+    public static String getWarehouseCode() {
+        return warehouseCode;
+    }
+
+    public static void setWarehouseCode(String warehouseCode) {
+        IuniWmsSalesOrderAction.warehouseCode = warehouseCode;
+    }
+
+    public List<IuniWmsWarehouse> getWarehouseList() {
+        return warehouseList;
+    }
+
+    public void setWarehouseList(List<IuniWmsWarehouse> warehouseList) {
+        this.warehouseList = warehouseList;
     }
 }

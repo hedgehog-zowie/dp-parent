@@ -8,7 +8,11 @@ public enum SalesOfGoodType {
 	i1("i1手机"),
 	U3("U3手机"),
 	U2("U2手机"),
-	PJ("配件");
+	PJ("配件"),
+	FW("服务"),
+	N1("N1手机"),
+	;
+
 	
 	private String value;
 	
@@ -27,6 +31,8 @@ public enum SalesOfGoodType {
 		goodsTypeList.put(U3.toString(), SalesOfGoodType.U3.getValue());
 		goodsTypeList.put(U2.toString(), SalesOfGoodType.U2.getValue());
 		goodsTypeList.put(PJ.toString(), SalesOfGoodType.PJ.getValue());
+		goodsTypeList.put(FW.toString(), SalesOfGoodType.FW.getValue());
+		goodsTypeList.put(N1.toString(), SalesOfGoodType.N1.getValue());
 		return goodsTypeList;
 	}
 }

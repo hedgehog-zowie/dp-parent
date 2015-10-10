@@ -3,6 +3,7 @@ package com.iuni.dp.service.datastat.service.wms.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.iuni.dp.service.common.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -219,6 +220,36 @@ public class IuniWmsSalesOrderServiceImpl implements IuniWmsSalesOrderService {
 
 		} catch(DataAccessException daex) {
 			logger.error("IuniWmsSalesOrderServiceImpl.queryIuniWmsPayAmountCheckCount found DataAccessException", daex);
+			throw new DBException(daex);
+		}
+
+		return totalCount;
+	}
+
+	@Override
+	public List<Map<String, Object>> queryIuniRebatesDetailByPage(Map<String, Object> params) throws ServiceException {
+		List<Map<String, Object>> list = null;
+
+		try {
+			list = iuniWmsSalesOrderDao.selectIuniRebatesDetailByPage(params);
+			logger.debug("IuniWmsSalesOrderServiceImpl.queryIuniRebatesDetailByPage invoke success");
+		} catch(DataAccessException daex) {
+			logger.error("IuniWmsSalesOrderServiceImpl.queryIuniRebatesDetailByPage found DataAccessException", daex);
+			throw new DBException(daex);
+		}
+
+		return list;
+	}
+
+	@Override
+	public Integer queryIuniRebatesDetailCount(Map<String, Object> params) throws ServiceException {
+		Integer totalCount = 0;
+
+		try {
+			totalCount = iuniWmsSalesOrderDao.selectIuniRebatesDetailCount(params);
+			logger.debug("IuniWmsSalesOrderServiceImpl.queryIuniRebatesDetailCount invoke success");
+		} catch(DataAccessException daex) {
+			logger.error("IuniWmsSalesOrderServiceImpl.queryIuniRebatesDetailCount found DataAccessException", daex);
 			throw new DBException(daex);
 		}
 

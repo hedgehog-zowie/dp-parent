@@ -95,7 +95,7 @@
 				  state,
 				  remark 
 	)
-    values (  
+    values (
     		  #msgAlarmId#,
 			  #msgTypeId#, 
 			  #msgSubject#,

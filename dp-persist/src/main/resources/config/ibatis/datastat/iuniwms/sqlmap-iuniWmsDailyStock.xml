@@ -31,6 +31,7 @@
     <sql id="iuniWmsStockDetails_query_1">
         select * from (
         select IWSD.REPORT_DATE "date",
+        IWWH.WAREHOUSE_CODE "warehouseCode",
         IWWH.WAREHOUSE_NAME "wareHouse",
         IWSD.SKU_CODE "skuCode",
         IWS.Material_Code "materialCode",
@@ -59,7 +60,7 @@
         <isNotNull property="endDate" prepend="and">
             IWSD.REPORT_DATE <![CDATA[ < ]]> to_date(#endDate#,'yyyy-mm-dd')+1
         </isNotNull>
-        GROUP BY IWSD.REPORT_DATE, IWWH.WAREHOUSE_NAME, IWSD.SKU_CODE, IWW.Wares_Name, IWS.Sku_Name, IWW.MEASURE_UNIT,
+        GROUP BY IWSD.REPORT_DATE, IWWH.WAREHOUSE_CODE, IWWH.WAREHOUSE_NAME, IWSD.SKU_CODE, IWW.Wares_Name, IWS.Sku_Name, IWW.MEASURE_UNIT,
         IWS.Material_Code
         ) TMP
         WHERE 1 = 1
@@ -68,6 +69,9 @@
         </isNotNull>
         <isNotNull property="materialCode" prepend="and">
             TMP."materialCode" LIKE '%' || #materialCode# || '%'
+        </isNotNull>
+        <isNotNull property="warehouseCode" prepend="and">
+            TMP."warehouseCode" = #warehouseCode#
         </isNotNull>
         order by TMP."date", TMP."skuCode"
     </sql>
